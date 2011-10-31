@@ -14,6 +14,14 @@ import android.util.Log;
 import android.widget.TextView;
 
 public class LoveAndroidActivity extends Activity {
+	@Override
+	public void onStop()
+	{
+		super.onStop();
+		// TODO hack to kill the process on home button
+		System.exit(0);
+	}
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -40,6 +48,7 @@ public class LoveAndroidActivity extends Activity {
 					"test.lua", _G).call();
 
 			LoadState.load(openFileInput("lala.lua"), "lala.lua", _G).call();
+			LoadState.load(openFileInput("lala2.lua"), "lala2.lua", _G).call();
 		} catch (NotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -50,6 +59,7 @@ public class LoveAndroidActivity extends Activity {
 
 		LuaValue t = _G.get("test").call();
 		_G.get("lala").call();
+		_G.get("lala2").call();
 
 		text.setText(text.getText() + "\n" + t.toString());
 		text.setText(text.getText() + "\n" + getFilesDir());
