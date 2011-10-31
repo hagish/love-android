@@ -26,6 +26,7 @@ public class LoveVM {
 		_G = JsePlatform.standardGlobals();
 
 		setupCoreFunctions();
+		setupLoveFunctions();
 		loadFile("core.lua");
 	}
 
@@ -41,7 +42,6 @@ public class LoveVM {
 
 	private void setupCoreFunctions() {
 		_G.set("print", new VarArgFunction() {
-
 			@Override
 			public LuaValue invoke(Varargs args) {
 				args.narg();
@@ -60,6 +60,43 @@ public class LoveVM {
 				return LuaValue.NONE;
 			}
 		});
+		
+	}
+	
+	private void setupLoveFunctions() {
+		LuaTable gLoveGraphics = Luavalue.TableOf() 
+		_G.get("love").set("graphics", gLoveGraphics);
+
+		// love.graphics.print(sText,x,y)
+		gLoveGraphics.set("print",new OneArgFunction() {
+					@Override
+					public Varargs invoke(Varargs args) {
+						String s = args.checkjstring(1);
+						int x = args.checkint(2);
+						int y = args.checkint(3);
+						text.setText(text.getText() + "\n" + s);
+						Log.i("lua", s);
+						return LuaValue.NONE;
+					}
+				});
+
+		// img = love.graphics.newImage(sFileName)
+		gLoveGraphics.set("newImage",new OneArgFunction() {
+					@Override
+					public Varargs invoke(Varargs args) {
+						String s = args.checkjstring(1);
+					}
+				});
+
+		// love.graphics.draw(img,x,y)
+		gLoveGraphics.set("draw",new OneArgFunction() {
+					@Override
+					public Varargs invoke(Varargs args) {
+						// String s = args.checkjstring(1);
+						int x = args.checkint(2);
+						int y = args.checkint(3);
+					}
+				});
 	}
 
 	public void load() {
