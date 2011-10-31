@@ -19,6 +19,7 @@ public class LoveVM {
 	private static final String TAG = "LoveVM";
 	private Activity attachedToThisActivity;
 	private LuaValue _G;
+	private LuanGraphics mLuanGraphics = new LuanGraphics();
 
 	public LoveVM(Activity attachedToThisActivity) {
 		this.attachedToThisActivity = attachedToThisActivity;
@@ -68,41 +69,8 @@ public class LoveVM {
 
 	private void setupLoveFunctions() {
 		_G.set("love", LuaValue.tableOf());
-
-		LuaTable gLoveGraphics = LuaValue.tableOf();
-		_G.get("love").set("graphics", gLoveGraphics);
-
-		// love.graphics.print(sText,x,y)
-		gLoveGraphics.set("print", new VarArgFunction() {
-			@Override
-			public Varargs invoke(Varargs args) {
-				String s = args.checkjstring(1);
-				int x = args.checkint(2);
-				int y = args.checkint(3);
-				Log.i("lua", s);
-				return LuaValue.NONE;
-			}
-		});
-
-		// img = love.graphics.newImage(sFileName)
-		gLoveGraphics.set("newImage", new VarArgFunction() {
-			@Override
-			public Varargs invoke(Varargs args) {
-				String s = args.checkjstring(1);
-				return LuaValue.NONE;
-			}
-		});
-
-		// love.graphics.draw(img,x,y)
-		gLoveGraphics.set("draw", new VarArgFunction() {
-			@Override
-			public Varargs invoke(Varargs args) {
-				// String s = args.checkjstring(1);
-				int x = args.checkint(2);
-				int y = args.checkint(3);
-				return LuaValue.NONE;
-			}
-		});
+		LuaTable t = mLuanGraphics.CreateLib();
+		_G.get("love").set("graphics", t);
 	}
 
 	public void load() {

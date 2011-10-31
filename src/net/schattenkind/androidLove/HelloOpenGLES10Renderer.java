@@ -11,6 +11,8 @@ import android.opengl.GLSurfaceView;
 
 public class HelloOpenGLES10Renderer implements GLSurfaceView.Renderer {
 	private FloatBuffer triangleVB;
+	public int mScreenW = 0;
+	public int mScreenH = 0;
 
 	private void initShapes() {
 
@@ -54,6 +56,8 @@ public class HelloOpenGLES10Renderer implements GLSurfaceView.Renderer {
 	}
 
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
+		mScreenW = width;
+		mScreenV = height;
 		gl.glViewport(0, 0, width, height);
 	}
 
