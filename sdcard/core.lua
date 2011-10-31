@@ -1,7 +1,5 @@
 print("test1",2,"test3")
 
-love = {}
-
 function love.load()
 	print("love.load")
 	gMyImg = love.graphics.newImage("ship01.png")

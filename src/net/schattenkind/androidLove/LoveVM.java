@@ -5,8 +5,10 @@ import java.io.IOException;
 
 import org.luaj.vm2.LoadState;
 import org.luaj.vm2.LuaNumber;
+import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
+import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
@@ -32,7 +34,8 @@ public class LoveVM {
 
 	private void loadFile(String filename) {
 		try {
-			LoadState.load(attachedToThisActivity.openFileInput(filename), filename, _G).call();
+			LoadState.load(attachedToThisActivity.openFileInput(filename),
+					filename, _G).call();
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, e.getMessage());
 		} catch (IOException e) {
@@ -60,45 +63,46 @@ public class LoveVM {
 				return LuaValue.NONE;
 			}
 		});
-		
+
 	}
-	
+
 	private void setupLoveFunctions() {
-		LuaTable gLoveGraphics = Luavalue.TableOf() 
+		_G.set("love", LuaValue.tableOf());
+
+		LuaTable gLoveGraphics = LuaValue.tableOf();
 		_G.get("love").set("graphics", gLoveGraphics);
 
 		// love.graphics.print(sText,x,y)
-		gLoveGraphics.set("print",new OneArgFunction() {
-					@Override
-					public Varargs invoke(Varargs args) {
-						String s = args.checkjstring(1);
-						int x = args.checkint(2);
-						int y = args.checkint(3);
-						text.setText(text.getText() + "\n" + s);
-						Log.i("lua", s);
-						return LuaValue.NONE;
-					}
-				});
+		gLoveGraphics.set("print", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs args) {
+				String s = args.checkjstring(1);
+				int x = args.checkint(2);
+				int y = args.checkint(3);
+				Log.i("lua", s);
+				return LuaValue.NONE;
+			}
+		});
 
 		// img = love.graphics.newImage(sFileName)
-		gLoveGraphics.set("newImage",new OneArgFunction() {
-					@Override
-					public Varargs invoke(Varargs args) {
-						String s = args.checkjstring(1);
-						return LuaValue.NONE;
-					}
-				});
+		gLoveGraphics.set("newImage", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs args) {
+				String s = args.checkjstring(1);
+				return LuaValue.NONE;
+			}
+		});
 
 		// love.graphics.draw(img,x,y)
-		gLoveGraphics.set("draw",new OneArgFunction() {
-					@Override
-					public Varargs invoke(Varargs args) {
-						// String s = args.checkjstring(1);
-						int x = args.checkint(2);
-						int y = args.checkint(3);
-						return LuaValue.NONE;
-					}
-				});
+		gLoveGraphics.set("draw", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs args) {
+				// String s = args.checkjstring(1);
+				int x = args.checkint(2);
+				int y = args.checkint(3);
+				return LuaValue.NONE;
+			}
+		});
 	}
 
 	public void load() {
