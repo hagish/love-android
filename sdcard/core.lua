@@ -5,7 +5,7 @@ function love.load()
 	gMyImg = love.graphics.newImage("ship01.png")
 end
 
-function love.upload(dt) print("love.upload", dt) end
+function love.update(dt) print("love.update", dt) end
 
 function love.draw()
 	print("love.draw")

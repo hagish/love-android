@@ -4,16 +4,45 @@ import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 
 public class HelloOpenGLES10 extends Activity {
+	private static final long updateDelayMillis = 100;
 	private LoveVM vm;
 	private GLSurfaceView mGLView;
-	
+
+	private class UpdateHandler extends Handler {
+
+		@Override
+		public void handleMessage(Message msg) {
+			HelloOpenGLES10.this._update();
+		}
+		
+		public void start()
+		{
+			sendMessageDelayed(obtainMessage(0), updateDelayMillis);
+		}
+
+		public void sleep(long delayMillis) {
+			this.removeMessages(0);
+			sendMessageDelayed(obtainMessage(0), delayMillis);
+		}
+	};
+
+	private UpdateHandler mUpdateHandler = new UpdateHandler();
+
 	@Override
 	public void onStop() {
 		super.onStop();
 		// TODO hack to kill the process on home button
 		System.exit(0);
+	}
+
+	public void _update() {
+		vm.update(updateDelayMillis);
+		vm.draw();
+		mUpdateHandler.sleep(updateDelayMillis);
 	}
 
 	@Override
@@ -24,10 +53,11 @@ public class HelloOpenGLES10 extends Activity {
 		// as the ContentView for this Activity.
 		mGLView = new HelloOpenGLES10SurfaceView(this);
 		setContentView(mGLView);
-		
+
 		vm = new LoveVM(this);
 		vm.init();
 		vm.load();
+		mUpdateHandler.start();
 	}
 
 	@Override

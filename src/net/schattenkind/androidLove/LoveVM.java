@@ -8,7 +8,6 @@ import org.luaj.vm2.LuaNumber;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
-import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
@@ -79,7 +78,7 @@ public class LoveVM {
 				String s = args.checkjstring(1);
 				int x = args.checkint(2);
 				int y = args.checkint(3);
-				Log.i("lua", s);
+				Log.i("LoveVM", s);
 				return LuaValue.NONE;
 			}
 		});
@@ -114,6 +113,6 @@ public class LoveVM {
 	}
 
 	public void update(float dt) {
-		_G.get("love").get("load").call(LuaNumber.valueOf(dt));
+		_G.get("love").get("update").call(LuaNumber.valueOf(dt));
 	}
 }
