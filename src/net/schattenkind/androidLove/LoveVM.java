@@ -85,6 +85,7 @@ public class LoveVM {
 					@Override
 					public Varargs invoke(Varargs args) {
 						String s = args.checkjstring(1);
+						return LuaValue.NONE;
 					}
 				});
 
@@ -95,6 +96,7 @@ public class LoveVM {
 						// String s = args.checkjstring(1);
 						int x = args.checkint(2);
 						int y = args.checkint(3);
+						return LuaValue.NONE;
 					}
 				});
 	}
