@@ -68,7 +68,7 @@ public class LoveVM {
 
 	private void setupLoveFunctions() {
 		_G.set("love", LuaValue.tableOf());
-		LuaTable t = mLuanGraphics.CreateLib();
+		LuaTable t = mLuanGraphics.InitLib();
 		_G.get("love").set("graphics", t);
 	}
 

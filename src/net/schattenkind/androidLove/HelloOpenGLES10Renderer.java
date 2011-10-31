@@ -57,7 +57,7 @@ public class HelloOpenGLES10Renderer implements GLSurfaceView.Renderer {
 
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		mScreenW = width;
-		mScreenV = height;
+		mScreenH = height;
 		gl.glViewport(0, 0, width, height);
 	}
 
