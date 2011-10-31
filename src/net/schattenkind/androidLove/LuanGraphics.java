@@ -27,7 +27,7 @@ public class LuanGraphics {
 				String s = args.checkjstring(1);
 				int x = args.checkint(2);
 				int y = args.checkint(3);
-				Log.i("lua", s);
+				Log.i("LoveVM", s);
 				return LuaValue.NONE;
 			}
 		});
@@ -46,8 +46,6 @@ public class LuanGraphics {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// String s = args.checkjstring(1);
-				//~  java.lang.Object 	checkuserdata(int i, java.lang.Class c) 
-				//~  java.lang.Object 	checkuserdata(int i, java.lang.Class c) 
 				int x = args.checkint(2);
 				int y = args.checkint(3);
 				return LuaValue.NONE;
