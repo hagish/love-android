@@ -18,10 +18,11 @@ public class LoveVM {
 	private static final String TAG = "LoveVM";
 	private Activity attachedToThisActivity;
 	private LuaValue _G;
-	private LuanGraphics mLuanGraphics = new LuanGraphics();
+	private LuanGraphics mLuanGraphics;
 
 	public LoveVM(Activity attachedToThisActivity) {
 		this.attachedToThisActivity = attachedToThisActivity;
+		mLuanGraphics = new LuanGraphics(attachedToThisActivity);
 	}
 
 	public void init() {
