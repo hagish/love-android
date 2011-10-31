@@ -1,17 +1,12 @@
 package net.schattenkind.androidLove;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 
-import org.luaj.vm2.LoadState;
-import org.luaj.vm2.LuaNumber;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
-import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
-import org.luaj.vm2.lib.jse.JsePlatform;
 
 import android.app.Activity;
 import android.graphics.Bitmap;

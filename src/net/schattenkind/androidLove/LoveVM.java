@@ -19,10 +19,10 @@ public class LoveVM {
 	private Activity attachedToThisActivity;
 	private LuaValue _G;
 	private LuanGraphics mLuanGraphics;
+	private LuanMouse mLuanMouse;
 
 	public LoveVM(Activity attachedToThisActivity) {
 		this.attachedToThisActivity = attachedToThisActivity;
-		mLuanGraphics = new LuanGraphics(attachedToThisActivity);
 	}
 
 	public void init() {
@@ -30,6 +30,7 @@ public class LoveVM {
 
 		setupCoreFunctions();
 		setupLoveFunctions();
+
 		loadFile("core.lua");
 	}
 
@@ -56,7 +57,7 @@ public class LoveVM {
 					if (i > 1) {
 						s.append(", ");
 					}
-					s.append(args.arg(i).checkstring().toString());
+					s.append(args.arg(i).toString());
 				}
 
 				Log.i(TAG, s.toString());
@@ -69,8 +70,16 @@ public class LoveVM {
 
 	private void setupLoveFunctions() {
 		_G.set("love", LuaValue.tableOf());
-		LuaTable t = mLuanGraphics.InitLib();
+
+		LuaTable t;
+
+		mLuanGraphics = new LuanGraphics(attachedToThisActivity);
+		t = mLuanGraphics.InitLib();
 		_G.get("love").set("graphics", t);
+
+		mLuanMouse = new LuanMouse(_G);
+		t = mLuanMouse.InitLib();
+		_G.get("love").set("mouse", t);
 	}
 
 	public void load() {
@@ -83,5 +92,13 @@ public class LoveVM {
 
 	public void update(float dt) {
 		_G.get("love").get("update").call(LuaNumber.valueOf(dt));
+	}
+
+	public void feedPosition(int x, int y) {
+		mLuanMouse.feedPosition(x, y);
+	}
+
+	public void feedButtonState(boolean left, boolean middle, boolean right) {
+		mLuanMouse.feedButtonState(left, middle, right);
 	}
 }
