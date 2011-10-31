@@ -60,7 +60,7 @@ public class LuanGraphics {
 		t.set("draw", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
-				// String s = args.checkjstring(1);
+				LuanImage img = (LuanImage)args.checkuserdata(1,LuanImage.class);
 				int x = args.checkint(2);
 				int y = args.checkint(3);
 				return LuaValue.NONE;
@@ -74,27 +74,36 @@ public class LuanGraphics {
 	// ***** ***** ***** ***** *****  LuanImage
 
 	public class LuanImage {
+		int	miTextureID = 0;
+		
+		public void LoadFromBitmap (Bitmap bm) {
+			/*
+			// Generate one texture pointer
+			int[] textureIds = new int[1];
+			gl.glGenTextures( 1, textureIds, 0 );
+			miTextureID = textureIds[0];
+
+			// bind this texture
+			gl.glBindTexture( GL10.GL_TEXTURE_2D, miTextureID );
+
+			// Create Nearest Filtered Texture
+			gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR );
+			gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR );
+
+			gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, GL10.GL_REPEAT );
+			gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, GL10.GL_REPEAT );
+
+			GLUtils.texImage2D( GL10.GL_TEXTURE_2D, 0, bm, 0 ); // texImage2D(int target, int level, Bitmap bitmap, int border
+			*/
+		}
+		
 		public LuanImage (String filepath) throws FileNotFoundException {
 			//~ http://developer.android.com/resources/samples/ApiDemos/src/com/example/android/apis/graphics/CompressedTextureActivity.html
 			//~ von ressource : InputStream input = getResources().openRawResource(R.raw["bla.png"]);  // NICHT M�GLICH!!!! ->> sd card
 			//~ von ressource : InputStream input = getResources().openRawResource(R.raw.androids);
 			//~ von sd laden : InputStreamODERSO input = openFileInput("lala.lua");
-			//~ http://gamedev.stackexchange.com/questions/10829/loading-png-textures-for-use-in-android-opengl-es1
-			/*
-				... GLUtils.texImage2D( GL10.GL_TEXTURE_2D, 0, bitmap, 0 );...
-			
-				Drawable image = resources.getDrawable( resourceID ); // http://developer.android.com/reference/android/graphics/drawable/Drawable.html
-				bitmap = Bitmap.createBitmap( powWidth, powHeight, Bitmap.Config.ARGB_4444 );
-				// get a canvas to paint over the bitmap
-				Canvas canvas = new Canvas( bitmap );
-				bitmap.eraseColor(0);
-				image.draw( canvas ); // draw the image onto our bitmap
-				-- call sth... GLUtils.texImage2D(image)....
-				bitmap.recycle();
-				
-				//~ static Drawable 	Drawable.createFromStream(InputStream is, String srcName)
-			*/
-
+			//~ GLUtils.texImage2D : http://gamedev.stackexchange.com/questions/10829/loading-png-textures-for-use-in-android-opengl-es1		(see also comments/answers)
+			//~ static Drawable 	Drawable.createFromStream(InputStream is, String srcName)
 			
 			Log.i("LuanImage","constructor:"+filepath);
 			// TODO : throw lua error if file not found ?
@@ -106,8 +115,16 @@ public class LuanGraphics {
 			Log.i("LuanImage","BitmapDrawable ok");
 			Bitmap bm = bmd.getBitmap();
 			Log.i("LuanImage","Bitmap ok w="+bm.getWidth()+",h="+bm.getHeight());
+			// TODO : auto-scale to 2^n resolution ? naaaah.
+			// bitmap loaded into ram
 			
-			//~ texImage2D
+			// load into texture
+			LoadFromBitmap(bm);
+			Log.i("LuanImage","LoadFromBitmap done.");
+			
+			// release bitmap ram
+			bm.recycle();
+			
 			Log.i("LuanImage","constructor done.");
 		}
 	}

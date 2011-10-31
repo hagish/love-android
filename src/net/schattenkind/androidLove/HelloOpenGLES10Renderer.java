@@ -11,9 +11,12 @@ import android.opengl.GLSurfaceView;
 
 public class HelloOpenGLES10Renderer implements GLSurfaceView.Renderer {
 	private FloatBuffer triangleVB;
+	private LoveVM vm;
 	public int mScreenW = 0;
 	public int mScreenH = 0;
 
+	public HelloOpenGLES10Renderer (LoveVM vm) { this.vm = vm; }
+	
 	private void initShapes() {
 
 		float triangleCoords[] = {
@@ -53,6 +56,8 @@ public class HelloOpenGLES10Renderer implements GLSurfaceView.Renderer {
 		gl.glColor4f(0.63671875f, 0.76953125f, 0.22265625f, 0.0f);
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, triangleVB);
 		gl.glDrawArrays(GL10.GL_TRIANGLES, 0, 3);
+		
+		if (vm != null) vm.draw(gl);
 	}
 
 	public void onSurfaceChanged(GL10 gl, int width, int height) {

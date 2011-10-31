@@ -41,7 +41,6 @@ public class HelloOpenGLES10 extends Activity {
 
 	public void _update() {
 		vm.update(updateDelayMillis);
-		vm.draw();
 		mUpdateHandler.sleep(updateDelayMillis);
 	}
 
@@ -49,12 +48,13 @@ public class HelloOpenGLES10 extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		vm = new LoveVM(this);
+		
 		// Create a GLSurfaceView instance and set it
 		// as the ContentView for this Activity.
-		mGLView = new HelloOpenGLES10SurfaceView(this);
+		mGLView = new HelloOpenGLES10SurfaceView(this,vm);
 		setContentView(mGLView);
 
-		vm = new LoveVM(this);
 		vm.init();
 		vm.load();
 		mUpdateHandler.start();
@@ -82,10 +82,10 @@ public class HelloOpenGLES10 extends Activity {
 
 class HelloOpenGLES10SurfaceView extends GLSurfaceView {
 
-	public HelloOpenGLES10SurfaceView(Context context) {
+	public HelloOpenGLES10SurfaceView(Context context,LoveVM vm) {
 		super(context);
 
 		// Set the Renderer for drawing on the GLSurfaceView
-		setRenderer(new HelloOpenGLES10Renderer());
+		setRenderer(new HelloOpenGLES10Renderer(vm));
 	}
 }

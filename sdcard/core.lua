@@ -2,7 +2,7 @@ print("test1",2,"test3")
 
 function love.load()
 	--~ print("love.load")
-	gMyImg = love.graphics.newImage("ship01.png")
+	gMyImg = love.graphics.newImage("ship02.png") -- ship01.png=200x200,  ship02.png=256x256
 end
 
 function love.update(dt)

@@ -3,6 +3,8 @@ package net.schattenkind.androidLove;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import javax.microedition.khronos.opengles.GL10;
+
 import org.luaj.vm2.LoadState;
 import org.luaj.vm2.LuaNumber;
 import org.luaj.vm2.LuaTable;
@@ -77,7 +79,7 @@ public class LoveVM {
 		_G.get("love").get("load").call();
 	}
 
-	public void draw() {
+	public void draw(GL10 gl) {
 		_G.get("love").get("draw").call();
 	}
 
