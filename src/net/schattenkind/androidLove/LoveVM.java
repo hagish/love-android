@@ -22,18 +22,37 @@ public class LoveVM {
 	private LuaValue _G;
 	private LuanGraphics mLuanGraphics;
 	private LuanMouse mLuanMouse;
+	private GL10 gl;
+	private boolean bOnCreateDone = false;
+	private boolean bInitDone = false;
 
 	public LoveVM(Activity attachedToThisActivity) {
 		this.attachedToThisActivity = attachedToThisActivity;
 	}
 
+	/// called when gl context is created or updated
+	public void notifyGL (GL10 gl) {
+		this.gl = gl;
+		if (!bInitDone && bOnCreateDone) init();
+	}
+	
+	/// called when activity.onCreate has finished setting up the window
+	public void notifyOnCreateDone() {
+		bOnCreateDone = true;
+		if (!bInitDone && gl != null) init();
+	}
+	
+	/// may only be called after BOTH notifyGL AND notifyOnCreateDone have been called
 	public void init() {
+		assert(!bInitDone); // don't init twice
+		bInitDone = true;
 		_G = JsePlatform.standardGlobals();
 
 		setupCoreFunctions();
 		setupLoveFunctions();
 
 		loadFile("core.lua");
+		this.load();
 	}
 
 	private void loadFile(String filename) {
@@ -85,22 +104,27 @@ public class LoveVM {
 	}
 
 	public void load() {
+		assert(bInitDone);
 		_G.get("love").get("load").call();
 	}
 
 	public void draw(GL10 gl) {
+		if (!bInitDone) return;
 		_G.get("love").get("draw").call();
 	}
 
 	public void update(float dt) {
+		if (!bInitDone) return;
 		_G.get("love").get("update").call(LuaNumber.valueOf(dt));
 	}
 
 	public void feedPosition(int x, int y) {
+		if (!bInitDone) return;
 		mLuanMouse.feedPosition(x, y);
 	}
 
 	public void feedButtonState(boolean left, boolean middle, boolean right) {
+		if (!bInitDone) return;
 		mLuanMouse.feedButtonState(left, middle, right);
 	}
 }

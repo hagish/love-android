@@ -56,8 +56,8 @@ public class HelloOpenGLES10 extends Activity {
 		mGLView = new HelloOpenGLES10SurfaceView(this,vm);
 		setContentView(mGLView);
 
-		vm.init();
-		vm.load();
+		vm.notifyOnCreateDone();
+		
 		mUpdateHandler.start();
 
 		inputHandler = new InputHandler(mGLView, vm);
