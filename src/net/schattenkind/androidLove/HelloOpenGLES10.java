@@ -11,6 +11,8 @@ public class HelloOpenGLES10 extends Activity {
 	private static final long updateDelayMillis = 100;
 	private LoveVM vm;
 	private GLSurfaceView mGLView;
+	@SuppressWarnings("unused")
+	private InputHandler inputHandler;
 
 	private class UpdateHandler extends Handler {
 
@@ -18,9 +20,8 @@ public class HelloOpenGLES10 extends Activity {
 		public void handleMessage(Message msg) {
 			HelloOpenGLES10.this._update();
 		}
-		
-		public void start()
-		{
+
+		public void start() {
 			sendMessageDelayed(obtainMessage(0), updateDelayMillis);
 		}
 
@@ -58,6 +59,8 @@ public class HelloOpenGLES10 extends Activity {
 		vm.init();
 		vm.load();
 		mUpdateHandler.start();
+
+		inputHandler = new InputHandler(mGLView, vm);
 	}
 
 	@Override
