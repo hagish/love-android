@@ -13,7 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
-public class LoveAndroidActivity extends Activity {
+public class DummyActivity extends Activity {
 	@Override
 	public void onStop()
 	{
@@ -50,10 +50,8 @@ public class LoveAndroidActivity extends Activity {
 			LoadState.load(openFileInput("lala.lua"), "lala.lua", _G).call();
 			LoadState.load(openFileInput("lala2.lua"), "lala2.lua", _G).call();
 		} catch (NotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

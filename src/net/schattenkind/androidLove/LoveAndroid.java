@@ -6,19 +6,20 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.KeyEvent;
 
-public class HelloOpenGLES10 extends Activity {
+public class LoveAndroid extends Activity {
 	private static final long updateDelayMillis = 100;
 	private LoveVM vm;
 	private GLSurfaceView mGLView;
 	@SuppressWarnings("unused")
-	private InputHandler inputHandler;
+	private MouseHandler mouseHandler;
 
 	private class UpdateHandler extends Handler {
 
 		@Override
 		public void handleMessage(Message msg) {
-			HelloOpenGLES10.this._update();
+			LoveAndroid.this._update();
 		}
 
 		public void start() {
@@ -33,6 +34,17 @@ public class HelloOpenGLES10 extends Activity {
 
 	private UpdateHandler mUpdateHandler = new UpdateHandler();
 
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		return vm.feedKey(keyCode, true);
+	}
+
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		return vm.feedKey(keyCode, false);
+	}
+	
 	@Override
 	public void onStop() {
 		super.onStop();
@@ -60,7 +72,7 @@ public class HelloOpenGLES10 extends Activity {
 		vm.load();
 		mUpdateHandler.start();
 
-		inputHandler = new InputHandler(mGLView, vm);
+		mouseHandler = new MouseHandler(mGLView, vm);
 	}
 
 	@Override
@@ -89,6 +101,6 @@ class HelloOpenGLES10SurfaceView extends GLSurfaceView {
 		super(context);
 
 		// Set the Renderer for drawing on the GLSurfaceView
-		setRenderer(new HelloOpenGLES10Renderer(vm));
+		setRenderer(new LoveAndroidRenderer(vm));
 	}
 }

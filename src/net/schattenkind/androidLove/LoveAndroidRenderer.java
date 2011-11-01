@@ -9,13 +9,13 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.opengl.GLSurfaceView;
 
-public class HelloOpenGLES10Renderer implements GLSurfaceView.Renderer {
+public class LoveAndroidRenderer implements GLSurfaceView.Renderer {
 	private FloatBuffer triangleVB;
 	private LoveVM vm;
 	public int mScreenW = 0;
 	public int mScreenH = 0;
 
-	public HelloOpenGLES10Renderer (LoveVM vm) { this.vm = vm; }
+	public LoveAndroidRenderer (LoveVM vm) { this.vm = vm; }
 	
 	private void initShapes() {
 

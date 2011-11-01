@@ -22,6 +22,7 @@ public class LoveVM {
 	private LuaValue _G;
 	private LuanGraphics mLuanGraphics;
 	private LuanMouse mLuanMouse;
+	private LuanKeyboard mLuanKeyboard;
 
 	public LoveVM(Activity attachedToThisActivity) {
 		this.attachedToThisActivity = attachedToThisActivity;
@@ -78,10 +79,14 @@ public class LoveVM {
 		mLuanGraphics = new LuanGraphics(attachedToThisActivity);
 		t = mLuanGraphics.InitLib();
 		_G.get("love").set("graphics", t);
-
+		
 		mLuanMouse = new LuanMouse(_G);
 		t = mLuanMouse.InitLib();
 		_G.get("love").set("mouse", t);
+
+		mLuanKeyboard = new LuanKeyboard(_G);
+		t = mLuanKeyboard.InitLib();
+		_G.get("love").set("keyboard", t);
 	}
 
 	public void load() {
@@ -102,5 +107,9 @@ public class LoveVM {
 
 	public void feedButtonState(boolean left, boolean middle, boolean right) {
 		mLuanMouse.feedButtonState(left, middle, right);
+	}
+
+	public boolean feedKey(int keyCode, boolean isDown) {
+		return mLuanKeyboard.feedKey(keyCode, isDown);
 	}
 }

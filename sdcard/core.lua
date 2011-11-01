@@ -5,6 +5,14 @@ function love.load()
 	gMyImg = love.graphics.newImage("ship02.png") -- ship01.png=200x200,  ship02.png=256x256
 end
 
+function love.keypressed(key, unicode)
+	print("keypressed", key, unicode)
+end
+
+function love.keyreleased(key)
+	print("keyreleased", key)
+end
+
 function love.mousepressed(x, y, button)
 	print("mousepressed", x, y, button)
 end
