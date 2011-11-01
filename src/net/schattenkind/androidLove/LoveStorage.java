@@ -1,9 +1,15 @@
 package net.schattenkind.androidLove;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.List;
 
 import android.app.Activity;
 import android.graphics.drawable.BitmapDrawable;
@@ -48,5 +54,20 @@ public class LoveStorage {
 	public FileType getFileType(String filename) {
 		// TODO
 		return FileType.NONE;
+	}
+
+	public List<String> getLines(String filename) throws IOException {
+		FileInputStream fin = getFileStreamFromSdCard(filename);
+		DataInputStream in = new DataInputStream(fin);
+		BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
+		LinkedList<String> lines = new LinkedList<String>();
+
+		String strLine;
+		while ((strLine = br.readLine()) != null) {
+			lines.add(strLine);
+		}
+
+		return lines;
 	}
 }
