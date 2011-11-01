@@ -18,6 +18,7 @@ end
 
 function love.mousepressed(x, y, button)
 	print("mousepressed", x, y, button)
+	toast("mousepressed", x, y, button)
 end
 
 function love.mousereleased(x, y, button)

@@ -34,7 +34,7 @@ public class LoveVM {
 	private Activity attachedToThisActivity;
 	private LuaValue _G;
 
-	private String loveAppRootOnSdCard = "/love/";
+	private String loveAppRootOnSdCard = "/love/clouds/";
 
 	private LuanGraphics mLuanGraphics;
 	private LuanMouse mLuanMouse;
