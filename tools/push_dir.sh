@@ -7,7 +7,7 @@ fi
 
 if [ -z "$DST" ]
 then 
-	DST=/data/data/net.schattenkind.androidLove/files/ 
+	DST=/mnt/sdcard/love/ 
 fi
 
 if [ -z "$ADB" ]

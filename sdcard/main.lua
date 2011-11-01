@@ -34,6 +34,6 @@ function love.draw()
 	--~ print("love.draw")
     --~ love.graphics.print("Hello World", 20, 20)
 	local t = love.timer.getTime()
-	print("curtime",t)
+	-- print("curtime",t)
 	love.graphics.draw(gMyImg, 20, 20, t)
 end

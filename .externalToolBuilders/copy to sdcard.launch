@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.ui.externaltools.ProgramBuilderLaunchConfigurationType">
 <mapAttribute key="org.eclipse.debug.core.environmentVariables">
-<mapEntry key="DST" value="/data/data/net.schattenkind.androidLove/files/"/>
+<mapEntry key="DST" value="/mnt/sdcard/love/"/>
 <mapEntry key="SRC" value="${project_loc}/sdcard"/>
 </mapAttribute>
 <booleanAttribute key="org.eclipse.debug.ui.ATTR_LAUNCH_IN_BACKGROUND" value="false"/>

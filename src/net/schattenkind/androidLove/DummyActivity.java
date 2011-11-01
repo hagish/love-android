@@ -26,9 +26,9 @@ public class DummyActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+//		setContentView(R.layout.main);
 
-		final TextView text = (TextView) this.findViewById(R.id.text);
+//		final TextView text = (TextView) this.findViewById(R.id.text);
 
 		LuaValue _G = JsePlatform.standardGlobals();
 
@@ -36,7 +36,7 @@ public class DummyActivity extends Activity {
 
 			@Override
 			public LuaValue call(LuaValue luaValue) {
-				text.setText(text.getText() + "\n" + luaValue.toString());
+//				text.setText(text.getText() + "\n" + luaValue.toString());
 				Log.i("lua", luaValue.toString());
 
 				return LuaValue.NONE;
@@ -44,8 +44,8 @@ public class DummyActivity extends Activity {
 		});
 
 		try {
-			LoadState.load(getResources().openRawResource(R.raw.test),
-					"test.lua", _G).call();
+//			LoadState.load(getResources().openRawResource(R.raw.test),
+//					"test.lua", _G).call();
 
 			LoadState.load(openFileInput("lala.lua"), "lala.lua", _G).call();
 			LoadState.load(openFileInput("lala2.lua"), "lala2.lua", _G).call();
@@ -59,7 +59,7 @@ public class DummyActivity extends Activity {
 		_G.get("lala").call();
 		_G.get("lala2").call();
 
-		text.setText(text.getText() + "\n" + t.toString());
-		text.setText(text.getText() + "\n" + getFilesDir());
+//		text.setText(text.getText() + "\n" + t.toString());
+//		text.setText(text.getText() + "\n" + getFilesDir());
 	}
 }

@@ -8,8 +8,6 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
-import android.util.Log;
-
 public class LuanMouse {
 	private int mouseX;
 	private int mouseY;

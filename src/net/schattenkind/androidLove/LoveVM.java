@@ -1,5 +1,7 @@
 package net.schattenkind.androidLove;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -22,12 +24,15 @@ import org.luaj.vm2.lib.jse.JsePlatform;
 
 import android.app.Activity;
 import android.content.res.Resources.NotFoundException;
+import android.os.Environment;
 import android.util.Log;
 
 public class LoveVM {
 	private static final String TAG = "LoveVM";
 	private Activity attachedToThisActivity;
 	private LuaValue _G;
+	
+	private String loveAppRootOnSdCard = "/love/";
 
 	private LuanGraphics mLuanGraphics;
 	private LuanMouse mLuanMouse;
@@ -96,9 +101,15 @@ public class LoveVM {
 		}
 	}
 
+	public FileInputStream getFileStreamFromSdCard(String filename) throws FileNotFoundException
+	{
+		File f = new File(Environment.getExternalStorageDirectory() + "/" + loveAppRootOnSdCard + "/" + filename);
+		return new FileInputStream(f);
+	}
+	
 	private void loadFileFromSdCard(String filename) {
 		try {
-			LoadState.load(attachedToThisActivity.openFileInput(filename),
+			LoadState.load(getFileStreamFromSdCard(filename),
 					filename, _G).call();
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, e.getMessage());
