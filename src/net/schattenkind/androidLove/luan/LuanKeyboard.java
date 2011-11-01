@@ -2,6 +2,8 @@ package net.schattenkind.androidLove.luan;
 
 import java.util.HashMap;
 
+import net.schattenkind.androidLove.LoveVM;
+
 import org.luaj.vm2.LuaBoolean;
 import org.luaj.vm2.LuaNumber;
 import org.luaj.vm2.LuaString;
@@ -12,16 +14,14 @@ import org.luaj.vm2.lib.VarArgFunction;
 
 import android.view.KeyEvent;
 
-public class LuanKeyboard {
+public class LuanKeyboard extends LuanBase {
 	private float repeatDelay;
 	private float repeatInterval;
 
-	private LuaValue _G;
-
 	private HashMap<String, Boolean> isLuaKeyDown = new HashMap<String, Boolean>();
 
-	public LuanKeyboard(LuaValue _G) {
-		this._G = _G;
+	public LuanKeyboard(LoveVM vm) {
+		super(vm);
 	}
 
 	public LuaTable InitLib() {
@@ -72,7 +72,7 @@ public class LuanKeyboard {
 			}
 
 			// TODO unicode
-			_G.get("love").get(callback).call(LuaString.valueOf(luaKeyCode));
+			vm.get_G().get("love").get(callback).call(LuaString.valueOf(luaKeyCode));
 		}
 	}
 

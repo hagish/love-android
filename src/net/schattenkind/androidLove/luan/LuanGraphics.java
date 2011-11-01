@@ -2,6 +2,11 @@ package net.schattenkind.androidLove.luan;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+
+import javax.microedition.khronos.opengles.GL10;
 
 import net.schattenkind.androidLove.LoveVM;
 
@@ -10,26 +15,15 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.opengl.GLUtils;
 import android.util.Log;
 
-import javax.microedition.khronos.opengles.GL10;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-
-public class LuanGraphics {
-	private Activity mActivity;
-	private LoveVM vm;
-
-	public LuanGraphics (LoveVM vm,Activity activity) { this.vm = vm; mActivity = activity; }
+public class LuanGraphics extends LuanBase {
+	public LuanGraphics (LoveVM vm) { super(vm); }
 	
 	public GL10		getGL () { return vm.getGL(); }
-	public Activity	getActivity () { return mActivity; }
 	
 	public void Log (String s) { Log.i("LuanGraphics", s); }
 	public void LogException (Exception e) { Log.e("LuanGraphics",e.getMessage()); }
@@ -293,7 +287,7 @@ public class LuanGraphics {
 			//~ Drawable d = Drawable.createFromStream(input,filepath);
 			Log.i("LuanImage","InputStream ok");
 			
-			BitmapDrawable bmd = new BitmapDrawable(g.getActivity().getResources(),input); // ressources needed for "density" / dpi etc ?  no idea
+			BitmapDrawable bmd = new BitmapDrawable(vm.getResources(),input); // ressources needed for "density" / dpi etc ?  no idea
 			Log.i("LuanImage","BitmapDrawable ok");
 			Bitmap bm = bmd.getBitmap();
 			Log.i("LuanImage","Bitmap ok w="+bm.getWidth()+",h="+bm.getHeight());

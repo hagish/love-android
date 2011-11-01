@@ -24,6 +24,7 @@ import org.luaj.vm2.lib.jse.JsePlatform;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.os.Environment;
 import android.util.Log;
@@ -57,6 +58,10 @@ public class LoveVM {
 		return gl;
 	}
 
+	public LuaValue get_G() {
+		return _G;
+	}
+
 	// / called when gl context is created or updated
 	public void notifyGL(GL10 gl) {
 		this.gl = gl;
@@ -76,7 +81,7 @@ public class LoveVM {
 	public void init() {
 		assert (!bInitDone); // don't init twice
 		bInitDone = true;
-//		_G = JsePlatform.standardGlobals();
+		// _G = JsePlatform.standardGlobals();
 		_G = JsePlatform.debugGlobals();
 
 		try {
@@ -168,7 +173,8 @@ public class LoveVM {
 	public void toast(final String string) {
 		attachedToThisActivity.runOnUiThread(new Runnable() {
 			public void run() {
-				Context context = attachedToThisActivity.getApplicationContext();
+				Context context = attachedToThisActivity
+						.getApplicationContext();
 				int duration = Toast.LENGTH_SHORT;
 
 				Toast toast = Toast.makeText(context, string, duration);
@@ -180,22 +186,22 @@ public class LoveVM {
 	private void setupLoveFunctions() {
 		_G.set("love", LuaValue.tableOf());
 
-		mLuanGraphics = new LuanGraphics(this, attachedToThisActivity);
+		mLuanGraphics = new LuanGraphics(this);
 		_G.get("love").set("graphics", mLuanGraphics.InitLib());
-		
-		mLuanAudio = new LuanAudio(this, attachedToThisActivity);
+
+		mLuanAudio = new LuanAudio(this);
 		_G.get("love").set("audio", mLuanAudio.InitLib());
 
-		mLuanMouse = new LuanMouse(_G);
+		mLuanMouse = new LuanMouse(this);
 		_G.get("love").set("mouse", mLuanMouse.InitLib());
 
-		mLuanKeyboard = new LuanKeyboard(_G);
+		mLuanKeyboard = new LuanKeyboard(this);
 		_G.get("love").set("keyboard", mLuanKeyboard.InitLib());
 
-		mLuanTimer = new LuanTimer(_G);
+		mLuanTimer = new LuanTimer(this);
 		_G.get("love").set("timer", mLuanTimer.InitLib());
 
-		mLuanFilesystem = new LuanFilesystem(_G, this);
+		mLuanFilesystem = new LuanFilesystem(this);
 		_G.get("love").set("filesystem", mLuanFilesystem.InitLib());
 	}
 
@@ -254,5 +260,9 @@ public class LoveVM {
 
 	public boolean feedKey(int keyCode, boolean isDown) {
 		return mLuanKeyboard.feedKey(keyCode, isDown);
+	}
+
+	public Resources getResources() {
+		return attachedToThisActivity.getResources();
 	}
 }

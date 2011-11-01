@@ -7,18 +7,12 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
-import android.app.Activity;
+public class LuanAudio extends LuanBase {
+	public LuanAudio(LoveVM vm) {
+		super(vm);
+	}
 
-
-public class LuanAudio {
-	private Activity mActivity;
-	private LoveVM vm;
-
-	public LuanAudio (LoveVM vm,Activity activity) { this.vm = vm; mActivity = activity; }
-	
-	public Activity	getActivity () { return mActivity; }
-	
-	public LuaTable InitLib () {
+	public LuaTable InitLib() {
 		LuaTable t = LuaValue.tableOf();
 
 		// source = love.audio.newSource( file, type )
@@ -27,12 +21,13 @@ public class LuanAudio {
 			public Varargs invoke(Varargs args) {
 				// TODO
 				String s = args.checkjstring(1);
-				//~ try {
-					//~ return LuaValue.userdataOf(new LuanImage(LuanGraphics.this,s));
-				//~ } catch (Exception e) {
-					//~ // TODO : throw lua error ?
-					//~ LogException(e);
-				//~ }
+				// ~ try {
+				// ~ return LuaValue.userdataOf(new
+				// LuanImage(LuanGraphics.this,s));
+				// ~ } catch (Exception e) {
+				// ~ // TODO : throw lua error ?
+				// ~ LogException(e);
+				// ~ }
 				return LuaValue.NONE;
 			}
 		});
@@ -44,9 +39,8 @@ public class LuanAudio {
 				return LuaValue.NONE;
 			}
 		});
-		
+
 		return t;
 	}
-	
-}
 
+}
