@@ -1,5 +1,7 @@
 package net.schattenkind.androidLove.luan;
 
+import net.schattenkind.androidLove.LoveVM;
+
 import org.luaj.vm2.LuaNumber;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -9,12 +11,13 @@ import org.luaj.vm2.lib.VarArgFunction;
 import android.os.SystemClock;
 import android.util.Log;
 
-public class LuanTimer {
+public class LuanTimer extends LuanBase {
 	private float lastFrameStartInSec;
 	private float lastFrameDeltaInSec;
 	private long timerStartInMs;
 
-	public LuanTimer(LuaValue _G) {
+	public LuanTimer(LoveVM vm) {
+		super(vm);
 		timerStartInMs = SystemClock.uptimeMillis();
 	}
 

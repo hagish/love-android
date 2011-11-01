@@ -9,7 +9,7 @@ import android.os.Message;
 import android.view.KeyEvent;
 
 public class LoveAndroid extends Activity {
-	private static final long updateDelayMillis = 100;
+	private static final long updateDelayMillis = 1000 / 30;
 	private LoveVM vm;
 	private GLSurfaceView mGLView;
 	@SuppressWarnings("unused")
@@ -53,7 +53,7 @@ public class LoveAndroid extends Activity {
 	}
 
 	public void _update() {
-		vm.update(updateDelayMillis);
+		vm.update(updateDelayMillis / 1000.0f);
 		mUpdateHandler.sleep(updateDelayMillis);
 	}
 

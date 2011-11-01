@@ -2,6 +2,11 @@ package net.schattenkind.androidLove.luan;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+
+import javax.microedition.khronos.opengles.GL10;
 
 import net.schattenkind.androidLove.LoveVM;
 
@@ -10,36 +15,26 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.opengl.GLUtils;
 import android.util.Log;
 
-import javax.microedition.khronos.opengles.GL10;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-
-public class LuanGraphics {
-	private Activity mActivity;
-	public LoveVM vm;
+public class LuanGraphics extends LuanBase {
+	public LuanGraphics (LoveVM vm) { super(vm); }
 	static final String sMetaName_LuanImage = "__MetaLuanImage";
-
-	public LuanGraphics (LoveVM vm,Activity activity) { this.vm = vm; mActivity = activity; }
 	
 	public GL10		getGL () { return vm.getGL(); }
-	public Activity	getActivity () { return mActivity; }
 	
 	public void Log (String s) { Log.i("LuanGraphics", s); }
 	public void LogException (Exception e) { Log.e("LuanGraphics",e.getMessage()); }
 	
 	
-	// TODO: warning, the final needed for the param here is so it can be used to get image:metatable in inner function, might cause problems if we ever use more than one lua state ?
-	public LuaTable InitLib (final LuaValue _G) {
+	public LuaTable InitLib () {
 		InitSpriteBuffer();
 		LuaTable t = LuaValue.tableOf();
+		LuaValue _G = vm.get_G();
 		
 		_G.set(sMetaName_LuanImage,LuanImage.CreateMetaTable());
 
@@ -61,7 +56,7 @@ public class LuanGraphics {
 			public Varargs invoke(Varargs args) {
 				String s = args.checkjstring(1);
 				try {
-					return LuaValue.userdataOf(new LuanImage(LuanGraphics.this,s),_G.get(sMetaName_LuanImage));
+					return LuaValue.userdataOf(new LuanImage(LuanGraphics.this,s),vm.get_G().get(sMetaName_LuanImage));
 				} catch (Exception e) {
 					// TODO : throw lua error ?
 					LogException(e);
@@ -340,7 +335,7 @@ public class LuanGraphics {
 			//~ Drawable d = Drawable.createFromStream(input,filepath);
 			Log.i("LuanImage","InputStream ok");
 			
-			BitmapDrawable bmd = new BitmapDrawable(g.getActivity().getResources(),input); // ressources needed for "density" / dpi etc ?  no idea
+			BitmapDrawable bmd = new BitmapDrawable(g.vm.getResources(),input); // ressources needed for "density" / dpi etc ?  no idea
 			Log.i("LuanImage","BitmapDrawable ok");
 			Bitmap bm = bmd.getBitmap();
 			Log.i("LuanImage","Bitmap ok w="+bm.getWidth()+",h="+bm.getHeight());

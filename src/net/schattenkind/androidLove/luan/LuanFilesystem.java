@@ -14,16 +14,12 @@ import org.luaj.vm2.lib.VarArgFunction;
 
 import android.util.Log;
 
-public class LuanFilesystem {
+public class LuanFilesystem extends LuanBase {
 
 	protected static final String TAG = "LoveFilesystem";
 
-	private LuaValue _G;
-	private LoveVM vm;
-
-	public LuanFilesystem(LuaValue _G, LoveVM vm) {
-		this._G = _G;
-		this.vm = vm;
+	public LuanFilesystem(LoveVM vm) {
+		super(vm);
 	}
 
 	public LuaTable InitLib() {
@@ -35,7 +31,7 @@ public class LuanFilesystem {
 			public Varargs invoke(Varargs args) {
 				String filename = args.arg1().toString();
 				try {
-					LuaFunction f = LoadState.load(vm.getFileStreamFromSdCard(filename), filename, _G);
+					LuaFunction f = LoadState.load(vm.getFileStreamFromSdCard(filename), filename, vm.get_G());
 					return f;
 				} catch (FileNotFoundException e) {
 					Log.e(TAG, e.getMessage());

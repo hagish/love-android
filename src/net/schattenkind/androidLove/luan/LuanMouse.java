@@ -1,5 +1,7 @@
 package net.schattenkind.androidLove.luan;
 
+import net.schattenkind.androidLove.LoveVM;
+
 import org.luaj.vm2.LuaBoolean;
 import org.luaj.vm2.LuaNumber;
 import org.luaj.vm2.LuaString;
@@ -8,14 +10,13 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
-public class LuanMouse {
+public class LuanMouse extends LuanBase {
 	private int mouseX;
 	private int mouseY;
 
 	private boolean mouseButtonLeft = false;
 	private boolean mouseButtonMiddle = false;
 	private boolean mouseButtonRight = false;
-	private LuaValue _G;
 
 	public static final String LEFT_BUTTON = "l";
 	public static final String MIDDLE_BUTTON = "m";
@@ -25,8 +26,8 @@ public class LuanMouse {
 	public static final String X1 = "x1";
 	public static final String X2 = "x2";
 
-	public LuanMouse(LuaValue _G) {
-		this._G = _G;
+	public LuanMouse(LoveVM vm) {
+		super(vm);
 	}
 
 	public void feedPosition(int x, int y) {
@@ -50,7 +51,7 @@ public class LuanMouse {
 				callback = "mousereleased";
 			}
 
-			_G.get("love")
+			vm.get_G().get("love")
 					.get(callback)
 					.call(LuaNumber.valueOf(mouseX), LuaNumber.valueOf(mouseY),
 							LuaString.valueOf(button));

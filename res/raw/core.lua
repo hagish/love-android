@@ -12,3 +12,8 @@ function love.mousereleased() end
 function love.quit() end
 function love.run() end
 function love.update() end
+
+function require(file)
+	return love.filesystem.load(file .. ".lua")()
+end
+
