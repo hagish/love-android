@@ -34,7 +34,6 @@ public class LoveAndroid extends Activity {
 
 	private UpdateHandler mUpdateHandler = new UpdateHandler();
 
-	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		return vm.feedKey(keyCode, true);
@@ -44,7 +43,7 @@ public class LoveAndroid extends Activity {
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		return vm.feedKey(keyCode, false);
 	}
-	
+
 	@Override
 	public void onStop() {
 		super.onStop();
@@ -61,15 +60,15 @@ public class LoveAndroid extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		vm = new LoveVM(this);
-		
+		vm = new LoveVM(this, new LoveStorage(this, "/love/clouds/"));
+
 		// Create a GLSurfaceView instance and set it
 		// as the ContentView for this Activity.
-		mGLView = new HelloOpenGLES10SurfaceView(this,vm);
+		mGLView = new HelloOpenGLES10SurfaceView(this, vm);
 		setContentView(mGLView);
 
 		vm.notifyOnCreateDone();
-		
+
 		mUpdateHandler.start();
 
 		mouseHandler = new MouseHandler(mGLView, vm);
@@ -97,7 +96,7 @@ public class LoveAndroid extends Activity {
 
 class HelloOpenGLES10SurfaceView extends GLSurfaceView {
 
-	public HelloOpenGLES10SurfaceView(Context context,LoveVM vm) {
+	public HelloOpenGLES10SurfaceView(Context context, LoveVM vm) {
 		super(context);
 
 		// Set the Renderer for drawing on the GLSurfaceView

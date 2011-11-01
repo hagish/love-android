@@ -31,7 +31,9 @@ public class LuanFilesystem extends LuanBase {
 			public Varargs invoke(Varargs args) {
 				String filename = args.arg1().toString();
 				try {
-					LuaFunction f = LoadState.load(vm.getFileStreamFromSdCard(filename), filename, vm.get_G());
+					LuaFunction f = LoadState.load(vm.getStorage()
+							.getFileStreamFromSdCard(filename), filename, vm
+							.get_G());
 					return f;
 				} catch (FileNotFoundException e) {
 					Log.e(TAG, e.getMessage());

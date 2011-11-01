@@ -1,7 +1,5 @@
 package net.schattenkind.androidLove;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -26,7 +24,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
-import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -34,8 +31,6 @@ public class LoveVM {
 	private static final String TAG = "LoveVM";
 	private Activity attachedToThisActivity;
 	private LuaValue _G;
-
-	private String loveAppRootOnSdCard = "/love/clouds/";
 
 	private LuanGraphics mLuanGraphics;
 	private LuanAudio mLuanAudio;
@@ -49,8 +44,11 @@ public class LoveVM {
 	private boolean bInitDone = false;
 	private boolean isBroken = false;
 
-	public LoveVM(Activity attachedToThisActivity) {
+	private LoveStorage storage;
+
+	public LoveVM(Activity attachedToThisActivity, LoveStorage storage) {
 		this.attachedToThisActivity = attachedToThisActivity;
+		this.storage = storage;
 	}
 
 	// / access to latest valid gl object
@@ -110,17 +108,10 @@ public class LoveVM {
 		}
 	}
 
-	public FileInputStream getFileStreamFromSdCard(String filename)
-			throws FileNotFoundException {
-		File f = new File(Environment.getExternalStorageDirectory() + "/"
-				+ loveAppRootOnSdCard + "/" + filename);
-		return new FileInputStream(f);
-	}
-
 	private void loadFileFromSdCard(String filename) {
 		try {
-			LoadState.load(getFileStreamFromSdCard(filename), filename, _G)
-					.call();
+			LoadState.load(storage.getFileStreamFromSdCard(filename), filename,
+					_G).call();
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, e.getMessage());
 		} catch (IOException e) {
@@ -264,5 +255,9 @@ public class LoveVM {
 
 	public Resources getResources() {
 		return attachedToThisActivity.getResources();
+	}
+
+	public LoveStorage getStorage() {
+		return storage;
 	}
 }

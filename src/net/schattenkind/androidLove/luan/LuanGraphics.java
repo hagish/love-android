@@ -330,7 +330,7 @@ public class LuanGraphics extends LuanBase {
 			
 			Log.i("LuanImage","constructor:"+filepath);
 			// TODO : throw lua error if file not found ?
-			InputStream input = g.vm.getFileStreamFromSdCard(filepath);
+			InputStream input = g.vm.getStorage().getFileStreamFromSdCard(filepath);
 			//g.getActivity().openFileInput(filepath);
 			//~ Drawable d = Drawable.createFromStream(input,filepath);
 			Log.i("LuanImage","InputStream ok");
