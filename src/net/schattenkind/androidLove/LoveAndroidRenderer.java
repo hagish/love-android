@@ -40,6 +40,7 @@ public class LoveAndroidRenderer implements GLSurfaceView.Renderer {
 		// Set the background frame color
 		//~ gl.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		gl.glColor4f(1f, 1f, 1f, 1f);
 
 		// initialize the triangle vertex array
 		initShapes();

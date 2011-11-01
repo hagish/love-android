@@ -84,6 +84,33 @@ public class LuanGraphics {
 			}
 		});
 		
+		// love.graphics.setBackgroundColor( red, green, blue )  // 0-255
+		t.set("setBackgroundColor", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs args) {
+				float r = (float)args.checkdouble(1);
+				float g = (float)args.checkdouble(2);
+				float b = (float)args.checkdouble(3);
+				gl.glClearColor(r, g, b, 1.0f);
+				// TODO : remember for recreate surface after mode switch
+				return LuaValue.NONE;
+			}
+		});
+		
+		// love.graphics.setColor( red, green, blue, alpha )  // 0-255
+		t.set("setColor", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs args) {
+				float r = (float)args.checkdouble(1);
+				float g = (float)args.checkdouble(2);
+				float b = (float)args.checkdouble(3);
+				float a = (float)args.checkdouble(4);
+				gl.glColor4f(r, g, b, a);
+				// TODO : remember for recreate surface after mode switch
+				return LuaValue.NONE;
+			}
+		});
+		
 		return t;
 	}
 	
@@ -134,7 +161,7 @@ public class LuanGraphics {
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 		
-		gl.glColor4f(1f, 1f, 1f, 1f); // todo : love global color ?
+		//~ gl.glColor4f(1f, 1f, 1f, 1f); // todo : love global color ?
 			 
 		
 		// Point to our vertex buffer
