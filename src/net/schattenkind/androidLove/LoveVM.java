@@ -34,7 +34,7 @@ public class LoveVM {
 	private Activity attachedToThisActivity;
 	private LuaValue _G;
 
-	private String loveAppRootOnSdCard = "/love/clouds/";
+	private String loveAppRootOnSdCard = "/love/test/";
 
 	private LuanGraphics mLuanGraphics;
 	private LuanMouse mLuanMouse;
@@ -196,7 +196,7 @@ public class LoveVM {
 		t = mLuanTimer.InitLib();
 		_G.get("love").set("timer", t);
 
-		mLuanFilesystem = new LuanFilesystem(_G);
+		mLuanFilesystem = new LuanFilesystem(_G, this);
 		t = mLuanFilesystem.InitLib();
 		_G.get("love").set("filesystem", t);
 	}
