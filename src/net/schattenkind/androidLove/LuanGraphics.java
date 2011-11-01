@@ -138,7 +138,7 @@ public class LuanGraphics {
 		// Point to our vertex buffer
 		gl.glVertexPointer(2, GL10.GL_FLOAT, 0, spriteVB_Pos);
 		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, spriteVB_Tex);
-		Log("notifyFrameStart");
+		//~ Log("notifyFrameStart");
 	}
 	
 	public void notifyFrameEnd		(GL10 gl) {
@@ -146,7 +146,7 @@ public class LuanGraphics {
 		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
 		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 		gl.glDisable(GL10.GL_BLEND 	);
-		Log("notifyFrameEnd");
+		//~ Log("notifyFrameEnd");
 	}
 	
 	public void DrawSprite	(int iTextureID,float w,float h,float x,float y,float r,float sx,float sy,float ox,float oy) {
@@ -164,7 +164,7 @@ public class LuanGraphics {
 		float vy_y = -h*mycos; 
 
 		
-		Log("DrawSprite vx="+vx_x+","+vx_y+" vy="+vy_x+","+vy_y);
+		//~ Log("DrawSprite vx="+vx_x+","+vx_y+" vy="+vy_x+","+vy_y);
 		
 		//~ float x0 = -0.5f*vx_x -0.5f*vy_x; // center
 		//~ float y0 = -0.5f*vx_y -0.5f*vy_y; 
