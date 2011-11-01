@@ -32,6 +32,7 @@ public class LuanGraphics extends LuanBase {
 	public void Log (String s) { Log.i("LuanGraphics", s); }
 	public void LogException (Exception e) { Log.e("LuanGraphics",e.getMessage()); }
 	
+	public LuanFont mFont; // TODO: not yet used/implemented
 	
 	public LuaTable InitLib () {
 		InitSpriteBuffer();
@@ -127,6 +128,13 @@ public class LuanGraphics extends LuanBase {
 			}
 		});
 		
+		/// love.graphics.setFont( font )
+		t.set("setFont", new VarArgFunction() {
+			@Override public Varargs invoke(Varargs args) {
+				mFont = (LuanFont)args.checkuserdata(1,LuanFont.class);
+				return LuaValue.NONE;
+			}
+		});
 
 		/// love.graphics.draw(drawable, x, y, r=0, sx=1, sy=1, ox=0, oy=0)
 		t.set("draw", new VarArgFunction() {
@@ -165,6 +173,16 @@ public class LuanGraphics extends LuanBase {
 				LuanColor rgba = new LuanColor(args);
 				getGL().glColor4f(rgba.r, rgba.g, rgba.b, rgba.a);
 				// TODO : remember for recreate surface after mode switch
+				return LuaValue.NONE;
+			}
+		});
+		
+		/// success = love.graphics.setMode( width, height, fullscreen, vsync, fsaa )
+		t.set("setMode", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs args) {
+				// TODO: not yet implemented
+				// TODO: maybe fake resolution/scale ?
 				return LuaValue.NONE;
 			}
 		});
