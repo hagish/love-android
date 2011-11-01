@@ -43,6 +43,63 @@ public class LuanGraphics extends LuanBase {
 		_G.set(sMetaName_LuanQuad,LuanQuad.CreateMetaTable());
 		_G.set(sMetaName_LuanFont,LuanFont.CreateMetaTable());
 
+		
+
+		t.set("checkMode",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented	
+		t.set("circle",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("clear",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("getBackgroundColor",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("getBlendMode",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("getCaption",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("getColor",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("getColorMode",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("getFont",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("getHeight",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("getLineStipple",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("getLineStyle",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("getLineWidth",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("getMaxPointSize",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("getModes",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("getPointSize",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("getPointStyle",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("getScissor",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("getWidth",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("isCreated",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("line",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("newFont",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("newFramebuffer",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("newParticleSystem",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("newScreenshot",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("newSpriteBatch",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("point",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("polygon",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("pop",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("present",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("printf",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("push",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("quad",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("rectangle",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("reset",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("rotate",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("setBlendMode",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("setCaption",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("setColorMode",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("setIcon",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("setLine",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("setLineStipple",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("setLineStyle",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("setLineWidth",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("setPoint",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("setPointSize",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("setPointStyle",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("setRenderTarget",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("setScissor",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("toggleFullscreen",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("translate",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("triangle",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		
+		
+		
 		/// love.graphics.print(sText,x,y)
 		t.set("print", new VarArgFunction() {
 			@Override
@@ -108,26 +165,6 @@ public class LuanGraphics extends LuanBase {
 		});
 		
 		
-		/// quad = love.graphics.newQuad( x, y, width, height, sw, sh )
-		t.set("newQuad", new VarArgFunction() {
-			@Override
-			public Varargs invoke(Varargs args) {
-				float x  = (float)args.checkdouble(1);
-				float y  = (float)args.checkdouble(2);
-				float w  = (float)args.checkdouble(3);
-				float h  = (float)args.checkdouble(4);
-				float sw = (float)args.checkdouble(5);
-				float sh = (float)args.checkdouble(6);
-				try {
-					return LuaValue.userdataOf(new LuanQuad(LuanGraphics.this,x,y,w,h,sw,sh),vm.get_G().get(sMetaName_LuanQuad));
-				} catch (Exception e) {
-					// TODO : throw lua error ?
-					LogException(e);
-				}
-				return LuaValue.NONE;
-			}
-		});
-		
 		/// love.graphics.setFont( font )
 		t.set("setFont", new VarArgFunction() {
 			@Override public Varargs invoke(Varargs args) {
@@ -151,6 +188,18 @@ public class LuanGraphics extends LuanBase {
 				float oy = (n >= 8) ? ((float)args.checkdouble(8)) : 0.0f;
 				
 				DrawSprite(img.miTextureID,img.mWidth,img.mHeight,x,y,r,sx,sy,ox,oy);
+				return LuaValue.NONE;
+			}
+		});
+		
+		/// love.graphics.scale( sx, sy )
+		/// Scaling lasts until love.draw() exits. 
+		t.set("scale", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs args) {
+				float x = (float)args.checkdouble(1);
+				float y = (float)args.checkdouble(2);
+				// TODO: not yet implemented
 				return LuaValue.NONE;
 			}
 		});
@@ -186,6 +235,11 @@ public class LuanGraphics extends LuanBase {
 				return LuaValue.NONE;
 			}
 		});
+		
+		
+		t.set("drawq", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		
+		
 		
 		return t;
 	}
