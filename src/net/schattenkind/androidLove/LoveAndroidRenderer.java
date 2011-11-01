@@ -75,7 +75,8 @@ public class LoveAndroidRenderer implements GLSurfaceView.Renderer {
 		//~ gl.glScalef(1,-1,1);
 		
 		gl.glViewport(0, 0, width, height); // (evil dark voodoo magic) love2d pixel coord system: 0,0=top,left w,h=bottom,right
-		gl.glScalef(1f/width,1f/height,1);
+		gl.glTranslatef(-1,1,0);
+		gl.glScalef(2f/width,-2f/height,1);
 		
 		
 		vm.notifyGL(gl);
