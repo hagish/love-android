@@ -9,6 +9,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import net.schattenkind.androidLove.luan.LuanFilesystem;
 import net.schattenkind.androidLove.luan.LuanGraphics;
+import net.schattenkind.androidLove.luan.LuanAudio;
 import net.schattenkind.androidLove.luan.LuanKeyboard;
 import net.schattenkind.androidLove.luan.LuanMouse;
 import net.schattenkind.androidLove.luan.LuanTimer;
@@ -35,6 +36,7 @@ public class LoveVM {
 	private String loveAppRootOnSdCard = "/love/";
 
 	private LuanGraphics mLuanGraphics;
+	private LuanAudio mLuanAudio;
 	private LuanMouse mLuanMouse;
 	private LuanKeyboard mLuanKeyboard;
 	private LuanTimer mLuanTimer;
@@ -144,27 +146,23 @@ public class LoveVM {
 	private void setupLoveFunctions() {
 		_G.set("love", LuaValue.tableOf());
 
-		LuaTable t;
-
 		mLuanGraphics = new LuanGraphics(this, attachedToThisActivity);
-		t = mLuanGraphics.InitLib();
-		_G.get("love").set("graphics", t);
+		_G.get("love").set("graphics", mLuanGraphics.InitLib());
+		
+		mLuanAudio = new LuanAudio(this, attachedToThisActivity);
+		_G.get("love").set("audio", mLuanAudio.InitLib());
 
 		mLuanMouse = new LuanMouse(_G);
-		t = mLuanMouse.InitLib();
-		_G.get("love").set("mouse", t);
+		_G.get("love").set("mouse", mLuanMouse.InitLib());
 
 		mLuanKeyboard = new LuanKeyboard(_G);
-		t = mLuanKeyboard.InitLib();
-		_G.get("love").set("keyboard", t);
+		_G.get("love").set("keyboard", mLuanKeyboard.InitLib());
 
 		mLuanTimer = new LuanTimer(_G);
-		t = mLuanTimer.InitLib();
-		_G.get("love").set("timer", t);
+		_G.get("love").set("timer", mLuanTimer.InitLib());
 
 		mLuanFilesystem = new LuanFilesystem(_G);
-		t = mLuanFilesystem.InitLib();
-		_G.get("love").set("filesystem", t);
+		_G.get("love").set("filesystem", mLuanFilesystem.InitLib());
 	}
 
 	public void load() {
