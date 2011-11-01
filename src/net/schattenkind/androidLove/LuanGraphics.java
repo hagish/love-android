@@ -33,6 +33,7 @@ public class LuanGraphics {
 	public void LogException (Exception e) { Log.e("LuanGraphics",e.getMessage()); }
 	
 	public LuaTable InitLib () {
+		InitSpriteBuffer();
 		LuaTable t = LuaValue.tableOf();
 
 		// love.graphics.print(sText,x,y)
@@ -62,14 +63,21 @@ public class LuanGraphics {
 			}
 		});
 
-		// love.graphics.draw(img,x,y)
+		// love.graphics.draw(drawable, x, y, r=0, sx=1, sy=1, ox=0, oy=0)
 		t.set("draw", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
 				LuanImage img = (LuanImage)args.checkuserdata(1,LuanImage.class);
-				int x = args.checkint(2);
-				int y = args.checkint(3);
-				img.Draw(x,y);
+				int n = args.narg();
+				float x = (float)args.checkdouble(2);
+				float y = (float)args.checkdouble(3);
+				float r  = (n >= 4) ? ((float)args.checkdouble(4)) : 0.0f;
+				float sx = (n >= 5) ? ((float)args.checkdouble(5)) : 1.0f;
+				float sy = (n >= 6) ? ((float)args.checkdouble(6)) : 1.0f;
+				float ox = (n >= 7) ? ((float)args.checkdouble(7)) : 0.0f;
+				float oy = (n >= 8) ? ((float)args.checkdouble(8)) : 0.0f;
+				
+				DrawSprite(img.miTextureID,img.mWidth,img.mHeight,x,y,r,sx,sy,ox,oy);
 				return LuaValue.NONE;
 			}
 		});
@@ -77,14 +85,88 @@ public class LuanGraphics {
 		return t;
 	}
 	
+	// ***** ***** ***** ***** *****  DrawSprite function, rotate calc etc
+	
+	private float[]		spritePosFloats = new float[4*2];
+	private float[]		spriteTexFloats = { 0f,0f, 1f,0f, 0f,1f, 1f,1f };
+	private FloatBuffer	spriteVB_Pos;
+	private FloatBuffer	spriteVB_Tex;
+	final static int	kBytesPerFloat = 4;
+	
+	private FloatBuffer	LuanCreateBuffer (int iNumFloats) {
+		ByteBuffer bb = ByteBuffer.allocateDirect(iNumFloats * kBytesPerFloat);
+		bb.order(ByteOrder.nativeOrder());// use the device hardware's native byte order
+		return bb.asFloatBuffer(); // create a floating point buffer from the ByteBuffer
+	}
+	
+	//~ WARNING: probably array sent by VALUE, e.g. copy -> slow
+	private void		LuanFillBuffer (FloatBuffer b,float[] data) {
+		b.put(data); // add the coordinates to the FloatBuffer
+		b.position(0); // set the buffer to read the first coordinate
+	}
+	
+	private void InitSpriteBuffer () {
+		spriteVB_Pos = LuanCreateBuffer(spritePosFloats.length);
+		spriteVB_Tex = LuanCreateBuffer(spriteTexFloats.length);
+		LuanFillBuffer(spriteVB_Tex,spriteTexFloats); // assuming the sprite thing is always the full texture and not a subthing
+	}
+	
+	public void DrawSprite	(int iTextureID,float fWidth,float fHeight,float x,float y,float r,float sx,float sy,float ox,float oy) {
+		float e = 0.5f;
+		spritePosFloats[0*2 + 0] = -e; 
+		spritePosFloats[0*2 + 1] =  e; 
+		
+		spritePosFloats[1*2 + 0] =  e; 
+		spritePosFloats[1*2 + 1] =  e; 
+		
+		spritePosFloats[2*2 + 0] = -e; 
+		spritePosFloats[2*2 + 1] = -e; 
+		
+		spritePosFloats[3*2 + 0] =  e; 
+		spritePosFloats[3*2 + 1] = -e; 
+		
+		LuanFillBuffer(spriteVB_Pos,spritePosFloats);
+	
+	
+		GL10 gl = getGL();
+		// Draw the triangle
+		
+		gl.glEnable(GL10.GL_TEXTURE_2D);            //Enable Texture Mapping ( NEW )
+		//~ gl.glShadeModel(GL10.GL_SMOOTH);            //Enable Smooth Shading
+		//~ gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);    //Black Background
+		//~ gl.glClearDepthf(1.0f);                     //Depth Buffer Setup
+		//~ gl.glEnable(GL10.GL_DEPTH_TEST);            //Enables Depth Testing
+		//~ gl.glDepthFunc(GL10.GL_LEQUAL);             //The Type Of Depth Testing To Do
+
+		
+		gl.glBindTexture(GL10.GL_TEXTURE_2D, iTextureID);
+		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		
+		gl.glColor4f(1f, 1f, 1f, 0.0f); // todo : love global color ?
+			 
+		
+		// Point to our vertex buffer
+		gl.glVertexPointer(2, GL10.GL_FLOAT, 0, spriteVB_Pos);
+		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, spriteVB_Tex);
+		
+		// Draw the vertices as triangle strip
+		//~ gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertices.length / 3);
+		//~ gl.glDrawArrays(GL10.GL_TRIANGLES, 0, 3);
+		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
+		
+		//Disable the client state before leaving
+		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
+		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+	}
 		
 	// ***** ***** ***** ***** *****  LuanImage
 
 	public class LuanImage {
 		private LuanGraphics	g;
 		public int				miTextureID = 0;
-		private FloatBuffer		triangleVB;
-		private FloatBuffer		texCoordBuffer;
+		public float			mWidth;
+		public float			mHeight;
 		
 		public void LoadFromBitmap (Bitmap bm) {
 			GL10 gl = g.getGL();
@@ -105,36 +187,6 @@ public class LuanGraphics {
 			gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, GL10.GL_REPEAT );
 
 			GLUtils.texImage2D( GL10.GL_TEXTURE_2D, 0, bm, 0 ); // texImage2D(int target, int level, Bitmap bitmap, int border
-			
-			
-			
-			// just a test hack
-				
-			float triangleCoords[] = {
-					// X, Y, Z
-						-0.6f, -0.35f, 0,
-						 0.6f, -0.35f, 0, 
-						 0.0f, 0.659016994f, 0 };
-
-			// initialize vertex Buffer for triangle
-			ByteBuffer vbb = ByteBuffer.allocateDirect(
-			// (# of coordinate values * 4 bytes per float)
-					triangleCoords.length * 4);
-			vbb.order(ByteOrder.nativeOrder());// use the device hardware's native
-												// byte order
-			triangleVB = vbb.asFloatBuffer(); // create a floating point buffer from
-												// the ByteBuffer
-			triangleVB.put(triangleCoords); // add the coordinates to the
-											// FloatBuffer
-			triangleVB.position(0); // set the buffer to read the first coordinate
-						 
-			// texcoords
-			float texCoords[] = { 0f,0f, 1f,0f, 0.5f,1f };
-			ByteBuffer byteBuffer = ByteBuffer.allocateDirect(texCoords.length * 4);
-			byteBuffer.order(ByteOrder.nativeOrder());
-			texCoordBuffer = byteBuffer.asFloatBuffer();
-			texCoordBuffer.put(texCoords);
-			texCoordBuffer.position(0);
 		}
 		
 		public LuanImage (LuanGraphics g,String filepath) throws FileNotFoundException {
@@ -156,6 +208,8 @@ public class LuanGraphics {
 			Log.i("LuanImage","BitmapDrawable ok");
 			Bitmap bm = bmd.getBitmap();
 			Log.i("LuanImage","Bitmap ok w="+bm.getWidth()+",h="+bm.getHeight());
+			mWidth = bm.getWidth();
+			mHeight = bm.getHeight();
 			// TODO : auto-scale to 2^n resolution ? naaaah.
 			// bitmap loaded into ram
 			
@@ -167,42 +221,6 @@ public class LuanGraphics {
 			bm.recycle();
 			
 			Log.i("LuanImage","constructor done.");
-		}
-		
-		public void Draw (int x,int y) {
-			GL10 gl = g.getGL();
-			// Draw the triangle
-			
-			gl.glEnable(GL10.GL_TEXTURE_2D);            //Enable Texture Mapping ( NEW )
-			//~ gl.glShadeModel(GL10.GL_SMOOTH);            //Enable Smooth Shading
-			//~ gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);    //Black Background
-			//~ gl.glClearDepthf(1.0f);                     //Depth Buffer Setup
-			//~ gl.glEnable(GL10.GL_DEPTH_TEST);            //Enables Depth Testing
-			//~ gl.glDepthFunc(GL10.GL_LEQUAL);             //The Type Of Depth Testing To Do
-
-			
-			gl.glBindTexture(GL10.GL_TEXTURE_2D, miTextureID);
-			gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-			gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-			
-			gl.glColor4f(0.8f, 0.2f, 0.2f, 0.0f);
-				 
-			
-			// Point to our vertex buffer
-			gl.glVertexPointer(3, GL10.GL_FLOAT, 0, triangleVB);
-			//~ gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
-			gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, texCoordBuffer);
-			
-			// Draw the vertices as triangle strip
-			//~ gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertices.length / 3);
-			gl.glDrawArrays(GL10.GL_TRIANGLES, 0, 3);
-			
-			//Disable the client state before leaving
-			gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
-			gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-
-
-
 		}
 	}
 }
