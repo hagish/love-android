@@ -76,7 +76,8 @@ public class LoveVM {
 	public void init() {
 		assert (!bInitDone); // don't init twice
 		bInitDone = true;
-		_G = JsePlatform.standardGlobals();
+//		_G = JsePlatform.standardGlobals();
+		_G = JsePlatform.debugGlobals();
 
 		try {
 			setupCoreFunctions();
