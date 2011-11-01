@@ -92,6 +92,7 @@ public class LuanGraphics {
 	private FloatBuffer	spriteVB_Pos;
 	private FloatBuffer	spriteVB_Tex;
 	final static int	kBytesPerFloat = 4;
+	private	GL10		gl; // only valid after notifyFrameStart
 	
 	private FloatBuffer	LuanCreateBuffer (int iNumFloats) {
 		ByteBuffer bb = ByteBuffer.allocateDirect(iNumFloats * kBytesPerFloat);
@@ -111,25 +112,11 @@ public class LuanGraphics {
 		LuanFillBuffer(spriteVB_Tex,spriteTexFloats); // assuming the sprite thing is always the full texture and not a subthing
 	}
 	
-	public void DrawSprite	(int iTextureID,float fWidth,float fHeight,float x,float y,float r,float sx,float sy,float ox,float oy) {
-		float e = 0.5f;
-		spritePosFloats[0*2 + 0] = -e; 
-		spritePosFloats[0*2 + 1] =  e; 
-		
-		spritePosFloats[1*2 + 0] =  e; 
-		spritePosFloats[1*2 + 1] =  e; 
-		
-		spritePosFloats[2*2 + 0] = -e; 
-		spritePosFloats[2*2 + 1] = -e; 
-		
-		spritePosFloats[3*2 + 0] =  e; 
-		spritePosFloats[3*2 + 1] = -e; 
-		
-		LuanFillBuffer(spriteVB_Pos,spritePosFloats);
 	
-	
-		GL10 gl = getGL();
-		// Draw the triangle
+	public void notifyFrameStart	(GL10 gl) {
+		this.gl = gl;
+		
+		// prepare fore rendering textured quads
 		
 		gl.glEnable(GL10.GL_TEXTURE_2D);
 		gl.glEnable(GL10.GL_BLEND 	);
@@ -142,7 +129,6 @@ public class LuanGraphics {
 		//~ gl.glDepthFunc(GL10.GL_LEQUAL);             //The Type Of Depth Testing To Do		always true for love2d
 
 		
-		gl.glBindTexture(GL10.GL_TEXTURE_2D, iTextureID);
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 		
@@ -152,16 +138,73 @@ public class LuanGraphics {
 		// Point to our vertex buffer
 		gl.glVertexPointer(2, GL10.GL_FLOAT, 0, spriteVB_Pos);
 		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, spriteVB_Tex);
-		
-		// Draw the vertices as triangle strip
-		//~ gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertices.length / 3);
-		//~ gl.glDrawArrays(GL10.GL_TRIANGLES, 0, 3);
-		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
-		
+		Log("notifyFrameStart");
+	}
+	
+	public void notifyFrameEnd		(GL10 gl) {
 		//Disable the client state before leaving
 		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
 		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 		gl.glDisable(GL10.GL_BLEND 	);
+		Log("notifyFrameEnd");
+	}
+	
+	public void DrawSprite	(int iTextureID,float w,float h,float x,float y,float r,float sx,float sy,float ox,float oy) {
+		float e = 0.5f;
+		w = e;
+		h = e; // no coordinate system in place yet
+		
+		float mycos = (float)Math.cos(r);
+		float mysin = (float)Math.sin(r);
+		
+		float vx_x = w*mycos;
+		float vx_y = w*mysin;
+		
+		float vy_x =  h*mysin;
+		float vy_y = -h*mycos; 
+
+		
+		Log("DrawSprite vx="+vx_x+","+vx_y+" vy="+vy_x+","+vy_y);
+		
+		//~ float x0 = -0.5f*vx_x -0.5f*vy_x; // center
+		//~ float y0 = -0.5f*vx_y -0.5f*vy_y; 
+		
+		float x0 = 0; // top-left ?
+		float y0 = 0; 
+		
+		spritePosFloats[0*2 + 0] = x0; 
+		spritePosFloats[0*2 + 1] = y0; 
+		
+		spritePosFloats[1*2 + 0] = x0 + vx_x; 
+		spritePosFloats[1*2 + 1] = y0 + vx_y; 
+		
+		spritePosFloats[2*2 + 0] = x0 + vy_x;  
+		spritePosFloats[2*2 + 1] = y0 + vy_y;  
+		
+		spritePosFloats[3*2 + 0] = x0 + vx_x + vy_x;  
+		spritePosFloats[3*2 + 1] = y0 + vx_y + vy_y;  
+		
+		/*
+		// old hardcoded centered quad
+		spritePosFloats[0*2 + 0] = -e; 
+		spritePosFloats[0*2 + 1] =  e; 
+		
+		spritePosFloats[1*2 + 0] =  e; 
+		spritePosFloats[1*2 + 1] =  e; 
+		
+		spritePosFloats[2*2 + 0] = -e; 
+		spritePosFloats[2*2 + 1] = -e; 
+		
+		spritePosFloats[3*2 + 0] =  e; 
+		spritePosFloats[3*2 + 1] = -e; 
+		*/
+		
+		
+		
+		LuanFillBuffer(spriteVB_Pos,spritePosFloats);
+	
+		gl.glBindTexture(GL10.GL_TEXTURE_2D, iTextureID);
+		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 	}
 		
 	// ***** ***** ***** ***** *****  LuanImage
@@ -195,6 +238,9 @@ public class LuanGraphics {
 		
 		public LuanImage (LuanGraphics g,String filepath) throws FileNotFoundException {
 			this.g = g;
+			
+			// todo : remember filepath so textureid can be reconstructed if lost during context-switch ?
+			
 			//~ http://developer.android.com/resources/samples/ApiDemos/src/com/example/android/apis/graphics/CompressedTextureActivity.html
 			//~ von ressource : InputStream input = getResources().openRawResource(R.raw["bla.png"]);  // NICHT M�GLICH!!!! ->> sd card
 			//~ von ressource : InputStream input = getResources().openRawResource(R.raw.androids);

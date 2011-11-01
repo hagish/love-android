@@ -144,11 +144,13 @@ public class LoveVM {
 		_G.get("love").get("load").call();
 	}
 
-	public void draw() {
+	public void draw(GL10 gl) {
 		if (!bInitDone)
 			return;
 		mLuanTimer.notifyFrameStart();
+		mLuanGraphics.notifyFrameStart(gl);
 		_G.get("love").get("draw").call();
+		mLuanGraphics.notifyFrameEnd(gl);
 	}
 
 	public void update(float dt) {
