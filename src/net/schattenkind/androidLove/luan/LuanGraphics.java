@@ -1,7 +1,9 @@
-package net.schattenkind.androidLove;
+package net.schattenkind.androidLove.luan;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+
+import net.schattenkind.androidLove.LoveVM;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -24,7 +26,7 @@ public class LuanGraphics {
 	private Activity mActivity;
 	private LoveVM vm;
 
-	LuanGraphics (LoveVM vm,Activity activity) { this.vm = vm; mActivity = activity; }
+	public LuanGraphics (LoveVM vm,Activity activity) { this.vm = vm; mActivity = activity; }
 	
 	public GL10		getGL () { return vm.getGL(); }
 	public Activity	getActivity () { return mActivity; }

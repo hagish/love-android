@@ -1,4 +1,4 @@
-package net.schattenkind.androidLove;
+package net.schattenkind.androidLove.luan;
 
 import org.luaj.vm2.LuaBoolean;
 import org.luaj.vm2.LuaNumber;

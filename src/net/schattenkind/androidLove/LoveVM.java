@@ -5,7 +5,14 @@ import java.io.IOException;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import net.schattenkind.androidLove.luan.LuanFilesystem;
+import net.schattenkind.androidLove.luan.LuanGraphics;
+import net.schattenkind.androidLove.luan.LuanKeyboard;
+import net.schattenkind.androidLove.luan.LuanMouse;
+import net.schattenkind.androidLove.luan.LuanTimer;
+
 import org.luaj.vm2.LoadState;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaNumber;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -14,8 +21,10 @@ import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources.NotFoundException;
 import android.util.Log;
+import android.widget.Toast;
 
 public class LoveVM {
 	private static final String TAG = "LoveVM";
@@ -26,10 +35,12 @@ public class LoveVM {
 	private LuanMouse mLuanMouse;
 	private LuanKeyboard mLuanKeyboard;
 	private LuanTimer mLuanTimer;
+	private LuanFilesystem mLuanFilesystem;
 
 	private GL10 gl;
 	private boolean bOnCreateDone = false;
 	private boolean bInitDone = false;
+	private boolean isBroken = false;
 
 	public LoveVM(Activity attachedToThisActivity) {
 		this.attachedToThisActivity = attachedToThisActivity;
@@ -61,12 +72,16 @@ public class LoveVM {
 		bInitDone = true;
 		_G = JsePlatform.standardGlobals();
 
-		setupCoreFunctions();
-		setupLoveFunctions();
+		try {
+			setupCoreFunctions();
+			setupLoveFunctions();
 
-		loadFileFromRes(R.raw.core, "core.lua");
+			loadFileFromRes(R.raw.core, "core.lua");
 
-		loadFileFromSdCard("main.lua");
+			loadFileFromSdCard("main.lua");
+		} catch (LuaError e) {
+			handleLuaError(e);
+		}
 
 		this.load();
 	}
@@ -137,26 +152,49 @@ public class LoveVM {
 		mLuanTimer = new LuanTimer(_G);
 		t = mLuanTimer.InitLib();
 		_G.get("love").set("timer", t);
+
+		mLuanFilesystem = new LuanFilesystem(_G);
+		t = mLuanFilesystem.InitLib();
+		_G.get("love").set("filesystem", t);
 	}
 
 	public void load() {
 		assert (bInitDone);
-		_G.get("love").get("load").call();
+		try {
+			_G.get("love").get("load").call();
+		} catch (LuaError e) {
+			handleLuaError(e);
+		}
+	}
+
+	private void handleLuaError(LuaError e) {
+		Log.e(TAG, "LUA ERROR: " + e.getMessage());
+		isBroken = true;
 	}
 
 	public void draw() {
-		if (!bInitDone)
+		if (!bInitDone || isBroken)
 			return;
 		mLuanTimer.notifyFrameStart();
-		_G.get("love").get("draw").call();
+
+		try {
+			_G.get("love").get("draw").call();
+		} catch (LuaError e) {
+			handleLuaError(e);
+		}
 	}
 
 	public void update(float dt) {
-		if (!bInitDone)
+		if (!bInitDone || isBroken)
 			return;
 		// WARNING! must be called in mainthread, since gl can be accessed, not
 		// multi-thread safe with draw !
-		_G.get("love").get("update").call(LuaNumber.valueOf(dt));
+
+		try {
+			_G.get("love").get("update").call(LuaNumber.valueOf(dt));
+		} catch (LuaError e) {
+			handleLuaError(e);
+		}
 	}
 
 	public void feedPosition(int x, int y) {

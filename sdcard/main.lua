@@ -1,8 +1,10 @@
-print("test1",2,"test3")
+
+love.filesystem.load("lala.lua")()
 
 function love.load()
 	--~ print("love.load")
 	gMyImg = love.graphics.newImage("ship02.png") -- ship01.png=200x200,  ship02.png=256x256
+	lala()
 end
 
 function love.keypressed(key, unicode)
