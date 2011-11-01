@@ -105,7 +105,7 @@ public class LuanGraphics {
 				float g = (float)args.checkdouble(2);
 				float b = (float)args.checkdouble(3);
 				float a = (float)args.checkdouble(4);
-				getGL().glColor4f(r/255f, g/255f, b/255f, a);
+				getGL().glColor4f(r/255f, g/255f, b/255f, a/255f);
 				// TODO : remember for recreate surface after mode switch
 				return LuaValue.NONE;
 			}
