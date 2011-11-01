@@ -106,7 +106,7 @@ public class LuanAudio extends LuanBase {
 			public Varargs invoke(Varargs args) {
 				if (args.isstring(1)) {
 					String sFileName = args.checkjstring(1);
-					String sType = args.checkjstring(2);
+					String sType = (args.narg() >= 2) ? args.checkjstring(2) : "static";
 					return LuaValue.userdataOf(new LuanSource(LuanAudio.this,sFileName,sType),vm.get_G().get(sMetaName_LuanSource));
 				}
 				if (args.narg() >= 2 && args.isstring(2)) {
