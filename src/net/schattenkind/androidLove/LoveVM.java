@@ -21,10 +21,8 @@ import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.Resources.NotFoundException;
 import android.util.Log;
-import android.widget.Toast;
 
 public class LoveVM {
 	private static final String TAG = "LoveVM";
@@ -172,16 +170,17 @@ public class LoveVM {
 		isBroken = true;
 	}
 
-	public void draw() {
+	public void draw(GL10 gl) {
 		if (!bInitDone || isBroken)
 			return;
 		mLuanTimer.notifyFrameStart();
-
+		mLuanGraphics.notifyFrameStart(gl);
 		try {
 			_G.get("love").get("draw").call();
 		} catch (LuaError e) {
 			handleLuaError(e);
 		}
+		mLuanGraphics.notifyFrameEnd(gl);
 	}
 
 	public void update(float dt) {

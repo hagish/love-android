@@ -61,7 +61,7 @@ public class LoveAndroidRenderer implements GLSurfaceView.Renderer {
 		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
 		
 		vm.notifyGL(gl);
-		vm.draw();
+		vm.draw(gl);
 	}
 
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
