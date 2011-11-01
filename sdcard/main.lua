@@ -3,12 +3,13 @@
 
 function love.load()
 	--~ print("love.load")
-	gMyImg = love.graphics.newImage("ship02.png") -- ship01.png=200x200,  ship02.png=256x256
+	gMyImg = love.graphics.newImage("ship03.png") -- ship01.png=200x200,  ship02.png=256x256 ship03.png=256x256-with-test-pattern
 	-- lala()
 end
 
 function love.keypressed(key, unicode)
 	print("keypressed", key, unicode)
+	
 end
 
 function love.keyreleased(key)
@@ -34,6 +35,12 @@ function love.draw()
 	--~ print("love.draw")
     --~ love.graphics.print("Hello World", 20, 20)
 	local t = love.timer.getTime()
-	-- print("curtime",t)
-	love.graphics.draw(gMyImg, 20, 20, t)
+	--~ print("curtime",t)
+	local s = 1/8
+	local sd = 2
+	local od = 128,128
+	--~ local od = 0,0
+	local sx,sy = 2*s,1*s
+	local ox,oy = od,od
+	love.graphics.draw(gMyImg, 200, 200, t*4, sx,sy, ox,oy)
 end

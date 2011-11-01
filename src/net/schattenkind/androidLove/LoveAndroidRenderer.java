@@ -38,7 +38,8 @@ public class LoveAndroidRenderer implements GLSurfaceView.Renderer {
 	
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		// Set the background frame color
-		gl.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		//~ gl.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		// initialize the triangle vertex array
 		initShapes();
@@ -54,11 +55,13 @@ public class LoveAndroidRenderer implements GLSurfaceView.Renderer {
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
 		// Draw the triangle
+		/*
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 		gl.glColor4f(0.63671875f, 0.76953125f, 0.22265625f, 0.0f);
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, triangleVB);
 		gl.glDrawArrays(GL10.GL_TRIANGLES, 0, 3);
 		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
+		*/
 		
 		vm.notifyGL(gl);
 		vm.draw(gl);
@@ -67,7 +70,9 @@ public class LoveAndroidRenderer implements GLSurfaceView.Renderer {
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		mScreenW = width;
 		mScreenH = height;
-		gl.glViewport(0, 0, width, height);
+		//~ gl.glViewport(0, 0, width, height);
+		gl.glViewport(0, height, 2, 2); // (evil dark voodoo magic) love2d pixel coord system: 0,0=top,left w,h=bottom,right
+		gl.glScalef(1,-1,1);
 		
 		vm.notifyGL(gl);
 	}
