@@ -9,6 +9,8 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
+import android.util.Log;
+
 public class LuanAudio extends LuanBase {
 	public static final String SOURCE_TYPE_STATIC = "static";
 	public static final String SOURCE_TYPE_STREAM = "stream";
@@ -18,6 +20,12 @@ public class LuanAudio extends LuanBase {
 	private Vector3 position = new Vector3();
 	private Vector3 velocity = new Vector3();
 
+	static final String sMetaName_LuanSource = "__MetaLuanSource";
+	static final String sMetaName_LuanDecoder = "__MetaLuanDecoder";
+	static final String sMetaName_LuanSoundData = "__MetaLuanSoundData";
+	
+	public static void Log (String s) { Log.i("LuanAudio", s); }
+	
 	// 0.0f - 1.0f
 	private float volume = 1.0f;
 
@@ -32,12 +40,18 @@ public class LuanAudio extends LuanBase {
 
 	public LuaTable InitLib() {
 		LuaTable t = LuaValue.tableOf();
+		
+		LuaValue _G = vm.get_G();
+		
+		_G.set(sMetaName_LuanSource,LuanSource.CreateMetaTable());
+		_G.set(sMetaName_LuanDecoder,LuanDecoder.CreateMetaTable());
+		_G.set(sMetaName_LuanSoundData,LuanSoundData.CreateMetaTable());
+		
 
 		// numSources = love.audio.getNumSources( )
-		t.set("newSource", new VarArgFunction() {
+		t.set("getNumSources", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
-				// TODO
 				return LuaValue.ZERO;
 			}
 		});
@@ -90,16 +104,18 @@ public class LuanAudio extends LuanBase {
 		t.set("newSource", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
-				// TODO
-				String s = args.checkjstring(1);
-				// ~ try {
-				// ~ return LuaValue.userdataOf(new
-				// LuanImage(LuanGraphics.this,s));
-				// ~ } catch (Exception e) {
-				// ~ // TODO : throw lua error ?
-				// ~ LogException(e);
-				// ~ }
-				return LuaValue.NONE;
+				if (args.isstring(1)) {
+					String sFileName = args.checkjstring(1);
+					String sType = args.checkjstring(2);
+					return LuaValue.userdataOf(new LuanSource(LuanAudio.this,sFileName,sType),vm.get_G().get(sMetaName_LuanSource));
+				}
+				if (args.narg() >= 2 && args.isstring(2)) {
+					LuanDecoder decoder = (LuanDecoder)args.checkuserdata(1,LuanDecoder.class);
+					String sType = args.checkjstring(2);
+					return LuaValue.userdataOf(new LuanSource(LuanAudio.this,decoder,sType),vm.get_G().get(sMetaName_LuanSource));
+				}
+				LuanSoundData soundata = (LuanSoundData)args.checkuserdata(1,LuanSoundData.class);
+				return LuaValue.userdataOf(new LuanSource(LuanAudio.this,soundata),vm.get_G().get(sMetaName_LuanSource));
 			}
 		});
 
@@ -209,4 +225,78 @@ public class LuanAudio extends LuanBase {
 		return t;
 	}
 
+	
+	// ***** ***** ***** ***** *****  LuanSoundData
+	
+	public static class LuanSoundData {
+		public static LuaTable CreateMetaTable () {
+			LuaTable mt = LuaValue.tableOf();
+			LuaTable t = LuaValue.tableOf();
+			mt.set("__index",t);
+			return mt;
+		}
+	}
+		
+	// ***** ***** ***** ***** *****  LuanDecoder
+		
+	public static class LuanDecoder {
+		public static LuaTable CreateMetaTable () {
+			LuaTable mt = LuaValue.tableOf();
+			LuaTable t = LuaValue.tableOf();
+			mt.set("__index",t);
+			return mt;
+		}
+	}
+		
+	// ***** ***** ***** ***** *****  LuanSource
+	
+	public static class LuanSource {
+		private LuanAudio	audio;
+		
+		public LuanSource (LuanAudio audio,String filename,String type) { this.audio = audio; }
+		
+		public LuanSource (LuanAudio audio,LuanDecoder decoder,String type) { this.audio = audio; }
+		
+		public LuanSource (LuanAudio audio,LuanSoundData data) { this.audio = audio; }
+			
+		public static LuaTable CreateMetaTable () {
+			LuaTable mt = LuaValue.tableOf();
+			LuaTable t = LuaValue.tableOf();
+			mt.set("__index",t);
+			
+			t.set("getDirection",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
+			t.set("getPitch",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
+			t.set("getPosition",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
+			t.set("getVelocity",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
+			t.set("getVolume",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
+			t.set("isLooping",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
+			t.set("isPaused",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });		
+			t.set("isStatic",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });		
+			t.set("isStopped",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
+			t.set("pause",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
+			t.set("play",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });		
+			t.set("resume",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
+			t.set("rewind",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
+			t.set("setDirection",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });		
+			t.set("setLooping",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
+			t.set("setPitch",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });		
+			t.set("setPosition",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });		
+			t.set("setVelocity",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });		
+			t.set("setVolume",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
+			t.set("stop",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });		
+
+			/// type = Object:type()  , e.g. "Image" or audio:"Source"
+			t.set("type", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf("Source"); } });
+			
+			/// b = Object:typeOf( name )
+			t.set("typeOf", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { 
+				String s = args.checkjstring(2); 
+				return LuaValue.valueOf(s == "Object" || s == "Source"); 
+			} });
+			
+			
+			return mt;
+		}
+	}
+	
 }
