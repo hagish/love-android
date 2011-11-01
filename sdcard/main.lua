@@ -36,7 +36,7 @@ function love.draw()
     --~ love.graphics.print("Hello World", 20, 20)
 	local t = love.timer.getTime()
 	--~ print("curtime",t)
-	local s = 1/8
+	local s = 1/2
 	local sd = 2
 	local od = 128,128
 	--~ local od = 0,0
