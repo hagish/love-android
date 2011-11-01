@@ -24,7 +24,8 @@ public class LoveVM {
 	private LuanGraphics mLuanGraphics;
 	private LuanMouse mLuanMouse;
 	private LuanKeyboard mLuanKeyboard;
-
+	private LuanTimer mLuanTimer;
+	
 	private GL10 gl;
 	private boolean bOnCreateDone = false;
 	private boolean bInitDone = false;
@@ -105,10 +106,14 @@ public class LoveVM {
 		mLuanMouse = new LuanMouse(_G);
 		t = mLuanMouse.InitLib();
 		_G.get("love").set("mouse", t);
-
+		
 		mLuanKeyboard = new LuanKeyboard(_G);
 		t = mLuanKeyboard.InitLib();
 		_G.get("love").set("keyboard", t);
+
+		mLuanTimer = new LuanTimer(_G);
+		t = mLuanTimer.InitLib();
+		_G.get("love").set("timer", t);
 	}
 
 	public void load() {
@@ -118,6 +123,7 @@ public class LoveVM {
 
 	public void draw(GL10 gl) {
 		if (!bInitDone) return;
+		mLuanTimer.notifyFrameStart();
 		_G.get("love").get("draw").call();
 	}
 

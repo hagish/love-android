@@ -25,6 +25,7 @@ function love.update(dt)
 	--~ print("love.update", dt) 
 	--~ print("mouse pos", love.mouse.getPosition()) 
 	--~ print("mouse button", love.mouse.isDown("l"), love.mouse.isDown("r")) 
+	--~ print("fps", love.timer.getFPS( ), love.timer.getTime( ))
 end
 
 function love.draw()
