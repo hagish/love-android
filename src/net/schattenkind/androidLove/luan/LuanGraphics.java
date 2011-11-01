@@ -218,9 +218,9 @@ public class LuanGraphics extends LuanBase {
 		t.set("scale", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
-				float x = (float)args.checkdouble(1);
-				float y = (float)args.checkdouble(2);
-				// TODO: not yet implemented
+				float sx = (float)args.checkdouble(1);
+				float sy = (float)args.checkdouble(2);
+				getGL().glScalef(sx,sy,1);
 				return LuaValue.NONE;
 			}
 		});
@@ -344,6 +344,11 @@ public class LuanGraphics extends LuanBase {
 		gl.glVertexPointer(2, GL10.GL_FLOAT, 0, spriteVB_Pos);
 		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, spriteVB_Tex);
 		//~ Log("notifyFrameStart");
+		
+		// init pixel coordinatesystem
+		gl.glLoadIdentity();
+		gl.glTranslatef(-1,1,0);
+		gl.glScalef(2f/vm.mfScreenW,-2f/vm.mfScreenH,1);
 	}
 	
 	public void notifyFrameEnd		(GL10 gl) {

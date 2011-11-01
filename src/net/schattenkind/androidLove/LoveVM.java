@@ -38,6 +38,8 @@ public class LoveVM {
 	private LuanKeyboard mLuanKeyboard;
 	private LuanTimer mLuanTimer;
 	private LuanFilesystem mLuanFilesystem;
+	public float mfScreenW;
+	public float mfScreenH;
 
 	private GL10 gl;
 	private boolean bOnCreateDone = false;
@@ -58,6 +60,11 @@ public class LoveVM {
 
 	public LuaValue get_G() {
 		return _G;
+	}
+	
+	public void notifyScreenSize (float w, float h) {
+		mfScreenW = w;
+		mfScreenH = h;
 	}
 
 	// / called when gl context is created or updated
