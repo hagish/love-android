@@ -10,6 +10,10 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
 
 public class LoveStorage {
+	public enum FileType {
+		FILE, DIR, NONE
+	};
+
 	private Activity activity;
 	private String loveAppRootOnSdCard;
 
@@ -35,5 +39,14 @@ public class LoveStorage {
 		File f = new File(Environment.getExternalStorageDirectory() + "/"
 				+ loveAppRootOnSdCard + "/" + filename);
 		return new FileInputStream(f);
+	}
+
+	public String getRootPath() {
+		return loveAppRootOnSdCard;
+	}
+
+	public FileType getFileType(String filename) {
+		// TODO
+		return FileType.NONE;
 	}
 }
