@@ -36,10 +36,11 @@ function love.draw()
     --~ love.graphics.print("Hello World", 20, 20)
 	local t = love.timer.getTime()
 	--~ print("curtime",t)
+	local s = 1/8
 	local sd = 2
 	local od = 128,128
-	local od = 0,0
-	local sx,sy = 2,1
+	--~ local od = 0,0
+	local sx,sy = 2*s,1*s
 	local ox,oy = od,od
 	love.graphics.draw(gMyImg, 200, 200, t*4, sx,sy, ox,oy)
 end
