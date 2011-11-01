@@ -68,8 +68,8 @@ public class LoveAndroid extends Activity {
 		mGLView = new HelloOpenGLES10SurfaceView(this,vm);
 		setContentView(mGLView);
 
-		vm.init();
-		vm.load();
+		vm.notifyOnCreateDone();
+		
 		mUpdateHandler.start();
 
 		mouseHandler = new MouseHandler(mGLView, vm);

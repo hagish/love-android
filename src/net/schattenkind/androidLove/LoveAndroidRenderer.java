@@ -18,7 +18,6 @@ public class LoveAndroidRenderer implements GLSurfaceView.Renderer {
 	public LoveAndroidRenderer (LoveVM vm) { this.vm = vm; }
 	
 	private void initShapes() {
-
 		float triangleCoords[] = {
 				// X, Y, Z
 				-0.5f, -0.25f, 0, 0.5f, -0.25f, 0, 0.0f, 0.559016994f, 0 };
@@ -36,7 +35,7 @@ public class LoveAndroidRenderer implements GLSurfaceView.Renderer {
 		triangleVB.position(0); // set the buffer to read the first coordinate
 
 	}
-
+	
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		// Set the background frame color
 		gl.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -46,6 +45,8 @@ public class LoveAndroidRenderer implements GLSurfaceView.Renderer {
 
 		// Enable use of vertex arrays
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+		
+		vm.notifyGL(gl);
 	}
 
 	public void onDrawFrame(GL10 gl) {
@@ -57,13 +58,15 @@ public class LoveAndroidRenderer implements GLSurfaceView.Renderer {
 		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, triangleVB);
 		gl.glDrawArrays(GL10.GL_TRIANGLES, 0, 3);
 		
-		if (vm != null) vm.draw(gl);
+		vm.draw(gl);
 	}
 
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		mScreenW = width;
 		mScreenH = height;
 		gl.glViewport(0, 0, width, height);
+		
+		vm.notifyGL(gl);
 	}
 
 }
