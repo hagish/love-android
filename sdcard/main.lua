@@ -9,7 +9,7 @@ end
 
 function love.keypressed(key, unicode)
 	print("keypressed", key, unicode)
-	
+	toast("keypressed", key, unicode)	
 end
 
 function love.keyreleased(key)

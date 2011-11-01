@@ -23,15 +23,17 @@ import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources.NotFoundException;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 public class LoveVM {
 	private static final String TAG = "LoveVM";
 	private Activity attachedToThisActivity;
 	private LuaValue _G;
-	
+
 	private String loveAppRootOnSdCard = "/love/";
 
 	private LuanGraphics mLuanGraphics;
@@ -101,16 +103,17 @@ public class LoveVM {
 		}
 	}
 
-	public FileInputStream getFileStreamFromSdCard(String filename) throws FileNotFoundException
-	{
-		File f = new File(Environment.getExternalStorageDirectory() + "/" + loveAppRootOnSdCard + "/" + filename);
+	public FileInputStream getFileStreamFromSdCard(String filename)
+			throws FileNotFoundException {
+		File f = new File(Environment.getExternalStorageDirectory() + "/"
+				+ loveAppRootOnSdCard + "/" + filename);
 		return new FileInputStream(f);
 	}
-	
+
 	private void loadFileFromSdCard(String filename) {
 		try {
-			LoadState.load(getFileStreamFromSdCard(filename),
-					filename, _G).call();
+			LoadState.load(getFileStreamFromSdCard(filename), filename, _G)
+					.call();
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, e.getMessage());
 		} catch (IOException e) {
@@ -139,6 +142,37 @@ public class LoveVM {
 			}
 		});
 
+		_G.set("toast", new VarArgFunction() {
+			@Override
+			public LuaValue invoke(Varargs args) {
+				args.narg();
+
+				StringBuffer s = new StringBuffer();
+
+				for (int i = 1; i <= args.narg(); ++i) {
+					if (i > 1) {
+						s.append(", ");
+					}
+					s.append(args.arg(i).toString());
+				}
+
+				toast(s.toString());
+
+				return LuaValue.NONE;
+			}
+		});
+	}
+
+	public void toast(final String string) {
+		attachedToThisActivity.runOnUiThread(new Runnable() {
+			public void run() {
+				Context context = attachedToThisActivity.getApplicationContext();
+				int duration = Toast.LENGTH_SHORT;
+
+				Toast toast = Toast.makeText(context, string, duration);
+				toast.show();
+			}
+		});
 	}
 
 	private void setupLoveFunctions() {
@@ -178,6 +212,7 @@ public class LoveVM {
 
 	private void handleLuaError(LuaError e) {
 		Log.e(TAG, "LUA ERROR: " + e.getMessage());
+		toast("LUA ERROR: " + e.getMessage());
 		isBroken = true;
 	}
 
