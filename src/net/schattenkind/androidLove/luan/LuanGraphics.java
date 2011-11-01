@@ -192,6 +192,27 @@ public class LuanGraphics extends LuanBase {
 			}
 		});
 		
+		
+		/// love.graphics.drawq( image, quad, x, y, r, sx, sy, ox, oy )
+		t.set("drawq", new VarArgFunction() { 
+			@Override public Varargs invoke(Varargs args) {
+				LuanImage img = (LuanImage)args.checkuserdata(1,LuanImage.class);
+				LuanQuad quad = (LuanQuad)args.checkuserdata(2,LuanQuad.class);
+				int n = args.narg();
+				float x = (float)args.checkdouble(3);
+				float y = (float)args.checkdouble(4);
+				float r  = (n >= 5) ? ((float)args.checkdouble(5)) : 0.0f;
+				float sx = (n >= 6) ? ((float)args.checkdouble(6)) : 1.0f;
+				float sy = (n >= 7) ? ((float)args.checkdouble(7)) : 1.0f;
+				float ox = (n >= 8) ? ((float)args.checkdouble(8)) : 0.0f;
+				float oy = (n >= 9) ? ((float)args.checkdouble(9)) : 0.0f;
+				
+				DrawSprite(img.miTextureID,quad,img.mWidth,img.mHeight,x,y,r,sx,sy,ox,oy);
+				return LuaValue.NONE; 
+			} 
+		});
+		
+		
 		/// love.graphics.scale( sx, sy )
 		/// Scaling lasts until love.draw() exits. 
 		t.set("scale", new VarArgFunction() {
@@ -237,9 +258,6 @@ public class LuanGraphics extends LuanBase {
 		});
 		
 		
-		t.set("drawq", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
-		
-		
 		
 		return t;
 	}
@@ -252,11 +270,9 @@ public class LuanGraphics extends LuanBase {
 		public float b;
 		public float a;
 		
-		public LuanColor (Varargs args) { init(args,1); }
+		public LuanColor (Varargs args) { this(args,1); }
 		
-		public LuanColor (Varargs args,int i) { init(args,i); }
-		
-		private void init (Varargs args,int i) {
+		public LuanColor (Varargs args,int i) {
 			if (args.istable(i)) {
 				LuaTable t = args.checktable(i);
 				r = t.rawget(1).tofloat() / 255f;
@@ -338,7 +354,16 @@ public class LuanGraphics extends LuanBase {
 		//~ Log("notifyFrameEnd");
 	}
 	
+	public void DrawSprite	(int iTextureID,LuanQuad quad,float w,float h,float x,float y,float r,float sx,float sy,float ox,float oy) {
+		DrawSprite	(iTextureID,quad.vb_Tex,w,h,x,y,r,sx,sy,ox,oy);
+	}
+		
 	public void DrawSprite	(int iTextureID,float w,float h,float x,float y,float r,float sx,float sy,float ox,float oy) {
+		DrawSprite	(iTextureID,spriteVB_Tex,w,h,x,y,r,sx,sy,ox,oy);
+	}
+	
+	public void DrawSprite	(int iTextureID,FloatBuffer vb_texcoords,float w,float h,float x,float y,float r,float sx,float sy,float ox,float oy) {
+		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, vb_texcoords);
 		//~ float e = 0.5f;
 		//~ w = e;
 		//~ h = e; // no coordinate system in place yet
@@ -475,7 +500,7 @@ public class LuanGraphics extends LuanBase {
 		public float	sh;
 		public boolean	bFlippedX = false;
 		public boolean	bFlippedY = false;
-		private FloatBuffer	spriteVB_Tex;
+		private FloatBuffer	vb_Tex;
 		
 		public static LuanQuad self (Varargs args) { return (LuanQuad)args.checkuserdata(1,LuanQuad.class); }
 		
@@ -486,7 +511,7 @@ public class LuanGraphics extends LuanBase {
 			this.g = g;
 			this.sw = sw;
 			this.sh = sh;
-			spriteVB_Tex = LuanCreateBuffer(4*2);
+			vb_Tex = LuanCreateBuffer(4*2);
 			setViewport(x,y,w,h);
 		}
 		
@@ -499,7 +524,7 @@ public class LuanGraphics extends LuanBase {
 			if (bFlippedX) { a = u0; u0 = u1; u1 = a; }
 			if (bFlippedY) { a = v0; v0 = v1; v1 = a; }
 			float[]		spriteTexFloats = { u0,v1, u1,v1, u0,v0, u1,v0 }; // cloud test ok ? my
-			LuanFillBuffer(spriteVB_Tex,spriteTexFloats); // assuming the sprite thing is always the full texture and not a subthing
+			LuanFillBuffer(vb_Tex,spriteTexFloats); // assuming the sprite thing is always the full texture and not a subthing
 		}
 		
 		/// Sets the texture coordinates according to a viewport.  (the sub-section of the tex-atlas)
