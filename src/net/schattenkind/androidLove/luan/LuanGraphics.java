@@ -358,7 +358,9 @@ public class LuanGraphics extends LuanBase {
 		}
 		
 		public static LuaTable CreateMetaTable () {
+			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
+			mt.set("__index",t);
 			
 			/// Quad:flip( x, y )  booleans which axis should be flipped
 			t.set("flip", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { 
@@ -398,7 +400,7 @@ public class LuanGraphics extends LuanBase {
 			} });
 			
 			
-			return t;
+			return mt;
 		}
 	}
 	
@@ -413,7 +415,9 @@ public class LuanGraphics extends LuanBase {
 		public static LuanImage self (Varargs args) { return (LuanImage)args.checkuserdata(1,LuanImage.class); }
 		
 		public static LuaTable CreateMetaTable () {
+			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
+			mt.set("__index",t);
 			
 			/// min, mag = Image:getFilter( )
 			/// TODO: not yet implemented, "linear" , "nearest"
@@ -447,7 +451,7 @@ public class LuanGraphics extends LuanBase {
 			} });
 			
 			
-			return t;
+			return mt;
 		}
 		
 		public void LoadFromBitmap (Bitmap bm) {
