@@ -91,7 +91,7 @@ public class LuanGraphics {
 				float r = (float)args.checkdouble(1);
 				float g = (float)args.checkdouble(2);
 				float b = (float)args.checkdouble(3);
-				gl.glClearColor(r, g, b, 1.0f);
+				getGL().glClearColor(r, g, b, 1.0f);
 				// TODO : remember for recreate surface after mode switch
 				return LuaValue.NONE;
 			}
@@ -105,7 +105,7 @@ public class LuanGraphics {
 				float g = (float)args.checkdouble(2);
 				float b = (float)args.checkdouble(3);
 				float a = (float)args.checkdouble(4);
-				gl.glColor4f(r, g, b, a);
+				getGL().glColor4f(r, g, b, a);
 				// TODO : remember for recreate surface after mode switch
 				return LuaValue.NONE;
 			}

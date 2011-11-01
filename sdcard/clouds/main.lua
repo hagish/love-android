@@ -5,6 +5,8 @@
 -- Copyright (c) 2006-2009 LOVE Development Team
 -------------------------------------------------
 
+gXScale = 1/4
+
 function love.load()
 	
 	-- The amazing music.
@@ -45,10 +47,10 @@ end
 
 function love.draw()
 
-	love.graphics.draw(logo, 400, 380, 0, 1, 1, 128, 64)
+	love.graphics.draw(logo, 400*gXScale, 380, 0, 1, 1, 128, 64)
 	
 	for k, c in ipairs(clouds) do
-		love.graphics.draw(cloud, c.x, c.y)
+		love.graphics.draw(cloud, c.x*gXScale, c.y)
 	end
 	
 	nekochan:render()
@@ -73,11 +75,11 @@ function nekochan:update(dt)
 end
 
 function nekochan:render()
-	love.graphics.draw(body, self.x, self.y, 0, 1, 1, 64, 64)
-	love.graphics.draw(face, self.x, self.y + math.sin(self.a/5) * 3, 0, 1, 1, 64, 64)
+	love.graphics.draw(body, self.x*gXScale, self.y, 0, 1, 1, 64, 64)
+	love.graphics.draw(face, self.x*gXScale, self.y + math.sin(self.a/5) * 3, 0, 1, 1, 64, 64)
 	local r = 1 + math.sin(self.a*math.pi/20)
 	for i = 1,10 do
-		love.graphics.draw(ear, self.x, self.y, (i * math.pi*2/10) + self.a/10, 1, 1, 16, 64+10*r)
+		love.graphics.draw(ear, self.x*gXScale, self.y, (i * math.pi*2/10) + self.a/10, 1, 1, 16, 64+10*r)
 	end
 	
 end
