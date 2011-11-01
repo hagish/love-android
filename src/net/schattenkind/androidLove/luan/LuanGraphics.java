@@ -24,7 +24,8 @@ import java.nio.FloatBuffer;
 
 public class LuanGraphics {
 	private Activity mActivity;
-	private LoveVM vm;
+	public LoveVM vm;
+	static final String sMetaName_LuanImage = "__MetaLuanImage";
 
 	public LuanGraphics (LoveVM vm,Activity activity) { this.vm = vm; mActivity = activity; }
 	
@@ -34,9 +35,13 @@ public class LuanGraphics {
 	public void Log (String s) { Log.i("LuanGraphics", s); }
 	public void LogException (Exception e) { Log.e("LuanGraphics",e.getMessage()); }
 	
-	public LuaTable InitLib () {
+	
+	// TODO: warning, the final needed for the param here is so it can be used to get image:metatable in inner function, might cause problems if we ever use more than one lua state ?
+	public LuaTable InitLib (final LuaValue _G) {
 		InitSpriteBuffer();
 		LuaTable t = LuaValue.tableOf();
+		
+		_G.set(sMetaName_LuanImage,LuanImage.CreateMetaTable());
 
 		// love.graphics.print(sText,x,y)
 		t.set("print", new VarArgFunction() {
@@ -56,7 +61,7 @@ public class LuanGraphics {
 			public Varargs invoke(Varargs args) {
 				String s = args.checkjstring(1);
 				try {
-					return LuaValue.userdataOf(new LuanImage(LuanGraphics.this,s));
+					return LuaValue.userdataOf(new LuanImage(LuanGraphics.this,s),_G.get(sMetaName_LuanImage));
 				} catch (Exception e) {
 					// TODO : throw lua error ?
 					LogException(e);
@@ -248,11 +253,52 @@ public class LuanGraphics {
 		
 	// ***** ***** ***** ***** *****  LuanImage
 
-	public class LuanImage {
+	public static class LuanImage {
 		private LuanGraphics	g;
 		public int				miTextureID = 0;
 		public float			mWidth;
 		public float			mHeight;
+			
+		public static LuanImage self (Varargs args) { return (LuanImage)args.checkuserdata(1,LuanImage.class); }
+		
+		public static LuaTable CreateMetaTable () {
+			LuaTable t = LuaValue.tableOf();
+			//~ getHeight
+			
+			// min, mag = Image:getFilter( )
+			// TODO : not yet implemented, "linear" , "nearest"
+			t.set("getFilter", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.varargsOf( LuaValue.valueOf("linear") , LuaValue.valueOf("linear") ); } });
+			
+			// horiz, vert = Image:getWrap( )
+			// TODO : not yet implemented, "repeat" , "clamp"
+			t.set("getWrap", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.varargsOf( LuaValue.valueOf("repeat") , LuaValue.valueOf("repeat") ); } });
+			
+			// Image:setFilter( min, mag )
+			// TODO : not yet implemented, "linear" , "nearest"
+			t.set("setFilter", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });
+			
+			// Image:setWrap( horiz, vert )
+			// TODO : not yet implemented, "repeat" , "clamp"
+			t.set("setWrap", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });
+			
+			// w = Image:getWidth( )
+			t.set("getWidth", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).mWidth); } });
+			
+			// h = Image:getHeight( )
+			t.set("getHeight", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).mWidth); } });
+			
+			// type = Object:type()  , e.g. "Image" or audio:"Source"
+			t.set("type", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf("Image"); } });
+			
+			// b = Object:typeOf( name )
+			t.set("typeOf", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { 
+				String s = args.checkjstring(2); 
+				return LuaValue.valueOf(s == "Object" || s == "Drawable" || s == "Image"); 
+			} });
+			
+			
+			return t;
+		}
 		
 		public void LoadFromBitmap (Bitmap bm) {
 			GL10 gl = g.getGL();
@@ -289,7 +335,7 @@ public class LuanGraphics {
 			
 			Log.i("LuanImage","constructor:"+filepath);
 			// TODO : throw lua error if file not found ?
-			InputStream input = vm.getFileStreamFromSdCard(filepath);
+			InputStream input = g.vm.getFileStreamFromSdCard(filepath);
 			//g.getActivity().openFileInput(filepath);
 			//~ Drawable d = Drawable.createFromStream(input,filepath);
 			Log.i("LuanImage","InputStream ok");

@@ -180,7 +180,7 @@ public class LoveVM {
 		_G.set("love", LuaValue.tableOf());
 
 		mLuanGraphics = new LuanGraphics(this, attachedToThisActivity);
-		_G.get("love").set("graphics", mLuanGraphics.InitLib());
+		_G.get("love").set("graphics", mLuanGraphics.InitLib(_G));
 		
 		mLuanAudio = new LuanAudio(this, attachedToThisActivity);
 		_G.get("love").set("audio", mLuanAudio.InitLib());
