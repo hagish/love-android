@@ -5,7 +5,7 @@
 -- Copyright (c) 2006-2009 LOVE Development Team
 -------------------------------------------------
 
-gXScale = 1/4
+gXScale = 1/2
 
 function love.load()
 	
