@@ -205,7 +205,13 @@ public class LoveVM {
 		}
 	}
 
-	private void handleLuaError(LuaError e) {
+	public void handleError(Exception e) {
+		Log.e(TAG, "ERROR: " + e.getMessage());
+		toast("ERROR: " + e.getMessage());
+		isBroken = true;
+	}
+
+	public void handleLuaError(LuaError e) {
 		Log.e(TAG, "LUA ERROR: " + e.getMessage());
 		toast("LUA ERROR: " + e.getMessage());
 		isBroken = true;
