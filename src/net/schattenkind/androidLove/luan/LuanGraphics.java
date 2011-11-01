@@ -153,8 +153,11 @@ public class LuanGraphics {
 	
 	public void DrawSprite	(int iTextureID,float w,float h,float x,float y,float r,float sx,float sy,float ox,float oy) {
 		float e = 0.5f;
-		w = e;
-		h = e; // no coordinate system in place yet
+		//~ w = e;
+		//~ h = e; // no coordinate system in place yet
+		
+		sx = 2;
+		sy = 1;
 		
 		float mycos = (float)Math.cos(r);
 		float mysin = (float)Math.sin(r);
@@ -165,14 +168,19 @@ public class LuanGraphics {
 		float vy_x =  h*mysin;
 		float vy_y = -h*mycos; 
 
+		vx_x *= sx;
+		vx_y *= sx;
+		
+		vy_x *= sy;
+		vy_y *= sy;
 		
 		//~ Log("DrawSprite vx="+vx_x+","+vx_y+" vy="+vy_x+","+vy_y);
 		
 		//~ float x0 = -0.5f*vx_x -0.5f*vy_x; // center
 		//~ float y0 = -0.5f*vx_y -0.5f*vy_y; 
 		
-		float x0 = 0; // top-left ?
-		float y0 = 0; 
+		float x0 = x; // top-left ?
+		float y0 = y; 
 		
 		spritePosFloats[0*2 + 0] = x0; 
 		spritePosFloats[0*2 + 1] = y0; 
