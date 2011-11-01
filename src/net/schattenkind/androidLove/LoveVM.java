@@ -7,9 +7,9 @@ import java.io.IOException;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import net.schattenkind.androidLove.luan.LuanAudio;
 import net.schattenkind.androidLove.luan.LuanFilesystem;
 import net.schattenkind.androidLove.luan.LuanGraphics;
-import net.schattenkind.androidLove.luan.LuanAudio;
 import net.schattenkind.androidLove.luan.LuanKeyboard;
 import net.schattenkind.androidLove.luan.LuanMouse;
 import net.schattenkind.androidLove.luan.LuanTimer;
@@ -17,7 +17,6 @@ import net.schattenkind.androidLove.luan.LuanTimer;
 import org.luaj.vm2.LoadState;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaNumber;
-import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
@@ -35,7 +34,7 @@ public class LoveVM {
 	private Activity attachedToThisActivity;
 	private LuaValue _G;
 
-	private String loveAppRootOnSdCard = "/love/clouds/";
+	private String loveAppRootOnSdCard = "/love/test/";
 
 	private LuanGraphics mLuanGraphics;
 	private LuanAudio mLuanAudio;
@@ -195,7 +194,7 @@ public class LoveVM {
 		mLuanTimer = new LuanTimer(_G);
 		_G.get("love").set("timer", mLuanTimer.InitLib());
 
-		mLuanFilesystem = new LuanFilesystem(_G);
+		mLuanFilesystem = new LuanFilesystem(_G, this);
 		_G.get("love").set("filesystem", mLuanFilesystem.InitLib());
 	}
 

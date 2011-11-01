@@ -1,8 +1,5 @@
 package net.schattenkind.androidLove.luan;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-
 import net.schattenkind.androidLove.LoveVM;
 
 import org.luaj.vm2.LuaTable;
@@ -11,7 +8,6 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
 import android.app.Activity;
-import android.util.Log;
 
 
 public class LuanAudio {
