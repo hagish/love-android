@@ -35,6 +35,9 @@ public class LoveVM {
 		this.attachedToThisActivity = attachedToThisActivity;
 	}
 
+	/// access to latest valid gl object
+	public GL10 getGL () { return gl; }
+		
 	/// called when gl context is created or updated
 	public void notifyGL (GL10 gl) {
 		this.gl = gl;
@@ -99,7 +102,7 @@ public class LoveVM {
 
 		LuaTable t;
 
-		mLuanGraphics = new LuanGraphics(attachedToThisActivity);
+		mLuanGraphics = new LuanGraphics(this,attachedToThisActivity);
 		t = mLuanGraphics.InitLib();
 		_G.get("love").set("graphics", t);
 		
@@ -121,7 +124,7 @@ public class LoveVM {
 		_G.get("love").get("load").call();
 	}
 
-	public void draw(GL10 gl) {
+	public void draw() {
 		if (!bInitDone) return;
 		mLuanTimer.notifyFrameStart();
 		_G.get("love").get("draw").call();
@@ -129,6 +132,7 @@ public class LoveVM {
 
 	public void update(float dt) {
 		if (!bInitDone) return;
+		// WARNING! must be called in mainthread, since gl can be accessed, not multi-thread safe with draw !
 		_G.get("love").get("update").call(LuaNumber.valueOf(dt));
 	}
 
