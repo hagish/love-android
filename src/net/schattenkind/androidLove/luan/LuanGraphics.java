@@ -118,7 +118,8 @@ public class LuanGraphics {
 	
 	private float[]		spritePosFloats = new float[4*2];
 	//~ private float[]		spriteTexFloats = { 0f,0f, 1f,0f, 0f,1f, 1f,1f }; // pirate test ok
-	private float[]		spriteTexFloats = { 0f,1f, 1f,1f, 0f,0f, 1f,0f }; // cloud test ok ?
+	//~ private float[]		spriteTexFloats = { 0f,0f, 1f,0f, 0f,1f, 1f,1f }; // pirate test ok
+	private float[]		spriteTexFloats = { 0f,1f, 1f,1f, 0f,0f, 1f,0f }; // cloud test ok ? my
 	private FloatBuffer	spriteVB_Pos;
 	private FloatBuffer	spriteVB_Tex;
 	final static int	kBytesPerFloat = 4;
