@@ -25,6 +25,7 @@ public class LuanGraphics extends LuanBase {
 	public LuanGraphics (LoveVM vm) { super(vm); }
 	static final String sMetaName_LuanImage = "__MetaLuanImage";
 	static final String sMetaName_LuanQuad = "__MetaLuanQuad";
+	static final String sMetaName_LuanFont = "__MetaLuanFont";
 	
 	public GL10		getGL () { return vm.getGL(); }
 	
@@ -39,8 +40,9 @@ public class LuanGraphics extends LuanBase {
 		
 		_G.set(sMetaName_LuanImage,LuanImage.CreateMetaTable());
 		_G.set(sMetaName_LuanQuad,LuanQuad.CreateMetaTable());
+		_G.set(sMetaName_LuanFont,LuanFont.CreateMetaTable());
 
-		// love.graphics.print(sText,x,y)
+		/// love.graphics.print(sText,x,y)
 		t.set("print", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
@@ -52,7 +54,7 @@ public class LuanGraphics extends LuanBase {
 			}
 		});
 
-		// img = love.graphics.newImage(sFileName)
+		/// img = love.graphics.newImage(sFileName)
 		t.set("newImage", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
@@ -67,7 +69,7 @@ public class LuanGraphics extends LuanBase {
 			}
 		});
 		
-		// quad = love.graphics.newQuad( x, y, width, height, sw, sh )
+		/// quad = love.graphics.newQuad( x, y, width, height, sw, sh )
 		t.set("newQuad", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
@@ -86,8 +88,47 @@ public class LuanGraphics extends LuanBase {
 				return LuaValue.NONE;
 			}
 		});
+		
+		
+		/// font = love.graphics.newImageFont( image, glyphs )
+		t.set("newImageFont", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs args) {
+				if (args.isstring(1)) {
+					String filename = args.checkjstring(1);
+					String glyphs = args.checkjstring(2);
+					return LuaValue.userdataOf(new LuanFont(LuanGraphics.this,filename,glyphs),vm.get_G().get(sMetaName_LuanFont));
+				} else {
+					LuanImage img = (LuanImage)args.checkuserdata(1,LuanImage.class);
+					String glyphs = args.checkjstring(2);
+					return LuaValue.userdataOf(new LuanFont(LuanGraphics.this,img,glyphs),vm.get_G().get(sMetaName_LuanFont));
+				}
+			}
+		});
+		
+		
+		/// quad = love.graphics.newQuad( x, y, width, height, sw, sh )
+		t.set("newQuad", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs args) {
+				float x  = (float)args.checkdouble(1);
+				float y  = (float)args.checkdouble(2);
+				float w  = (float)args.checkdouble(3);
+				float h  = (float)args.checkdouble(4);
+				float sw = (float)args.checkdouble(5);
+				float sh = (float)args.checkdouble(6);
+				try {
+					return LuaValue.userdataOf(new LuanQuad(LuanGraphics.this,x,y,w,h,sw,sh),vm.get_G().get(sMetaName_LuanQuad));
+				} catch (Exception e) {
+					// TODO : throw lua error ?
+					LogException(e);
+				}
+				return LuaValue.NONE;
+			}
+		});
+		
 
-		// love.graphics.draw(drawable, x, y, r=0, sx=1, sy=1, ox=0, oy=0)
+		/// love.graphics.draw(drawable, x, y, r=0, sx=1, sy=1, ox=0, oy=0)
 		t.set("draw", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
@@ -106,7 +147,7 @@ public class LuanGraphics extends LuanBase {
 			}
 		});
 		
-		// love.graphics.setBackgroundColor( red, green, blue )  // 0-255
+		/// love.graphics.setBackgroundColor( red, green, blue )  // 0-255
 		t.set("setBackgroundColor", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
@@ -117,7 +158,7 @@ public class LuanGraphics extends LuanBase {
 			}
 		});
 		
-		// love.graphics.setColor( red, green, blue, alpha )  // 0-255
+		/// love.graphics.setColor( red, green, blue, alpha )  // 0-255
 		t.set("setColor", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
@@ -294,8 +335,56 @@ public class LuanGraphics extends LuanBase {
 	// ***** ***** ***** ***** *****  LuanDrawable
 	
 	public static class LuanDrawable {
+		
 	}
 	
+	
+	// ***** ***** ***** ***** *****  LuanFont
+	
+	public static class LuanFont {
+		private LuanGraphics	g;
+		
+		public LuanFont (LuanGraphics g,String filename,String glyphs) {}
+		public LuanFont (LuanGraphics g,LuanImage img,String glyphs) {}
+			
+		public static LuaTable CreateMetaTable () {
+			LuaTable mt = LuaValue.tableOf();
+			LuaTable t = LuaValue.tableOf();
+			mt.set("__index",t);
+			
+			/// height = Font:getHeight( )
+			/// TODO:dummy
+			t.set("getHeight", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(123); } });
+			
+			/// height = Font:getLineHeight( )
+			/// TODO:dummy
+			t.set("getLineHeight", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(123); } });
+			
+			/// width = Font:getWidth( line )
+			/// TODO:dummy
+			t.set("getWidth", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(123); } });
+			
+			/// Font:setLineHeight( height )
+			/// TODO:dummy
+			t.set("setLineHeight", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });
+			
+			/// Font:getWrap(text, width)
+			/// TODO:dummy
+			t.set("getWrap", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(123); } });
+			
+			/// type = Object:type()  , e.g. "Image" or audio:"Source"
+			t.set("type", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf("Font"); } });
+			
+			/// b = Object:typeOf( name )
+			t.set("typeOf", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { 
+				String s = args.checkjstring(2); 
+				return LuaValue.valueOf(s == "Object" || s == "Font"); 
+			} });
+			
+			
+			return mt;
+		}
+	}
 	
 	// ***** ***** ***** ***** *****  LuanQuad
 	
