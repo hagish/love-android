@@ -27,12 +27,18 @@ public class LuanGraphics extends LuanBase {
 	static final String sMetaName_LuanQuad = "__MetaLuanQuad";
 	static final String sMetaName_LuanFont = "__MetaLuanFont";
 	
+	public boolean bResolutionOverrideActive = false;
+	public int mfResolutionOverrideX;
+	public int mfResolutionOverrideY;
+	
 	public GL10		getGL () { return vm.getGL(); }
 	
 	public void Log (String s) { Log.i("LuanGraphics", s); }
 	public void LogException (Exception e) { Log.e("LuanGraphics",e.getMessage()); }
 	
 	public LuanFont mFont; // TODO: not yet used/implemented
+	
+	public float LOVE_TODEG (float fRadians) { return 360f*fRadians/(float)Math.PI; }
 	
 	public LuaTable InitLib () {
 		InitSpriteBuffer();
@@ -79,8 +85,6 @@ public class LuanGraphics extends LuanBase {
 		t.set("push",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("quad",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("rectangle",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("reset",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("rotate",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("setBlendMode",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("setCaption",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("setColorMode",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
@@ -95,8 +99,10 @@ public class LuanGraphics extends LuanBase {
 		t.set("setRenderTarget",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("setScissor",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("toggleFullscreen",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("translate",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("triangle",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+		
+		
+		
 		
 		
 		
@@ -225,6 +231,47 @@ public class LuanGraphics extends LuanBase {
 			}
 		});
 		
+		/// love.graphics.translate( dx, dy )
+		/// Translates the coordinate system in two dimensions. 
+		t.set("translate", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs args) {
+				float dx = (float)args.checkdouble(1);
+				float dy = (float)args.checkdouble(2);
+				getGL().glTranslatef(dx,dy,1);
+				return LuaValue.NONE;
+			}
+		});
+		
+		/// Rotates the coordinate system in two dimensions. 
+		/// Calling this function affects all future drawing operations by rotating the coordinate system around the origin by the given amount of radians. This change lasts until love.draw() exits. 
+		/// love.graphics.rotate( angle )
+		t.set("glRotatef", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs args) {
+				float a = (float)args.checkdouble(1);
+				getGL().glRotatef(LOVE_TODEG(a), 0, 0, 1);
+				return LuaValue.NONE;
+			}
+		});
+		
+		
+		
+		/// love.graphics.reset( )
+		/// Calling reset makes the current drawing color white, the current background color black, the window title empty and removes any scissor settings. It sets the BlendMode to alpha and ColorMode to modulate. 
+		/// It also sets both the point and line drawing modes to smooth and their sizes to 1.0 . Finally, it removes any stipple settings. 
+		t.set("reset",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { 
+			gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			gl.glColor4f(1f, 1f, 1f, 1f);
+			resetTransformMatrix(getGL());
+			Log("TODO:love.graphics.reset (lots of settings)");
+			return LuaValue.NONE; 
+			} }); // TODO: not yet implemented
+		
+		t.set("rotate",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
+
+		
+		
 		/// love.graphics.setBackgroundColor( red, green, blue )  // 0-255
 		t.set("setBackgroundColor", new VarArgFunction() {
 			@Override
@@ -251,9 +298,12 @@ public class LuanGraphics extends LuanBase {
 		t.set("setMode", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
-				// TODO: not yet implemented
-				// TODO: maybe fake resolution/scale ?
-				return LuaValue.NONE;
+				bResolutionOverrideActive = true;
+				mfResolutionOverrideX = args.checkint(1);
+				mfResolutionOverrideY = args.checkint(2);
+				// idea : if w>h and natural w<h , flip 90° ?
+				Log("love.graphics.setMode requested resolution = "+mfResolutionOverrideX+" x "+mfResolutionOverrideY);
+				return LuaValue.TRUE;
 			}
 		});
 		
@@ -318,7 +368,18 @@ public class LuanGraphics extends LuanBase {
 		LuanFillBuffer(spriteVB_Tex,spriteTexFloats); // assuming the sprite thing is always the full texture and not a subthing
 	}
 	
-	public void notifyFrameStart	(GL10 gl) {
+	public void resetTransformMatrix	(GL10 gl) {
+		// init pixel coordinatesystem
+		gl.glLoadIdentity();
+		gl.glTranslatef(-1,1,0);
+		if (bResolutionOverrideActive) {
+			gl.glScalef(2f/(mfResolutionOverrideX),-2f/(mfResolutionOverrideY),1);
+		} else {
+			gl.glScalef(2f/(vm.mfScreenW),-2f/(vm.mfScreenH),1);
+		}
+	}
+	
+	public void notifyFrameStart		(GL10 gl) {
 		this.gl = gl;
 		
 		// prepare fore rendering textured quads
@@ -346,9 +407,7 @@ public class LuanGraphics extends LuanBase {
 		//~ Log("notifyFrameStart");
 		
 		// init pixel coordinatesystem
-		gl.glLoadIdentity();
-		gl.glTranslatef(-1,1,0);
-		gl.glScalef(2f/vm.mfScreenW,-2f/vm.mfScreenH,1);
+		resetTransformMatrix(gl);
 	}
 	
 	public void notifyFrameEnd		(GL10 gl) {
