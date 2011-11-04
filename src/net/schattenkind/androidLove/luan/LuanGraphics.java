@@ -432,7 +432,7 @@ public class LuanGraphics extends LuanBase {
 		//~ float e = 0.5f;
 		//~ w = e;
 		//~ h = e; // no coordinate system in place yet
-		Log("DrawSprite "+w+","+h+"  "+x+","+y+"  "+r+"  "+sx+","+sy+"  "+ox+","+oy);
+		//~ Log("DrawSprite "+w+","+h+"  "+x+","+y+"  "+r+"  "+sx+","+sy+"  "+ox+","+oy);
 		
 		/*
 		love.graphics.draw(imgTerrain,0,0)
@@ -469,7 +469,7 @@ public class LuanGraphics extends LuanBase {
 		
 		float x0 = x - vx_x*ox/w - vy_x*oy/h; // top-left ?
 		float y0 = y - vx_y*ox/w - vy_y*oy/h; 
-		Log(" + "+x0+","+y0+"  "+vx_x+","+vx_y+"  "+vy_x+","+vy_y);
+		//~ Log(" + "+x0+","+y0+"  "+vx_x+","+vx_y+"  "+vy_x+","+vy_y);
 		
 		spritePosFloats[0*2 + 0] = x0; 
 		spritePosFloats[0*2 + 1] = y0; 
