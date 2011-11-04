@@ -46,7 +46,7 @@ end
 
 -- ***** ***** ***** ***** ***** start love-android test stuff 
 --~ imgTerrain = love.graphics.newImage("gfx/terrain.png")
-imgTerrain = love.graphics.newImage("test512.png")
+--~ imgTerrain = love.graphics.newImage("test512.png")
 --~ imgTerrain = love.graphics.newImage("terrain3.png")
 --~ imgTerrain = love.graphics.newImage("body.png")
 --~ imgTerrain:setFilter("nearest","nearest")
@@ -82,10 +82,10 @@ function drawTerrain()
 end
 
 function love_android_test_update (dt)
-	updateTerrain(dt)
+	--~ updateTerrain(dt)
 end
 function love_android_test_draw ()
-	drawTerrain()
+	--~ drawTerrain()
 end
 function love_android_test_disable_orig () return 2 == 1 end
 
@@ -122,6 +122,9 @@ function love.draw()
 	--~ love.graphics.draw(ear, 100,100*6, -0.1f, s, s, 16, 16)
 	--~ love.graphics.draw(ear, 100,100*7, -0.1f, s, s, 16, -16)
 	--~ love.graphics.draw(ear, 200,100*8, -0.1f, s, s, 16, 64+10*1)
+	
+	
+	love.graphics.draw(logo, 400, 380, 0, 1, 1, 128, 64)
 	
 	for k, c in ipairs(clouds) do
 		love.graphics.draw(cloud, c.x, c.y)
