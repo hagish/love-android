@@ -32,6 +32,7 @@ function love.load()
 end
 
 function love.update(dt)
+	love_android_test_update(dt)
 	try_spawn_cloud(dt)
 	
 	nekochan:update(dt)
@@ -43,24 +44,84 @@ function love.update(dt)
 	
 end
 
-function love.draw()
+-- ***** ***** ***** ***** ***** start love-android test stuff 
+--~ imgTerrain = love.graphics.newImage("gfx/terrain.png")
+imgTerrain = love.graphics.newImage("test512.png")
+--~ imgTerrain = love.graphics.newImage("terrain3.png")
+--~ imgTerrain = love.graphics.newImage("body.png")
+--~ imgTerrain:setFilter("nearest","nearest")
+--~ back_terrain = love.graphics.newQuad(0,112,300,94,512,512)
+--~ front_terrain = love.graphics.newQuad(0,224,300,94,512,512)
+--~ track_quad = love.graphics.newQuad(0,48,121,5,128,128)
+front_x = 0
+back_x = 0
+WIDTH = 300*3
+HEIGHT = 300
 
-	love.graphics.draw(logo, 400, 380, 0, 1, 1, 128, 64)
+function updateTerrain(dt)
+	--~ front_x = (front_x + 65*dt) % WIDTH
+	--~ back_x = (back_x + 40*dt) % WIDTH
+end
+
+function drawTerrain()
+	--~ love.graphics.drawq(imgTerrain,back_terrain,0-back_x,0)
+	--~ love.graphics.drawq(imgTerrain,back_terrain,WIDTH-back_x,0)
+	--~ love.graphics.drawq(imgTerrain,front_terrain,0-front_x,0)
+	--~ love.graphics.drawq(imgTerrain,front_terrain,WIDTH-front_x,0)
+	--~ love.graphics.draw(body,0,100)
+	--~ love.graphics.draw(imgTerrain,512,0)
+	--~ love.graphics.draw(imgTerrain,512,512)
+	--~ love.graphics.draw(imgTerrain,128,0)
+	--~ love.graphics.draw(imgTerrain,128,128)
+	--~ love.graphics.draw(imgTerrain,0,0)
+	--~ love.graphics.draw(ear,0,0)
+	--~ love.graphics.draw(ear,128,128)
+	--~ love.graphics.draw(ear,256,256)
+	--~ love.graphics.draw(ear,512,512)
+	--~ love.graphics.draw(body,0,100)
+end
+
+function love_android_test_update (dt)
+	updateTerrain(dt)
+end
+function love_android_test_draw ()
+	drawTerrain()
+end
+function love_android_test_disable_orig () return 2 == 1 end
+
+-- ***** ***** ***** ***** ***** end love-android test stuff 
+
+function love.draw()
+	love_android_test_draw()
+	if (love_android_test_disable_orig()) then return end
+
+
+	--~ if (not gMyQuad) then
+		--~ local x, y = 0,0
+		--~ local width, height = 64,64
+		--~ local sw, sh  = 128,128
+		--~ gMyQuad = love.graphics.newQuad( x, y, width, height, sw, sh )
+	--~ end
+	
+	--~ love.graphics.drawq( image, quad, x, y, r, sx, sy, ox, oy )
+	--~ love.graphics.drawq( body, gMyQuad, 150, 150)
+	
+	--~ love.graphics.draw(logo, 400, 380, 0, 1, 1, 128, 64)
 	local s = 1
 	--~ love.graphics.draw(body, 100,100*1, 0, s, s, 0, 0)
 	--~ love.graphics.draw(face, 100,100*2, 0, s, s, 0, 0)
 	--~ love.graphics.draw(ear, 100,100*3, 0, s, s, 0, 0)
 	--~ love.graphics.draw(logo, 100,100*4, 0, s, s, 0, 0)
 	
-	love.graphics.draw(ear, 100,100*1, 0.1f, s, s, 0, 0)
-	love.graphics.draw(ear, 100,100*2, 0.1f, s, s, 16, 16)
-	love.graphics.draw(ear, 100,100*3, 0.1f, s, s, 16, -16)
-	love.graphics.draw(ear, 200,100*4, 0.1f, s, s, 16, 64+10*1)
+	--~ love.graphics.draw(ear, 100,100*1, 0.1f, s, s, 0, 0)
+	--~ love.graphics.draw(ear, 100,100*2, 0.1f, s, s, 16, 16)
+	--~ love.graphics.draw(ear, 100,100*3, 0.1f, s, s, 16, -16)
+	--~ love.graphics.draw(ear, 200,100*4, 0.1f, s, s, 16, 64+10*1)
 	
-	love.graphics.draw(ear, 100,100*5, -0.1f, s, s, 0, 0)
-	love.graphics.draw(ear, 100,100*6, -0.1f, s, s, 16, 16)
-	love.graphics.draw(ear, 100,100*7, -0.1f, s, s, 16, -16)
-	love.graphics.draw(ear, 200,100*8, -0.1f, s, s, 16, 64+10*1)
+	--~ love.graphics.draw(ear, 100,100*5, -0.1f, s, s, 0, 0)
+	--~ love.graphics.draw(ear, 100,100*6, -0.1f, s, s, 16, 16)
+	--~ love.graphics.draw(ear, 100,100*7, -0.1f, s, s, 16, -16)
+	--~ love.graphics.draw(ear, 200,100*8, -0.1f, s, s, 16, 64+10*1)
 	
 	for k, c in ipairs(clouds) do
 		love.graphics.draw(cloud, c.x, c.y)
@@ -73,6 +134,9 @@ end
 function love.keypressed(k)
 	if k == "r" then
 		love.filesystem.load("main.lua")()
+	end
+	if k == "5" then
+		os.exit(0)
 	end
 end
 

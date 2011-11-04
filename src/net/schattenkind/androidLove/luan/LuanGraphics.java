@@ -213,7 +213,7 @@ public class LuanGraphics extends LuanBase {
 				float ox = (n >= 8) ? ((float)args.checkdouble(8)) : 0.0f;
 				float oy = (n >= 9) ? ((float)args.checkdouble(9)) : 0.0f;
 				
-				DrawSprite(img.miTextureID,quad,img.mWidth,img.mHeight,x,y,r,sx,sy,ox,oy);
+				DrawSprite(img.miTextureID,quad,quad.w,quad.h,x,y,r,sx,sy,ox,oy);
 				return LuaValue.NONE; 
 			} 
 		});
@@ -301,7 +301,7 @@ public class LuanGraphics extends LuanBase {
 				bResolutionOverrideActive = true;
 				mfResolutionOverrideX = args.checkint(1);
 				mfResolutionOverrideY = args.checkint(2);
-				// idea : if w>h and natural w<h , flip 90° ?
+				// TODO: idea : if w>h and natural w<h , flip 90° ?
 				Log("love.graphics.setMode requested resolution = "+mfResolutionOverrideX+" x "+mfResolutionOverrideY);
 				return LuaValue.TRUE;
 			}
@@ -343,7 +343,8 @@ public class LuanGraphics extends LuanBase {
 	private float[]		spritePosFloats = new float[4*2];
 	//~ private float[]		spriteTexFloats = { 0f,0f, 1f,0f, 0f,1f, 1f,1f }; // pirate test ok
 	//~ private float[]		spriteTexFloats = { 0f,0f, 1f,0f, 0f,1f, 1f,1f }; // pirate test ok
-	private float[]		spriteTexFloats = { 0f,1f, 1f,1f, 0f,0f, 1f,0f }; // cloud test ok ? my
+	//~ private float[]		spriteTexFloats = { 0f,1f, 1f,1f, 0f,0f, 1f,0f }; // cloud test ok ? my  pre 2011-11-04
+	private float[]		spriteTexFloats = { 0f,0f, 1f,0f, 0f,1f, 1f,1f }; // 2011-11-04 direct coord system test
 	private FloatBuffer	spriteVB_Pos; // TODO: since OpenGL ES 1.1 it is possible to use vertex-buffer objects directly in vram, this would improve performance
 	private FloatBuffer	spriteVB_Tex;
 	final static int	kBytesPerFloat = 4;
@@ -431,18 +432,29 @@ public class LuanGraphics extends LuanBase {
 		//~ float e = 0.5f;
 		//~ w = e;
 		//~ h = e; // no coordinate system in place yet
+		Log("DrawSprite "+w+","+h+"  "+x+","+y+"  "+r+"  "+sx+","+sy+"  "+ox+","+oy);
 		
+		/*
+		love.graphics.draw(imgTerrain,0,0)
+		11-04 22:12:59.797: I/LuanGraphics(1235): DrawSprite 512.0,512.0  0.0,0.0  0.0  1.0,1.0  0.0,0.0
+		11-04 22:12:59.797: I/LuanGraphics(1235):  + 0.0,0.0  512.0,0.0  0.0,-512.0
+
+		*/
 		//~ sx = 2;
 		//~ sy = 1;
 		
 		float mycos = (float)Math.cos(r);
 		float mysin = (float)Math.sin(r);
 		
-		float vx_x = w*mycos;
-		float vx_y = w*mysin;
+		// coord sys with 0,0 = left,top, and +,+ = right,bottom
+		// vx_ x/y = clockwise rotation starting at the right   (rot=0 : x=1,y=0)
+		// vy_ x/y = clockwise rotation starting at the bottom  (rot=0 : x=0,y=1)
 		
-		float vy_x =  h*mysin;
-		float vy_y = -h*mycos; 
+		float vx_x = w*mycos; // rot= 0:1  90:0  180:-1   270:0  = cos
+		float vx_y = w*mysin; // rot= 0:0  90:1  180:0   270:-1  = sin
+		
+		float vy_x = -h*mysin; // rot= 0:0  90:-1  180:0   270:1  = -sin
+		float vy_y =  h*mycos; // rot= 0:1  90:0  180:-1   270:0  = cos
 
 		vx_x *= sx;
 		vx_y *= sx;
@@ -457,6 +469,7 @@ public class LuanGraphics extends LuanBase {
 		
 		float x0 = x - vx_x*ox/w - vy_x*oy/h; // top-left ?
 		float y0 = y - vx_y*ox/w - vy_y*oy/h; 
+		Log(" + "+x0+","+y0+"  "+vx_x+","+vx_y+"  "+vy_x+","+vy_y);
 		
 		spritePosFloats[0*2 + 0] = x0; 
 		spritePosFloats[0*2 + 1] = y0; 
@@ -576,6 +589,7 @@ public class LuanGraphics extends LuanBase {
 			this.sw = sw;
 			this.sh = sh;
 			vb_Tex = LuanCreateBuffer(4*2);
+			g.Log("LuanQuad request="+x+","+y+"  "+ w+","+h+"  "+ sw+","+sh);
 			setViewport(x,y,w,h);
 		}
 		
@@ -587,7 +601,10 @@ public class LuanGraphics extends LuanBase {
 			float		a;
 			if (bFlippedX) { a = u0; u0 = u1; u1 = a; }
 			if (bFlippedY) { a = v0; v0 = v1; v1 = a; }
-			float[]		spriteTexFloats = { u0,v1, u1,v1, u0,v0, u1,v0 }; // cloud test ok ? my
+			//~ float[]		spriteTexFloats = { u0,v1, u1,v1, u0,v0, u1,v0 }; // cloud test ok ? my
+			float[]		spriteTexFloats = { u0,v0, u1,v0, u0,v1, u1,v1 };  // 2011-11-04 direct coord system test
+			//~ g.Log("LuanQuad texcoords="+u0+","+v1+"  "+ u1+","+v1+"  "+ u0+","+v0+"  "+ u1+","+v0);
+			g.Log("LuanQuad texcoords="+u0+","+v0+"  "+ u1+","+v0+"  "+ u0+","+v1+"  "+ u1+","+v1);
 			LuanFillBuffer(vb_Tex,spriteTexFloats); // assuming the sprite thing is always the full texture and not a subthing
 		}
 		
