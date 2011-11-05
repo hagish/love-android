@@ -53,10 +53,13 @@ public class LuanMouse extends LuanBase {
 
 			vm.get_G().get("love")
 					.get(callback)
-					.call(LuaNumber.valueOf(mouseX), LuaNumber.valueOf(mouseY),
+					.call(LuaNumber.valueOf(mouseX_for_vm()), LuaNumber.valueOf(mouseY_for_vm()),
 							LuaString.valueOf(button));
 		}
 	}
+	
+	private int mouseX_for_vm() { return vm.convertMouseX(mouseX,mouseY); }
+	private int mouseY_for_vm() { return vm.convertMouseY(mouseX,mouseY); }
 
 	private void triggerCallsbacksIfNecessary(boolean left, boolean middle,
 			boolean right) {
@@ -73,8 +76,8 @@ public class LuanMouse extends LuanBase {
 		t.set("getPosition", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
-				return LuaValue.varargsOf(LuaNumber.valueOf(mouseX),
-						LuaNumber.valueOf(mouseY));
+				return LuaValue.varargsOf(LuaNumber.valueOf(mouseX_for_vm()),
+						LuaNumber.valueOf(mouseY_for_vm()));
 			}
 		});
 
@@ -82,7 +85,7 @@ public class LuanMouse extends LuanBase {
 		t.set("getX", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
-				return LuaNumber.valueOf(mouseX);
+				return LuaNumber.valueOf(mouseX_for_vm());
 			}
 		});
 
@@ -90,7 +93,7 @@ public class LuanMouse extends LuanBase {
 		t.set("getY", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
-				return LuaNumber.valueOf(mouseY);
+				return LuaNumber.valueOf(mouseY_for_vm());
 			}
 		});
 

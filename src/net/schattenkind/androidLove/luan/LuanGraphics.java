@@ -193,7 +193,7 @@ public class LuanGraphics extends LuanBase {
 				float ox = (n >= 7) ? ((float)args.checkdouble(7)) : 0.0f;
 				float oy = (n >= 8) ? ((float)args.checkdouble(8)) : 0.0f;
 				
-				DrawSprite(img.miTextureID,img.mWidth,img.mHeight,x,y,r,sx,sy,ox,oy);
+				DrawSprite(img.GetTextureID(),img.mWidth,img.mHeight,x,y,r,sx,sy,ox,oy);
 				return LuaValue.NONE;
 			}
 		});
@@ -213,7 +213,7 @@ public class LuanGraphics extends LuanBase {
 				float ox = (n >= 8) ? ((float)args.checkdouble(8)) : 0.0f;
 				float oy = (n >= 9) ? ((float)args.checkdouble(9)) : 0.0f;
 				
-				DrawSprite(img.miTextureID,quad,quad.w,quad.h,x,y,r,sx,sy,ox,oy);
+				DrawSprite(img.GetTextureID(),quad,quad.w,quad.h,x,y,r,sx,sy,ox,oy);
 				return LuaValue.NONE; 
 			} 
 		});
@@ -367,6 +367,17 @@ public class LuanGraphics extends LuanBase {
 		spriteVB_Pos = LuanCreateBuffer(spritePosFloats.length);
 		spriteVB_Tex = LuanCreateBuffer(spriteTexFloats.length);
 		LuanFillBuffer(spriteVB_Tex,spriteTexFloats); // assuming the sprite thing is always the full texture and not a subthing
+	}
+	
+	
+	public int convertMouseX(int mouseX,int mouseY) { 
+		if (bResolutionOverrideActive) return (int)( ((float)mouseX) * ((float)mfResolutionOverrideX) / ((float)vm.mfScreenW) );
+		return mouseX;
+	}
+	
+	public int convertMouseY(int mouseX,int mouseY) { 
+		if (bResolutionOverrideActive) return (int)( ((float)mouseY) * ((float)mfResolutionOverrideY) / ((float)vm.mfScreenH) );
+		return mouseY;
 	}
 	
 	public void resetTransformMatrix	(GL10 gl) {
@@ -675,32 +686,51 @@ public class LuanGraphics extends LuanBase {
 	
 	public static class LuanImage extends LuanDrawable {
 		private LuanGraphics	g;
-		public int				miTextureID = 0;
+		private int				miTextureID = 0;
 		public float			mWidth;
 		public float			mHeight;
+		public int				mFilterMin = GL10.GL_LINEAR;
+		public int				mFilterMag = GL10.GL_LINEAR;
+		public int				mWrapH = GL10.GL_REPEAT;
+		public int				mWrapV = GL10.GL_REPEAT;
 			
 		public static LuanImage self (Varargs args) { return (LuanImage)args.checkuserdata(1,LuanImage.class); }
+		
+		public static String	Filter2Str	(int	a) { return (a == GL10.GL_LINEAR)?"linear":"nearest"; }
+		public static int		Str2Filter	(String a) { return (a == "linear")?GL10.GL_LINEAR:GL10.GL_NEAREST; }
+		
+		public static String	Wrap2Str	(int	a) { return (a == GL10.GL_CLAMP_TO_EDGE)?"clamp":"repeat"; }
+		public static int		Str2Wrap	(String a) { return (a == "clamp")?GL10.GL_CLAMP_TO_EDGE:GL10.GL_REPEAT; }
+		
 		
 		public static LuaTable CreateMetaTable () {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
 			mt.set("__index",t);
 			
-			/// min, mag = Image:getFilter( )
-			/// TODO: not yet implemented, "linear" , "nearest"
-			t.set("getFilter", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.varargsOf( LuaValue.valueOf("linear") , LuaValue.valueOf("linear") ); } });
+			/// min, mag = Image:getFilter( )	"linear" , "nearest"
+			t.set("getFilter", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { 
+				return LuaValue.varargsOf(	
+					LuaValue.valueOf(Filter2Str(self(args).mFilterMin)) , 
+					LuaValue.valueOf(Filter2Str(self(args).mFilterMag)) ); } });
 			
-			/// horiz, vert = Image:getWrap( )
-			/// TODO: not yet implemented, "repeat" , "clamp"
-			t.set("getWrap", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.varargsOf( LuaValue.valueOf("repeat") , LuaValue.valueOf("repeat") ); } });
+			/// Image:setFilter( min, mag )		"linear" , "nearest"
+			t.set("setFilter", new VarArgFunction() { @Override public Varargs invoke(Varargs args) {
+				self(args).setFilter(Str2Filter(args.checkjstring(2)),Str2Filter(args.checkjstring(3)));
+				return LuaValue.NONE;
+			} });
 			
-			/// Image:setFilter( min, mag )
-			/// TODO: not yet implemented, "linear" , "nearest"
-			t.set("setFilter", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });
+			/// horiz, vert = Image:getWrap( )	"repeat" , "clamp"
+			t.set("getWrap", new VarArgFunction() { @Override public Varargs invoke(Varargs args) {
+				return LuaValue.varargsOf(
+					LuaValue.valueOf(Wrap2Str(self(args).mWrapH)) , 
+					LuaValue.valueOf(Wrap2Str(self(args).mWrapV)) ); } });
 			
-			/// Image:setWrap( horiz, vert )
-			/// TODO: not yet implemented, "repeat" , "clamp"
-			t.set("setWrap", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });
+			/// Image:setWrap( horiz, vert )	"repeat" , "clamp"
+			t.set("setWrap", new VarArgFunction() { @Override public Varargs invoke(Varargs args) {
+				self(args).setWrap(Str2Wrap(args.checkjstring(2)),Str2Wrap(args.checkjstring(3)));
+				return LuaValue.NONE;
+			} });
 			
 			/// w = Image:getWidth( )
 			t.set("getWidth", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).mWidth); } });
@@ -720,6 +750,29 @@ public class LuanGraphics extends LuanBase {
 			
 			return mt;
 		}
+				
+		public void setFilter (int min, int mag) {
+			mFilterMin = min;
+			mFilterMag = mag;
+			GL10 gl = g.getGL();
+			gl.glBindTexture( GL10.GL_TEXTURE_2D, GetTextureID() );
+			gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, mFilterMin );
+			gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, mFilterMag );
+		}
+		
+		public void setWrap (int h, int v) {
+			mWrapH = h;
+			mWrapV = v;
+			GL10 gl = g.getGL();
+			gl.glBindTexture( GL10.GL_TEXTURE_2D, GetTextureID() );
+			gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, mWrapH );
+			gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, mWrapV );
+		}
+		
+		public int GetTextureID () { 
+			// TODO: reload if contextswitch detected
+			return miTextureID;
+		}
 		
 		public void LoadFromBitmap (Bitmap bm) {
 			GL10 gl = g.getGL();
@@ -730,14 +783,14 @@ public class LuanGraphics extends LuanBase {
 			miTextureID = textureIds[0];
 
 			// bind this texture
-			gl.glBindTexture( GL10.GL_TEXTURE_2D, miTextureID );
+			gl.glBindTexture( GL10.GL_TEXTURE_2D, GetTextureID() );
 
 			// Create Nearest Filtered Texture
-			gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR );
-			gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR );
+			gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, mFilterMin );
+			gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, mFilterMag );
 
-			gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, GL10.GL_REPEAT );
-			gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, GL10.GL_REPEAT );
+			gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, mWrapH );
+			gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, mWrapV );
 
 			GLUtils.texImage2D( GL10.GL_TEXTURE_2D, 0, bm, 0 ); // texImage2D(int target, int level, Bitmap bitmap, int border
 		}

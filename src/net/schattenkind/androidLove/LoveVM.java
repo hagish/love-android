@@ -52,7 +52,10 @@ public class LoveVM {
 		this.attachedToThisActivity = attachedToThisActivity;
 		this.storage = storage;
 	}
-
+	
+	public int convertMouseX(int mouseX,int mouseY) { return mLuanGraphics.convertMouseX(mouseX,mouseY); }
+	public int convertMouseY(int mouseX,int mouseY) { return mLuanGraphics.convertMouseY(mouseX,mouseY); }
+	
 	// / access to latest valid gl object
 	public GL10 getGL() {
 		return gl;
