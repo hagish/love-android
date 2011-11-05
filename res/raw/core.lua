@@ -14,7 +14,8 @@ function love.run() end
 function love.update() end
 
 function require(file)
-	return love.filesystem.load(file .. ".lua")()
+	if (string.sub(file,-4) ~= ".lua") then file = file .. ".lua" end
+	return love.filesystem.load(file)()
 end
 
 function love_andorid_list_iter (t)

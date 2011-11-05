@@ -15,7 +15,8 @@ public class LoveAndroid extends Activity {
 
 	//~ private final static String		kGamePath = "/love/clouds/";
 	//~ private final static String		kGamePath = "/love/iyfct/";
-	private final static String		kGamePath = "/love/love_for_zombies/";
+	//~ private final static String		kGamePath = "/love/love_for_zombies/";
+	private final static String		kGamePath = "/love/Stealth2D/";
 
 	//~ private final static String kGamePath = "/mnt/sdcard/love/clouds/";
 	//~ private final static String kGamePath = "/mnt/sdcard/love/iyfct/";

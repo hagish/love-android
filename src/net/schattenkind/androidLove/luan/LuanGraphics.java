@@ -60,7 +60,6 @@ public class LuanGraphics extends LuanBase {
 		t.set("getColor",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("getColorMode",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("getFont",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("getHeight",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("getLineStipple",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("getLineStyle",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("getLineWidth",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
@@ -69,7 +68,6 @@ public class LuanGraphics extends LuanBase {
 		t.set("getPointSize",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("getPointStyle",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("getScissor",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("getWidth",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("isCreated",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("line",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("newFramebuffer",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
@@ -331,10 +329,29 @@ public class LuanGraphics extends LuanBase {
 			}
 		});
 		
+		/// width = love.graphics.getWidth( )
+		/// Gets the width of the window. 
+		t.set("getWidth",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) {
+			float w = getScreenW();
+			Log("love.graphics.getWidth = "+w);
+			return LuaValue.valueOf(w);
+			} });
+		
+		/// height = love.graphics.getHeight( )
+		/// Gets the height of the window.
+		t.set("getHeight",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { 
+			float h = getScreenH();
+			Log("love.graphics.getHeight = "+h);
+			return LuaValue.valueOf(h);
+			} });
+		
 		
 		
 		return t;
 	}
+	
+	public float getScreenW () { return bResolutionOverrideActive ? mfResolutionOverrideX : vm.mfScreenW; }
+	public float getScreenH () { return bResolutionOverrideActive ? mfResolutionOverrideY : vm.mfScreenH; }
 	
 	// ***** ***** ***** ***** *****  LuanColor
 	
