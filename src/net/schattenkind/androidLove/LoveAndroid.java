@@ -7,13 +7,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 public class LoveAndroid extends Activity {
 	private static final long updateDelayMillis = 1000 / 30;
 	private LoveVM vm;
 	private GLSurfaceView mGLView;
-	//~ private final static String		kGamePath = "/love/clouds/";
-	private final static String		kGamePath = "/love/Stealth2D/";
+	// ~ private final static String kGamePath = "/love/clouds/";
+	private final static String kGamePath = "/love/Stealth2D/";
 	@SuppressWarnings("unused")
 	private MouseHandler mouseHandler;
 
@@ -57,16 +60,34 @@ public class LoveAndroid extends Activity {
 	}
 
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main_menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+		case R.id.exit:
+			System.exit(0);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		String path = kGamePath;
-		
-		if (Launcher.launchMeGamePath != null)
-		{
+
+		if (Launcher.launchMeGamePath != null) {
 			path = Launcher.launchMeGamePath;
 		}
-		
+
 		vm = new LoveVM(this, new LoveStorage(this, path));
 
 		// Create a GLSurfaceView instance and set it
