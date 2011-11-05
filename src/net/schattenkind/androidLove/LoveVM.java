@@ -42,11 +42,14 @@ public class LoveVM {
 	private LuanFilesystem mLuanFilesystem;
 	public float mfScreenW;
 	public float mfScreenH;
+	public long mfLastUpdateTick = 0;
+	public boolean bCallUpdateDuringDraw = true; // false leads to weird behavior in love_for_zombies
 
 	private GL10 gl;
 	private boolean bOnCreateDone = false;
 	private boolean bInitDone = false;
 	private boolean isBroken = false;
+	private boolean bInitInProgress = false;
 
 	private LoveStorage storage;
 
@@ -90,7 +93,8 @@ public class LoveVM {
 	// called
 	public void init() {
 		assert (!bInitDone); // don't init twice
-		bInitDone = true;
+		if (bInitInProgress) return; // multithread problem??
+		bInitInProgress = true;
 		// _G = JsePlatform.standardGlobals();
 		_G = JsePlatform.debugGlobals();
 
@@ -106,6 +110,8 @@ public class LoveVM {
 		}
 
 		this.load();
+		bInitDone = true;
+		bInitInProgress = false;
 	}
 
 	private void loadFileFromRes(int id, String filename) {
@@ -236,6 +242,15 @@ public class LoveVM {
 		if (!bInitDone || isBroken)
 			return;
 		mLuanTimer.notifyFrameStart();
+		
+		if (bCallUpdateDuringDraw) {
+			long t = mLuanTimer.getLoveClockMillis();
+			if (mfLastUpdateTick == 0) mfLastUpdateTick = t;
+			long dt = t - mfLastUpdateTick;
+			mfLastUpdateTick = t;
+			this.update(dt / 1000.0f);
+		}
+		
 		mLuanGraphics.notifyFrameStart(gl);
 		try {
 			_G.get("love").get("draw").call();
@@ -244,12 +259,16 @@ public class LoveVM {
 		}
 		mLuanGraphics.notifyFrameEnd(gl);
 	}
+	
+	public void notifyUpdateTimerMainThread(float dt) {
+		if (!bCallUpdateDuringDraw) update(dt);
+	}
 
 	public void update(float dt) {
 		if (!bInitDone || isBroken)
 			return;
 		// WARNING! must be called in mainthread, since gl can be accessed, not
-		// multi-thread safe with draw !
+		// multi-thread safe with draw ! (this is violated if bCallUpdateDuringDraw=true! otherwise we get weird behavior in love_for_zombies tho...)
 
 		try {
 			_G.get("love").get("update").call(LuaNumber.valueOf(dt));

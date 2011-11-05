@@ -61,7 +61,7 @@ public class LoveAndroid extends Activity {
 	}
 
 	public void _update() {
-		vm.update(updateDelayMillis / 1000.0f);
+		vm.notifyUpdateTimerMainThread(updateDelayMillis / 1000.0f);
 		mUpdateHandler.sleep(updateDelayMillis);
 	}
 
