@@ -10,13 +10,17 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
         <activity
-            android:label="@string/app_name"
-            android:name=".LoveAndroid" >
+            android:label="@string/launcher_name"
+            android:name=".Launcher" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:label="@string/app_name"
+            android:name=".LoveAndroid" >
         </activity>
     </application>
 

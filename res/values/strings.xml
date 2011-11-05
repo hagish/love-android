@@ -3,5 +3,6 @@
 
     <string name="hello">Hello World, LoveAndroidActivity!</string>
     <string name="app_name">LoveAndroid</string>
+    <string name="launcher_name">LoveLauncher</string>
 
 </resources>

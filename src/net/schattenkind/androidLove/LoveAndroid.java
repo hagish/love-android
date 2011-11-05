@@ -13,7 +13,7 @@ public class LoveAndroid extends Activity {
 	private LoveVM vm;
 	private GLSurfaceView mGLView;
 	//~ private final static String		kGamePath = "/love/clouds/";
-	private final static String		kGamePath = "/love/iyfct/";
+	private final static String		kGamePath = "/love/Stealth2D/";
 	@SuppressWarnings("unused")
 	private MouseHandler mouseHandler;
 
@@ -49,8 +49,6 @@ public class LoveAndroid extends Activity {
 	@Override
 	public void onStop() {
 		super.onStop();
-		// TODO hack to kill the process on home button
-		System.exit(0);
 	}
 
 	public void _update() {
@@ -62,7 +60,14 @@ public class LoveAndroid extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		vm = new LoveVM(this, new LoveStorage(this, kGamePath));
+		String path = kGamePath;
+		
+		if (Launcher.launchMeGamePath != null)
+		{
+			path = Launcher.launchMeGamePath;
+		}
+		
+		vm = new LoveVM(this, new LoveStorage(this, path));
 
 		// Create a GLSurfaceView instance and set it
 		// as the ContentView for this Activity.
