@@ -19,7 +19,7 @@ fi
 
 echo "using adb : $ADB"
 
-for X in `find $SRC -type f`
+for X in `find $SRC -type f|grep -v .git`
 do
 	D=`echo $X|sed -e "s#$SRC#$DST#g"`
 	echo "$X -> $D : "

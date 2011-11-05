@@ -176,9 +176,14 @@ public class LuanKeyboard extends LuanBase {
 			return "left";
 		case KeyEvent.KEYCODE_DPAD_RIGHT:
 			return "right";
-
+		case KeyEvent.KEYCODE_DPAD_CENTER:
+			// TODO document me
+			return "dpad_center";
+			
 		case KeyEvent.KEYCODE_ENTER:
 			return "return";
+		case KeyEvent.KEYCODE_SPACE:
+			return " ";
 			
 		default:
 			return null;
