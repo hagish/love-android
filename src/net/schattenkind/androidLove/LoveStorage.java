@@ -42,8 +42,7 @@ public class LoveStorage {
 
 	public FileInputStream getFileStreamFromSdCard(String filename)
 			throws FileNotFoundException {
-		File f = new File(Environment.getExternalStorageDirectory() + "/"
-				+ loveAppRootOnSdCard + "/" + filename);
+		File f = new File(loveAppRootOnSdCard + "/" + filename);
 		return new FileInputStream(f);
 	}
 

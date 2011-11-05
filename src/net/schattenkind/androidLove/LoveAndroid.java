@@ -15,8 +15,7 @@ public class LoveAndroid extends Activity {
 	private static final long updateDelayMillis = 1000 / 30;
 	private LoveVM vm;
 	private GLSurfaceView mGLView;
-	// ~ private final static String kGamePath = "/love/clouds/";
-	private final static String kGamePath = "/love/Stealth2D/";
+	private final static String kGamePath = "/mnt/sdcard/love/clouds/";
 	@SuppressWarnings("unused")
 	private MouseHandler mouseHandler;
 
