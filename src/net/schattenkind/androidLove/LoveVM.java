@@ -33,6 +33,8 @@ public class LoveVM {
 	private Activity attachedToThisActivity;
 	private LuaValue _G;
 
+	public void RobLog (String s) { Log.i("LoveVMRobLog", s.toString()); }
+	
 	private LuanGraphics mLuanGraphics;
 	private LuanAudio mLuanAudio;
 	private LuanMouse mLuanMouse;
@@ -44,9 +46,13 @@ public class LoveVM {
 	public float mfScreenH;
 	public long mfLastUpdateTick = 0;
 	public boolean bCallUpdateDuringDraw = true; // false leads to weird behavior in love_for_zombies
+	
+	public boolean bInitCondition_ScreenSize = false;
+	public boolean bInitCondition_NotifyGL = false;
+	public boolean bInitCondition_onCreate = false;
+	public boolean bInitCondition_initAlreadyCalled = false;
 
 	private GL10 gl;
-	private boolean bOnCreateDone = false;
 	private boolean bInitDone = false;
 	private boolean isBroken = false;
 	private boolean bInitInProgress = false;
@@ -70,23 +76,35 @@ public class LoveVM {
 		return _G;
 	}
 	
+	public void checkAllInitOk () {
+		if (!bInitDone && gl != null && bInitCondition_onCreate && bInitCondition_ScreenSize && bInitCondition_NotifyGL && !bInitCondition_initAlreadyCalled) {
+			bInitCondition_initAlreadyCalled = true;
+			init();
+		}
+	}
+	
+	// seems to be called LATE! after notifyGL, so made this an init condition to avoid screensize being unavailable during love.load
 	public void notifyScreenSize (float w, float h) {
+		RobLog("notifyScreenSize:"+w+","+h); 
 		mfScreenW = w;
 		mfScreenH = h;
+		bInitCondition_ScreenSize = true;
+		checkAllInitOk();
 	}
 
 	// / called when gl context is created or updated
 	public void notifyGL(GL10 gl) {
+		if (!bInitCondition_NotifyGL) RobLog("notifyGL");
 		this.gl = gl;
-		if (!bInitDone && bOnCreateDone)
-			init();
+		bInitCondition_NotifyGL = true;
+		checkAllInitOk();
 	}
 
 	// / called when activity.onCreate has finished setting up the window
 	public void notifyOnCreateDone() {
-		bOnCreateDone = true;
-		if (!bInitDone && gl != null)
-			init();
+		RobLog("notifyOnCreateDone"); 
+		bInitCondition_onCreate = true;
+		checkAllInitOk();
 	}
 
 	// / may only be called after BOTH notifyGL AND notifyOnCreateDone have been
@@ -102,8 +120,10 @@ public class LoveVM {
 			setupCoreFunctions();
 			setupLoveFunctions();
 
+			RobLog("exec core.lua...");
 			loadFileFromRes(R.raw.core, "core.lua");
 
+			RobLog("exec main.lua...");
 			loadFileFromSdCard("main.lua");
 		} catch (LuaError e) {
 			handleLuaError(e);
@@ -220,6 +240,7 @@ public class LoveVM {
 	public void load() {
 		assert (bInitDone);
 		try {
+			RobLog("calling love.load...");
 			_G.get("love").get("load").call();
 		} catch (LuaError e) {
 			handleLuaError(e);
@@ -252,6 +273,7 @@ public class LoveVM {
 		}
 		
 		mLuanGraphics.notifyFrameStart(gl);
+		//~ RobLog("calling love.draw...");
 		try {
 			_G.get("love").get("draw").call();
 		} catch (LuaError e) {
@@ -270,6 +292,7 @@ public class LoveVM {
 		// WARNING! must be called in mainthread, since gl can be accessed, not
 		// multi-thread safe with draw ! (this is violated if bCallUpdateDuringDraw=true! otherwise we get weird behavior in love_for_zombies tho...)
 
+		//~ RobLog("calling love.update..."+dt);
 		try {
 			_G.get("love").get("update").call(LuaNumber.valueOf(dt));
 		} catch (LuaError e) {
