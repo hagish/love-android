@@ -26,6 +26,7 @@ public class LuanAudio extends LuanBase {
 	
 	public static void Log (String s) { Log.i("LuanAudio", s); }
 	
+	
 	// 0.0f - 1.0f
 	private float volume = 1.0f;
 
@@ -100,16 +101,23 @@ public class LuanAudio extends LuanBase {
 			}
 		});
 
+		
 		// source = love.audio.newSource( file, type )
 		t.set("newSource", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
+				Log("love.audio.newSource params:"+
+					((args.narg() >= 1)?getLuaTypeName(args.type(1)):"notset")+","+
+					((args.narg() >= 2)?getLuaTypeName(args.type(2)):"notset")+","+
+					((args.narg() >= 3)?getLuaTypeName(args.type(3)):"notset")+"...");
 				if (args.isstring(1)) {
+					Log("love.audio.newSource(string,..)");
 					String sFileName = args.checkjstring(1);
-					String sType = (args.narg() >= 2) ? args.checkjstring(2) : "static";
+					String sType = IsArgSet(args,2) ? args.checkjstring(2) : "static";
 					return LuaValue.userdataOf(new LuanSource(LuanAudio.this,sFileName,sType),vm.get_G().get(sMetaName_LuanSource));
 				}
-				if (args.narg() >= 2 && args.isstring(2)) {
+				if (IsArgSet(args,2) && args.isstring(2)) {
+					Log("love.audio.newSource(???,string,..)");
 					LuanDecoder decoder = (LuanDecoder)args.checkuserdata(1,LuanDecoder.class);
 					String sType = args.checkjstring(2);
 					return LuaValue.userdataOf(new LuanSource(LuanAudio.this,decoder,sType),vm.get_G().get(sMetaName_LuanSource));

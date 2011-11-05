@@ -12,8 +12,15 @@ public class LoveAndroid extends Activity {
 	private static final long updateDelayMillis = 1000 / 30;
 	private LoveVM vm;
 	private GLSurfaceView mGLView;
+
 	//~ private final static String		kGamePath = "/love/clouds/";
-	private final static String		kGamePath = "/love/iyfct/";
+	//~ private final static String		kGamePath = "/love/iyfct/";
+	private final static String		kGamePath = "/love/love_for_zombies/";
+
+	//~ private final static String kGamePath = "/mnt/sdcard/love/clouds/";
+	//~ private final static String kGamePath = "/mnt/sdcard/love/iyfct/";
+	//~ private final static String kGamePath = "/mnt/sdcard/love/love_for_zombies/";
+
 	@SuppressWarnings("unused")
 	private MouseHandler mouseHandler;
 

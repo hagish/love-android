@@ -72,7 +72,6 @@ public class LuanGraphics extends LuanBase {
 		t.set("getWidth",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("isCreated",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("line",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("newFont",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("newFramebuffer",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("newParticleSystem",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("newScreenshot",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } }); // TODO: not yet implemented
@@ -153,6 +152,27 @@ public class LuanGraphics extends LuanBase {
 			}
 		});
 		
+		/// font = love.graphics.newFont( filename, size ) 
+		/// font = love.graphics.newFont( size )   (default font (Vera Sans))
+		t.set("newFont", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs args) {
+				if (args.isstring(1)) {
+					String filename = args.checkjstring(1);
+					int iSize = IsArgSet(args,2) ? args.checkint(2) : 12;
+					try {
+						return LuaValue.userdataOf(new LuanFont(LuanGraphics.this,filename,iSize),vm.get_G().get(sMetaName_LuanFont));
+					} catch (Exception e) {
+						// TODO : throw lua error ?
+						LogException(e);
+					}
+					return LuaValue.NONE;
+				} else {
+					int iSize = (IsArgSet(args,1)) ? args.checkint(1) : 12;
+					return LuaValue.userdataOf(new LuanFont(LuanGraphics.this,iSize),vm.get_G().get(sMetaName_LuanFont));
+				}
+			}
+		});
 		
 		/// font = love.graphics.newImageFont( image, glyphs )
 		t.set("newImageFont", new VarArgFunction() {
@@ -161,7 +181,13 @@ public class LuanGraphics extends LuanBase {
 				if (args.isstring(1)) {
 					String filename = args.checkjstring(1);
 					String glyphs = args.checkjstring(2);
-					return LuaValue.userdataOf(new LuanFont(LuanGraphics.this,filename,glyphs),vm.get_G().get(sMetaName_LuanFont));
+					try {
+						return LuaValue.userdataOf(new LuanFont(LuanGraphics.this,filename,glyphs),vm.get_G().get(sMetaName_LuanFont));
+					} catch (Exception e) {
+						// TODO : throw lua error ?
+						LogException(e);
+					}
+					return LuaValue.NONE;
 				} else {
 					LuanImage img = (LuanImage)args.checkuserdata(1,LuanImage.class);
 					String glyphs = args.checkjstring(2);
@@ -184,14 +210,13 @@ public class LuanGraphics extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				LuanImage img = (LuanImage)args.checkuserdata(1,LuanImage.class);
-				int n = args.narg();
 				float x = (float)args.checkdouble(2);
 				float y = (float)args.checkdouble(3);
-				float r  = (n >= 4) ? ((float)args.checkdouble(4)) : 0.0f;
-				float sx = (n >= 5) ? ((float)args.checkdouble(5)) : 1.0f;
-				float sy = (n >= 6) ? ((float)args.checkdouble(6)) : 1.0f;
-				float ox = (n >= 7) ? ((float)args.checkdouble(7)) : 0.0f;
-				float oy = (n >= 8) ? ((float)args.checkdouble(8)) : 0.0f;
+				float r  = (IsArgSet(args,4)) ? ((float)args.checkdouble(4)) : 0.0f;
+				float sx = (IsArgSet(args,5)) ? ((float)args.checkdouble(5)) : 1.0f;
+				float sy = (IsArgSet(args,6)) ? ((float)args.checkdouble(6)) : 1.0f;
+				float ox = (IsArgSet(args,7)) ? ((float)args.checkdouble(7)) : 0.0f;
+				float oy = (IsArgSet(args,8)) ? ((float)args.checkdouble(8)) : 0.0f;
 				
 				DrawSprite(img.GetTextureID(),img.mWidth,img.mHeight,x,y,r,sx,sy,ox,oy);
 				return LuaValue.NONE;
@@ -204,14 +229,13 @@ public class LuanGraphics extends LuanBase {
 			@Override public Varargs invoke(Varargs args) {
 				LuanImage img = (LuanImage)args.checkuserdata(1,LuanImage.class);
 				LuanQuad quad = (LuanQuad)args.checkuserdata(2,LuanQuad.class);
-				int n = args.narg();
 				float x = (float)args.checkdouble(3);
 				float y = (float)args.checkdouble(4);
-				float r  = (n >= 5) ? ((float)args.checkdouble(5)) : 0.0f;
-				float sx = (n >= 6) ? ((float)args.checkdouble(6)) : 1.0f;
-				float sy = (n >= 7) ? ((float)args.checkdouble(7)) : 1.0f;
-				float ox = (n >= 8) ? ((float)args.checkdouble(8)) : 0.0f;
-				float oy = (n >= 9) ? ((float)args.checkdouble(9)) : 0.0f;
+				float r  = (IsArgSet(args,5)) ? ((float)args.checkdouble(5)) : 0.0f;
+				float sx = (IsArgSet(args,6)) ? ((float)args.checkdouble(6)) : 1.0f;
+				float sy = (IsArgSet(args,7)) ? ((float)args.checkdouble(7)) : 1.0f;
+				float ox = (IsArgSet(args,8)) ? ((float)args.checkdouble(8)) : 0.0f;
+				float oy = (IsArgSet(args,9)) ? ((float)args.checkdouble(9)) : 0.0f;
 				
 				DrawSprite(img.GetTextureID(),quad,quad.w,quad.h,x,y,r,sx,sy,ox,oy);
 				return LuaValue.NONE; 
@@ -333,7 +357,7 @@ public class LuanGraphics extends LuanBase {
 				r = ((float)args.checkdouble(i+0)) / 255f;
 				g = ((float)args.checkdouble(i+1)) / 255f;
 				b = ((float)args.checkdouble(i+2)) / 255f;
-				a = (args.narg() >= i+3) ? (((float)args.checkdouble(i+3)) / 255f) : 1f;
+				a = (IsArgSet(args,i+3)) ? (((float)args.checkdouble(i+3)) / 255f) : 1f;
 			}
 		}
 	}
@@ -528,9 +552,26 @@ public class LuanGraphics extends LuanBase {
 	
 	public static class LuanFont {
 		private LuanGraphics	g;
+		public LuanImage		img;
 		
-		public LuanFont (LuanGraphics g,String filename,String glyphs) {}
-		public LuanFont (LuanGraphics g,LuanImage img,String glyphs) {}
+		/// ttf font
+		public LuanFont (LuanGraphics g,String ttf_filename,int iSize) {  }
+		
+		/// ttf font, default ttf_filename to verdana sans
+		public LuanFont (LuanGraphics g,int iSize) {  }
+		
+		/// imageFont
+		public LuanFont (LuanGraphics g,String filename,String glyphs) throws FileNotFoundException { this(g,new LuanImage(g,filename),glyphs); }
+		
+		/// imageFont
+		public LuanFont (LuanGraphics g,LuanImage img,String glyphs) {
+			/*
+			The imagefont file is an image file in a format that Löve can load. It can contain transparent pixels, so a PNG file is preferable, and it also needs to contain spacer color that will separate the different font glyphs.
+			The upper left pixel of the image file is always taken to be the spacer color. All columns that have this color as their uppermost pixel are interpreted as separators of font glyphs. The areas between these separators are interpreted as the actual font glyphs.
+			The width of the separator areas affect the spacing of the font glyphs. It is possible to have more areas in the image than are required for the font in the love.graphics.newImageFont() call. The extra areas are ignored. 
+			*/
+			
+		}
 			
 		public static LuaTable CreateMetaTable () {
 			LuaTable mt = LuaValue.tableOf();
