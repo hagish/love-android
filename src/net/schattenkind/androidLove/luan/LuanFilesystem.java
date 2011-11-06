@@ -36,8 +36,20 @@ public class LuanFilesystem extends LuanBase {
 		t.set("enumerate", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
-				// TODO
-				return LuaValue.tableOf();
+				try {
+					String path = args.arg1().toString();
+					Log("enumerate:"+path);
+					String[] children = vm.getStorage().getChildren(path);
+					if (children == null) Log("enumerate=error");
+					if (children == null) return LuaValue.NONE;
+					LuaTable t = LuaValue.tableOf();
+					for (int i=0;i<children.length;++i) Log("enumerate[]="+children[i]);
+					for (int i=0;i<children.length;++i) t.rawset(i+1,children[i]);
+					return t;
+				} catch (IOException e) {
+					vm.handleError(e);
+					return LuaValue.NONE;
+				}
 			}
 		});
 
