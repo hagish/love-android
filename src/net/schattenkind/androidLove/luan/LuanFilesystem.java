@@ -75,6 +75,7 @@ public class LuanFilesystem extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.filesystem.getLastModified");
 				return LuaValue.varargsOf(new LuaValue[] { LuaValue.NIL,
 						LuaValue.NIL });
 			}
@@ -180,6 +181,7 @@ public class LuanFilesystem extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.filesystem.mkdir");
 				return LuaValue.FALSE;
 			}
 		});
@@ -189,6 +191,7 @@ public class LuanFilesystem extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.filesystem.newFile");
 				return LuaValue.NIL;
 			}
 		});
@@ -198,6 +201,7 @@ public class LuanFilesystem extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.filesystem.newFileData");
 				return LuaValue.NIL;
 			}
 		});
@@ -207,6 +211,7 @@ public class LuanFilesystem extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.filesystem.read");
 				return LuaValue.NONE;
 			}
 		});
@@ -216,6 +221,7 @@ public class LuanFilesystem extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.filesystem.remove");
 				return LuaValue.FALSE;
 			}
 		});
@@ -225,6 +231,7 @@ public class LuanFilesystem extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.filesystem.setIdentity");
 				return LuaValue.NONE;
 			}
 		});
@@ -233,6 +240,8 @@ public class LuanFilesystem extends LuanBase {
 		t.set("setSource", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
+				// TODO
+				vm.NotImplemented("love.filesystem.setSource");
 				return LuaValue.NONE;
 			}
 		});
@@ -242,6 +251,7 @@ public class LuanFilesystem extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.filesystem.write");
 				return LuaValue.FALSE;
 			}
 		});

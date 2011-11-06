@@ -2,6 +2,7 @@ package net.schattenkind.androidLove;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashSet;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -13,6 +14,7 @@ import net.schattenkind.androidLove.luan.LuanMouse;
 import net.schattenkind.androidLove.luan.LuanTimer;
 import net.schattenkind.androidLove.luan.LuanEvent;
 import net.schattenkind.androidLove.luan.LuanAndroid;
+import net.schattenkind.androidLove.luan.LuanThread;
 
 import org.luaj.vm2.LoadState;
 import org.luaj.vm2.LuaError;
@@ -44,6 +46,7 @@ public class LoveVM {
 	private LuanEvent mLuanEvent;
 	private LuanFilesystem mLuanFilesystem;
 	private LuanAndroid mLuanAndroid;
+	private LuanThread mLuanThread;
 	public float mfScreenW;
 	public float mfScreenH;
 	public long mfLastUpdateTick = 0;
@@ -238,6 +241,9 @@ public class LoveVM {
 		mLuanFilesystem = new LuanFilesystem(this);
 		_G.get("love").set("filesystem", mLuanFilesystem.InitLib());
 		
+		mLuanThread = new LuanThread(this);
+		_G.get("love").set("thread", mLuanThread.InitLib());
+		
 		// set love.android, so android-aware games can detect it, might be used for additional util functions later
 		mLuanAndroid = new LuanAndroid(this);
 		_G.get("love").set("android", mLuanAndroid.InitLib());
@@ -263,6 +269,14 @@ public class LoveVM {
 		Log.e(TAG, "LUA ERROR: " + e.getMessage());
 		toast("LUA ERROR: " + e.getMessage());
 		isBroken = true;
+	}
+	
+	// warn first time, then ignore
+	HashSet mSetKnownNotImplemented = new HashSet();
+	public void NotImplemented(String s) {
+		if (mSetKnownNotImplemented.contains(s)) return;
+		mSetKnownNotImplemented.add(s);
+		Log.e(TAG, "WARNING:NotImplemented: " + s);
 	}
 
 	public void draw(GL10 gl) {
