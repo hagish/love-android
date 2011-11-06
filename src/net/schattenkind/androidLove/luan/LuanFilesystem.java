@@ -38,12 +38,12 @@ public class LuanFilesystem extends LuanBase {
 			public Varargs invoke(Varargs args) {
 				try {
 					String path = args.arg1().toString();
-					Log("enumerate:"+path);
+					//~ Log("enumerate:"+path);
 					String[] children = vm.getStorage().getChildren(path);
-					if (children == null) Log("enumerate=error");
+					//~ if (children == null) Log("enumerate=error");
 					if (children == null) return LuaValue.NONE;
 					LuaTable t = LuaValue.tableOf();
-					for (int i=0;i<children.length;++i) Log("enumerate[]="+children[i]);
+					//~ for (int i=0;i<children.length;++i) Log("enumerate[]="+children[i]);
 					for (int i=0;i<children.length;++i) t.rawset(i+1,children[i]);
 					return t;
 				} catch (IOException e) {

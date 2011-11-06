@@ -62,8 +62,9 @@ public class LoveStorage {
 	
 	public FileType getFileType(String filename) {
 		File f = new File(convertFilePath(filename));
-		return f.isDirectory() ? FileType.DIR : FileType.FILE;
-		//~ return FileType.NONE;
+		if (f.isDirectory()) return FileType.DIR;
+		if (f.isFile()) return FileType.FILE;
+		return FileType.NONE;
 	}
 
 	public List<String> getLines(String filename) throws IOException {
