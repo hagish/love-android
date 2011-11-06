@@ -11,6 +11,7 @@ import net.schattenkind.androidLove.luan.LuanFilesystem;
 import net.schattenkind.androidLove.luan.LuanGraphics;
 import net.schattenkind.androidLove.luan.LuanKeyboard;
 import net.schattenkind.androidLove.luan.LuanMouse;
+import net.schattenkind.androidLove.luan.LuanJoystick;
 import net.schattenkind.androidLove.luan.LuanTimer;
 import net.schattenkind.androidLove.luan.LuanEvent;
 import net.schattenkind.androidLove.luan.LuanAndroid;
@@ -42,6 +43,7 @@ public class LoveVM {
 	private LuanAudio mLuanAudio;
 	private LuanMouse mLuanMouse;
 	private LuanKeyboard mLuanKeyboard;
+	private LuanJoystick mLuanJoystick;
 	private LuanTimer mLuanTimer;
 	private LuanEvent mLuanEvent;
 	private LuanFilesystem mLuanFilesystem;
@@ -232,6 +234,9 @@ public class LoveVM {
 		mLuanKeyboard = new LuanKeyboard(this);
 		_G.get("love").set("keyboard", mLuanKeyboard.InitLib());
 
+		mLuanJoystick = new LuanJoystick(this);
+		_G.get("love").set("joystick", mLuanJoystick.InitLib());
+		
 		mLuanTimer = new LuanTimer(this);
 		_G.get("love").set("timer", mLuanTimer.InitLib());
 		
