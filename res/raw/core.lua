@@ -23,7 +23,7 @@ if (1==2) then
 	for k,v in pairs(hold) do print("ROBLOG:test:hold["..tostring(k).."] = "..tostring(v)) end -- works fine
 	for k,v in pairs(hold) do print("ROBLOG:real:hold["..tostring(k).."] = "..tostring(v)) if type(v)=="boolean" then hold[k] = nil end end -- throws "invalid key to 'next'" on android luaj
 	print("ROBLOG: hold iter done.")
-	-- confirmed 2011-11-06
+	-- bugtracker entry already exists : http://sourceforge.net/tracker/?func=detail&aid=3430986&group_id=197627&atid=962226
 end
 
 
