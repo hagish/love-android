@@ -26,6 +26,7 @@ public class LuanAudio extends LuanBase {
 	
 	public static void Log (String s) { Log.i("LuanAudio", s); }
 	
+	
 	// 0.0f - 1.0f
 	private float volume = 1.0f;
 
@@ -43,15 +44,16 @@ public class LuanAudio extends LuanBase {
 		
 		LuaValue _G = vm.get_G();
 		
-		_G.set(sMetaName_LuanSource,LuanSource.CreateMetaTable());
-		_G.set(sMetaName_LuanDecoder,LuanDecoder.CreateMetaTable());
-		_G.set(sMetaName_LuanSoundData,LuanSoundData.CreateMetaTable());
+		_G.set(sMetaName_LuanSource,LuanSource.CreateMetaTable(this));
+		_G.set(sMetaName_LuanDecoder,LuanDecoder.CreateMetaTable(this));
+		_G.set(sMetaName_LuanSoundData,LuanSoundData.CreateMetaTable(this));
 		
 
 		// numSources = love.audio.getNumSources( )
 		t.set("getNumSources", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
+				vm.NotImplemented("love.audio.getNumSources");
 				return LuaValue.ZERO;
 			}
 		});
@@ -100,16 +102,23 @@ public class LuanAudio extends LuanBase {
 			}
 		});
 
+		
 		// source = love.audio.newSource( file, type )
 		t.set("newSource", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
+				Log("love.audio.newSource params:"+
+					((args.narg() >= 1)?getLuaTypeName(args.type(1)):"notset")+","+
+					((args.narg() >= 2)?getLuaTypeName(args.type(2)):"notset")+","+
+					((args.narg() >= 3)?getLuaTypeName(args.type(3)):"notset")+"...");
 				if (args.isstring(1)) {
+					Log("love.audio.newSource(string,..)");
 					String sFileName = args.checkjstring(1);
-					String sType = (args.narg() >= 2) ? args.checkjstring(2) : "static";
+					String sType = IsArgSet(args,2) ? args.checkjstring(2) : "static";
 					return LuaValue.userdataOf(new LuanSource(LuanAudio.this,sFileName,sType),vm.get_G().get(sMetaName_LuanSource));
 				}
-				if (args.narg() >= 2 && args.isstring(2)) {
+				if (IsArgSet(args,2) && args.isstring(2)) {
+					Log("love.audio.newSource(???,string,..)");
 					LuanDecoder decoder = (LuanDecoder)args.checkuserdata(1,LuanDecoder.class);
 					String sType = args.checkjstring(2);
 					return LuaValue.userdataOf(new LuanSource(LuanAudio.this,decoder,sType),vm.get_G().get(sMetaName_LuanSource));
@@ -124,6 +133,7 @@ public class LuanAudio extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.audio.pause");
 				return LuaValue.NONE;
 			}
 		});
@@ -133,6 +143,7 @@ public class LuanAudio extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.audio.play");
 				return LuaValue.NONE;
 			}
 		});
@@ -142,6 +153,7 @@ public class LuanAudio extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.audio.resume");
 				return LuaValue.NONE;
 			}
 		});
@@ -151,6 +163,7 @@ public class LuanAudio extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.audio.rewind");
 				return LuaValue.NONE;
 			}
 		});
@@ -208,6 +221,7 @@ public class LuanAudio extends LuanBase {
 				volume = args.arg(1).tofloat();
 
 				// TODO
+				vm.NotImplemented("love.audio.setVolume");
 
 				return LuaValue.NONE;
 			}
@@ -218,6 +232,7 @@ public class LuanAudio extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.audio.stop");
 				return LuaValue.NONE;
 			}
 		});
@@ -229,7 +244,7 @@ public class LuanAudio extends LuanBase {
 	// ***** ***** ***** ***** *****  LuanSoundData
 	
 	public static class LuanSoundData {
-		public static LuaTable CreateMetaTable () {
+		public static LuaTable CreateMetaTable (final LuanAudio audio) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
 			mt.set("__index",t);
@@ -240,7 +255,7 @@ public class LuanAudio extends LuanBase {
 	// ***** ***** ***** ***** *****  LuanDecoder
 		
 	public static class LuanDecoder {
-		public static LuaTable CreateMetaTable () {
+		public static LuaTable CreateMetaTable (final LuanAudio audio) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
 			mt.set("__index",t);
@@ -259,31 +274,31 @@ public class LuanAudio extends LuanBase {
 		
 		public LuanSource (LuanAudio audio,LuanSoundData data) { this.audio = audio; }
 			
-		public static LuaTable CreateMetaTable () {
+		public static LuaTable CreateMetaTable (final LuanAudio audio) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
 			mt.set("__index",t);
 			
-			t.set("getDirection",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
-			t.set("getPitch",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
-			t.set("getPosition",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
-			t.set("getVelocity",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
-			t.set("getVolume",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
-			t.set("isLooping",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
-			t.set("isPaused",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });		
-			t.set("isStatic",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });		
-			t.set("isStopped",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
-			t.set("pause",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
-			t.set("play",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });		
-			t.set("resume",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
-			t.set("rewind",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
-			t.set("setDirection",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });		
-			t.set("setLooping",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
-			t.set("setPitch",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });		
-			t.set("setPosition",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });		
-			t.set("setVelocity",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });		
-			t.set("setVolume",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });	
-			t.set("stop",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.NONE; } });		
+			t.set("getDirection",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"getDirection"	);	return LuaValue.NONE; } });	
+			t.set("getPitch",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"getPitch"		);	return LuaValue.NONE; } });	
+			t.set("getPosition",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"getPosition"	);	return LuaValue.NONE; } });	
+			t.set("getVelocity",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"getVelocity"	);	return LuaValue.NONE; } });	
+			t.set("getVolume",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"getVolume"		);	return LuaValue.NONE; } });	
+			t.set("isLooping",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"isLooping"		);	return LuaValue.NONE; } });	
+			t.set("isPaused",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"isPaused"		);	return LuaValue.NONE; } });		
+			t.set("isStatic",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"isStatic"		);	return LuaValue.NONE; } });		
+			t.set("isStopped",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"isStopped"		);	return LuaValue.NONE; } });	
+			t.set("pause",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"pause"			);	return LuaValue.NONE; } });	
+			t.set("play",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"play"			);	return LuaValue.NONE; } });		
+			t.set("resume",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"resume"		);	return LuaValue.NONE; } });	
+			t.set("rewind",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"rewind"		);	return LuaValue.NONE; } });	
+			t.set("setDirection",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"setDirection"	);	return LuaValue.NONE; } });		
+			t.set("setLooping",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"setLooping"	);	return LuaValue.NONE; } });	
+			t.set("setPitch",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"setPitch"		);	return LuaValue.NONE; } });		
+			t.set("setPosition",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"setPosition"	);	return LuaValue.NONE; } });		
+			t.set("setVelocity",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"setVelocity"	);	return LuaValue.NONE; } });		
+			t.set("setVolume",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"setVolume"		);	return LuaValue.NONE; } });	
+			t.set("stop",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"stop"			);	return LuaValue.NONE; } });		
 
 			/// type = Object:type()  , e.g. "Image" or audio:"Source"
 			t.set("type", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf("Source"); } });

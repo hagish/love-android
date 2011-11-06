@@ -13,7 +13,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Environment;
 
 public class LoveStorage {
 	public enum FileType {
@@ -39,10 +38,15 @@ public class LoveStorage {
 		BitmapDrawable bmd = new BitmapDrawable(activity.getResources(), input);
 		return bmd;
 	}
+	
+	public String convertFilePath (String relpath) {
+//		return Environment.getExternalStorageDirectory() + "/" + loveAppRootOnSdCard + "/" + relpath; 
+		return loveAppRootOnSdCard + "/" + relpath; 
+	}
 
 	public FileInputStream getFileStreamFromSdCard(String filename)
 			throws FileNotFoundException {
-		File f = new File(loveAppRootOnSdCard + "/" + filename);
+		File f = new File(convertFilePath(filename));
 		return new FileInputStream(f);
 	}
 
@@ -50,8 +54,16 @@ public class LoveStorage {
 		return loveAppRootOnSdCard;
 	}
 
+	/// list/enumerate directory childs
+	public String[] getChildren(String dirpath) throws FileNotFoundException {
+		File f = new File(convertFilePath(dirpath));
+		return f.list();
+	}
+	
 	public FileType getFileType(String filename) {
-		// TODO
+		File f = new File(convertFilePath(filename));
+		if (f.isDirectory()) return FileType.DIR;
+		if (f.isFile()) return FileType.FILE;
 		return FileType.NONE;
 	}
 

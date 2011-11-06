@@ -95,8 +95,10 @@ public class LuanTimer extends LuanBase {
 		lastFrameStartInSec = timeInSec;
 	}
 
+	public long getLoveClockMillis() { return SystemClock.uptimeMillis() - timerStartInMs; }
+	
 	private float getTime() {
-		return (float) (SystemClock.uptimeMillis() - timerStartInMs) / 1000.0f;
+		return (float) getLoveClockMillis() / 1000.0f;
 	}
 
 }

@@ -26,6 +26,8 @@ public class LuanFilesystem extends LuanBase {
 	public LuanFilesystem(LoveVM vm) {
 		super(vm);
 	}
+	
+	public void Log (String s) { Log.i("LuanFilesystem", s); }
 
 	public LuaTable InitLib() {
 		LuaTable t = LuaValue.tableOf();
@@ -34,8 +36,20 @@ public class LuanFilesystem extends LuanBase {
 		t.set("enumerate", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
-				// TODO
-				return LuaValue.tableOf();
+				try {
+					String path = args.arg1().toString();
+					//~ Log("enumerate:"+path);
+					String[] children = vm.getStorage().getChildren(path);
+					//~ if (children == null) Log("enumerate=error");
+					if (children == null) return LuaValue.NONE;
+					LuaTable t = LuaValue.tableOf();
+					//~ for (int i=0;i<children.length;++i) Log("enumerate[]="+children[i]);
+					for (int i=0;i<children.length;++i) t.rawset(i+1,children[i]);
+					return t;
+				} catch (IOException e) {
+					vm.handleError(e);
+					return LuaValue.NONE;
+				}
 			}
 		});
 
@@ -61,6 +75,7 @@ public class LuanFilesystem extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.filesystem.getLastModified");
 				return LuaValue.varargsOf(new LuaValue[] { LuaValue.NIL,
 						LuaValue.NIL });
 			}
@@ -166,6 +181,7 @@ public class LuanFilesystem extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.filesystem.mkdir");
 				return LuaValue.FALSE;
 			}
 		});
@@ -175,6 +191,7 @@ public class LuanFilesystem extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.filesystem.newFile");
 				return LuaValue.NIL;
 			}
 		});
@@ -184,6 +201,7 @@ public class LuanFilesystem extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.filesystem.newFileData");
 				return LuaValue.NIL;
 			}
 		});
@@ -193,6 +211,7 @@ public class LuanFilesystem extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.filesystem.read");
 				return LuaValue.NONE;
 			}
 		});
@@ -202,6 +221,7 @@ public class LuanFilesystem extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.filesystem.remove");
 				return LuaValue.FALSE;
 			}
 		});
@@ -211,6 +231,7 @@ public class LuanFilesystem extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.filesystem.setIdentity");
 				return LuaValue.NONE;
 			}
 		});
@@ -219,6 +240,8 @@ public class LuanFilesystem extends LuanBase {
 		t.set("setSource", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
+				// TODO
+				vm.NotImplemented("love.filesystem.setSource");
 				return LuaValue.NONE;
 			}
 		});
@@ -228,6 +251,7 @@ public class LuanFilesystem extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				// TODO
+				vm.NotImplemented("love.filesystem.write");
 				return LuaValue.FALSE;
 			}
 		});
