@@ -26,6 +26,8 @@ public class LuanFilesystem extends LuanBase {
 	public LuanFilesystem(LoveVM vm) {
 		super(vm);
 	}
+	
+	public void Log (String s) { Log.i("LuanFilesystem", s); }
 
 	public LuaTable InitLib() {
 		LuaTable t = LuaValue.tableOf();

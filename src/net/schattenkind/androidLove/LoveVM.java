@@ -12,6 +12,7 @@ import net.schattenkind.androidLove.luan.LuanKeyboard;
 import net.schattenkind.androidLove.luan.LuanMouse;
 import net.schattenkind.androidLove.luan.LuanTimer;
 import net.schattenkind.androidLove.luan.LuanEvent;
+import net.schattenkind.androidLove.luan.LuanAndroid;
 
 import org.luaj.vm2.LoadState;
 import org.luaj.vm2.LuaError;
@@ -42,6 +43,7 @@ public class LoveVM {
 	private LuanTimer mLuanTimer;
 	private LuanEvent mLuanEvent;
 	private LuanFilesystem mLuanFilesystem;
+	private LuanAndroid mLuanAndroid;
 	public float mfScreenW;
 	public float mfScreenH;
 	public long mfLastUpdateTick = 0;
@@ -235,6 +237,10 @@ public class LoveVM {
 
 		mLuanFilesystem = new LuanFilesystem(this);
 		_G.get("love").set("filesystem", mLuanFilesystem.InitLib());
+		
+		// set love.android, so android-aware games can detect it, might be used for additional util functions later
+		mLuanAndroid = new LuanAndroid(this);
+		_G.get("love").set("android", mLuanAndroid.InitLib());
 	}
 
 	public void load() {
