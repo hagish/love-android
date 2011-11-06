@@ -603,7 +603,7 @@ public class LuanGraphics extends LuanBase {
 				this.v1 = 1f;
 			}
 		};
-		HashMap mGlyphInfos = new HashMap();
+		public HashMap mGlyphInfos = new HashMap();
 		
 		public GlyphInfo getGlyphInfo (char c) { return (GlyphInfo)mGlyphInfos.get(c); }
 		
@@ -625,10 +625,10 @@ public class LuanGraphics extends LuanBase {
 		
 		
 		/// ttf font
-		public LuanFont (LuanGraphics g,String ttf_filename,int iSize) { g.vm.NotImplemented("font:ttf"); }
+		public LuanFont (LuanGraphics g,String ttf_filename,int iSize) { this.g = g; g.vm.NotImplemented("font:ttf"); }
 		
 		/// ttf font, default ttf_filename to verdana sans
-		public LuanFont (LuanGraphics g,int iSize) { g.vm.NotImplemented("font:ttf"); } 
+		public LuanFont (LuanGraphics g,int iSize) { this.g = g; g.vm.NotImplemented("font:ttf"); } 
 		
 		/// imageFont
 		public LuanFont (LuanGraphics g,String filename,String glyphs) throws FileNotFoundException { this(g,new LuanImage(g,filename),glyphs); }
@@ -637,6 +637,7 @@ public class LuanGraphics extends LuanBase {
 		
 		/// imageFont
 		public LuanFont (LuanGraphics g,LuanImage img,String glyphs) {
+			this.g = g;
 			/*
 			The imagefont file is an image file in a format that Löve can load. It can contain transparent pixels, so a PNG file is preferable, and it also needs to contain spacer color that will separate the different font glyphs.
 			The upper left pixel of the image file is always taken to be the spacer color. All columns that have this color as their uppermost pixel are interpreted as separators of font glyphs. The areas between these separators are interpreted as the actual font glyphs.
@@ -719,18 +720,26 @@ public class LuanGraphics extends LuanBase {
 		
 		/// NOTE: not related to c printf, rather wordwrap etc
 		public void printf		(String text, float param_x, float param_y, float limit, AlignMode align) {
+			
+			Log.i("LuanFont","printf start...");
 			g.vm.NotImplemented("love.graphics.printf");
+			Log.i("LuanFont","printf text.length...");
 			int len = text.length();
+			Log.i("LuanFont","printf prepareBuffer...");
 			prepareBuffer(len);
 			float x = param_x; // TODO: align here
 			float y = param_y;
 			// TODO: ignores word boundaries for now, lookahead ? 
 			for (int i=0;i<len;++i) {
+				Log.i("LuanFont","printf text.charAt...");
 				char c = text.charAt(i);
 				float draw_x = x;
 				float draw_y = y;
+				Log.i("LuanFont","printf isWhiteSpace...");
 				if (!isWhiteSpace(c)) {
+					Log.i("LuanFont","printf non-white getGlyphMoveX...");
 					float mx = getGlyphMoveX(c);
+					Log.i("LuanFont","printf non-white getGlyphMoveX ok");
 					if (x + mx < limit) {
 						x += mx;
 					} else {
@@ -740,16 +749,21 @@ public class LuanGraphics extends LuanBase {
 						y = draw_y;
 					}
 				} else {
+					Log.i("LuanFont","printf white getGlyphMoveX...");
 					if (c == ' ' ) x += getGlyphMoveX(c);
 					if (c == '\t') x += getGlyphMoveX(c);
+					Log.i("LuanFont","printf white getGlyphMoveX ok");
 					if (c == '\n') {
 						x = 0f; // TODO: align here
 						y += line_h*font_h;
 					}
 				}
+				Log.i("LuanFont","printf addCharToBuffer...");
 				addCharToBuffer(c,draw_x,draw_y);
+				Log.i("LuanFont","printf addCharToBuffer ok");
 			}
 			// TODO: center/right align line-wise : getLineW(substr(... till next newline))
+			Log.i("LuanFont","printf drawBuffer...");
 			drawBuffer();
 		}
 		
