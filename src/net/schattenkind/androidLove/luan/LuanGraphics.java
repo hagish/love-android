@@ -5,10 +5,12 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.HashMap;
 
 import javax.microedition.khronos.opengles.GL10;
 
 import net.schattenkind.androidLove.LoveVM;
+import net.schattenkind.androidLove.luan.LuanGraphics.LuanFont.GlyphInfo;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -37,7 +39,7 @@ public class LuanGraphics extends LuanBase {
 	
 	public void Log (String s) { Log.i(TAG, s); }
 	
-	public LuanFont mFont; // TODO: not yet used/implemented
+	public LuanFont mFont;
 	
 	public float LOVE_TODEG (float fRadians) { return 360f*fRadians/(float)Math.PI; }
 	
@@ -79,7 +81,6 @@ public class LuanGraphics extends LuanBase {
 		t.set("polygon",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"polygon"				); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("pop",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"pop"					); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("present",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"present"				); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("printf",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"printf"				); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("push",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"push"				); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("quad",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"quad"				); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("rectangle",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"rectangle"			); return LuaValue.NONE; } }); // TODO: not yet implemented
@@ -100,14 +101,36 @@ public class LuanGraphics extends LuanBase {
 		t.set("triangle",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"triangle"			); return LuaValue.NONE; } }); // TODO: not yet implemented
 		
 		
-		/// love.graphics.print(sText,x,y)
+		/// love.graphics.print( text, x, y, r, sx, sy )
+		/// Draws text on screen.
 		t.set("print", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
 				String s = args.checkjstring(1);
-				int x = args.checkint(2);
-				int y = args.checkint(3);
+				float x = (float)args.checkdouble(2);
+				float y = (float)args.checkdouble(3);
+				float r = (IsArgSet(args,4)) ? ((float)args.checkdouble(4)) : 0f;
+				float sx = (IsArgSet(args,5)) ? ((float)args.checkdouble(5)) : 1f;
+				float sy = (IsArgSet(args,6)) ? ((float)args.checkdouble(6)) : sx;
 				Log("print:"+s);
+				if (mFont != null) mFont.print(s, x, y, r, sx, sy);
+				return LuaValue.NONE;
+			}
+		});
+		
+		/// love.graphics.printf( text, x, y, limit, align )
+		/// NOTE: not related to c printf, rather wordwrap etc
+		/// Draws formatted text, with word wrap and alignment. 
+		t.set("printf", new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs args) {
+				String s = args.checkjstring(1);
+				float x = (float)args.checkdouble(2);
+				float y = (float)args.checkdouble(3);
+				float limit = (float)args.checkdouble(4);
+				String align = (IsArgSet(args,5)) ? args.checkjstring(5) : "left";
+				Log("printf:"+s);
+				if (mFont != null) mFont.printf(s,x,y,limit,LuanFont.Text2Align(align));
 				return LuaValue.NONE;
 			}
 		});
@@ -314,7 +337,7 @@ public class LuanGraphics extends LuanBase {
 				bResolutionOverrideActive = true;
 				mfResolutionOverrideX = args.checkint(1);
 				mfResolutionOverrideY = args.checkint(2);
-				// TODO: idea : if w>h and natural w<h , flip 90° ?
+				// TODO: idea : if w>h and natural w<h , flip 90ï¿½ ?
 				Log("love.graphics.setMode requested resolution = "+mfResolutionOverrideX+" x "+mfResolutionOverrideY);
 				return LuaValue.TRUE;
 			}
@@ -561,26 +584,186 @@ public class LuanGraphics extends LuanBase {
 	public static class LuanFont {
 		private LuanGraphics	g;
 		public LuanImage		img;
+		public float w_space = 0f; // TODO: set from letter 'a' ? 
+		public float font_h = 0f; // TODO: set from letter 'a' ? probably just the height of the whole image
+		public float line_h = 1f; ///< Gets the line height. This will be the value previously set by Font:setLineHeight, or 1.0 by default. 
+		
+		public class GlyphInfo {
+			public float w;
+			public float movex;
+			public float u0;
+			public float v0;
+			public float u1;
+			public float v1;
+			public GlyphInfo(float w,float movex,float u0,float u1) {
+				this.w = w;
+				this.movex = movex;
+				this.u0 = u0;
+				this.v0 = 0f;
+				this.u1 = u1;
+				this.v1 = 1f;
+			}
+		};
+		public HashMap<Character, GlyphInfo> mGlyphInfos = new HashMap<Character, GlyphInfo>();
+		
+		public GlyphInfo getGlyphInfo (char c) { return (GlyphInfo)mGlyphInfos.get(c); }
+		
+		public enum AlignMode {
+			CENTER, LEFT, RIGHT
+		};
+		
+		public static AlignMode	Text2Align (String s) {
+			if (s == "center") return AlignMode.CENTER;
+			if (s == "right") return AlignMode.RIGHT;
+			return AlignMode.LEFT;
+		}
+		
+		public static String	Align2Text (AlignMode a) {
+			if (a == AlignMode.CENTER) return "center";
+			if (a == AlignMode.RIGHT) return "right";
+			return "left";
+		}
+		
 		
 		/// ttf font
-		public LuanFont (LuanGraphics g,String ttf_filename,int iSize) {  }
+		public LuanFont (LuanGraphics g,String ttf_filename,int iSize) { this.g = g; g.vm.NotImplemented("font:ttf"); }
 		
 		/// ttf font, default ttf_filename to verdana sans
-		public LuanFont (LuanGraphics g,int iSize) {  }
+		public LuanFont (LuanGraphics g,int iSize) { this.g = g; g.vm.NotImplemented("font:ttf"); } 
 		
 		/// imageFont
 		public LuanFont (LuanGraphics g,String filename,String glyphs) throws FileNotFoundException { this(g,new LuanImage(g,filename),glyphs); }
 		
+		public static int getColAtPos (LuanImage img,int x,int y) { return 0; }
+		
 		/// imageFont
 		public LuanFont (LuanGraphics g,LuanImage img,String glyphs) {
+			this.g = g;
 			/*
-			The imagefont file is an image file in a format that Löve can load. It can contain transparent pixels, so a PNG file is preferable, and it also needs to contain spacer color that will separate the different font glyphs.
+			The imagefont file is an image file in a format that Lï¿½ve can load. It can contain transparent pixels, so a PNG file is preferable, and it also needs to contain spacer color that will separate the different font glyphs.
 			The upper left pixel of the image file is always taken to be the spacer color. All columns that have this color as their uppermost pixel are interpreted as separators of font glyphs. The areas between these separators are interpreted as the actual font glyphs.
 			The width of the separator areas affect the spacing of the font glyphs. It is possible to have more areas in the image than are required for the font in the love.graphics.newImageFont() call. The extra areas are ignored. 
 			*/
+			int col = getColAtPos(img,0,0);
+			int x = 0;
+			int imgw = (int)img.mWidth;
+			while (getColAtPos(img,x,0) == col && x < imgw) ++x; // skip first separator column
 			
+			for (int i=0;i<glyphs.length();++i) {
+				char c = glyphs.charAt(i);
+				
+				// calc the size of the glyph
+				int w = 1;
+				while (getColAtPos(img,x+w,0) != col && x+w < imgw) ++w;
+					
+				// calc the size of the separator
+				int spacing = 0;
+				while (getColAtPos(img,x+w+spacing,0) == col && x+w+spacing < imgw) ++spacing;
+				
+				// register glyph
+				mGlyphInfos.put(c,new GlyphInfo(w,w+spacing,(float)x/(float)imgw,(float)(x+w)/(float)imgw));
+				
+				x += w+spacing;
+			}
 		}
+		
+		public boolean isWhiteSpace (char c) { return c == ' ' || c == '\t' || c == '\r' || c == '\n'; }
+		public float getGlyphMoveX (char c) { 
+			if (c == ' ') return w_space;
+			if (c == '\t') return 4f*w_space;
+			GlyphInfo gi = getGlyphInfo(c); 
+			if (gi != null) return gi.movex;
+			return 0f; // TODO! GlyphInfo ? 
+		}
+		
+		
+		public void prepareBuffer (int maxglyphs) { prepareBuffer(maxglyphs,0f); }
+		public void prepareBuffer (int maxglyphs,float fRotate) {
+			// TODO: alloc/resize float buffers
+		}
+		public void addCharToBuffer(char c,float draw_x,float draw_y) { addCharToBuffer(c,draw_x,draw_y,1f,1f); }
+		public void addCharToBuffer(char c,float draw_x,float draw_y, float sx, float sy) {
+			// TODO: add geometry to float buffers if possible
+		}
+		public void drawBuffer () {
+			// TODO: send geometry to ogre
+		}
+		
+		public void print		(String text, float param_x, float param_y, float r, float sx, float sy) {
+			g.vm.NotImplemented("love.graphics.print");
 			
+			int len = text.length();
+			prepareBuffer(len,r);
+			float x = param_x;
+			float y = param_y;
+			// TODO: rotate code here rather than in prepareBuffer? x,y
+			for (int i=0;i<len;++i) {
+				char c = text.charAt(i);
+				float draw_x = x;
+				float draw_y = y;
+				if (!isWhiteSpace(c)) {
+					float mx = getGlyphMoveX(c);
+					x += mx;
+				} else {
+					if (c == ' ' ) x += getGlyphMoveX(c);
+					if (c == '\t') x += getGlyphMoveX(c);
+					if (c == '\n') {
+						x = 0f;
+						y += line_h*font_h;
+					}
+				}
+				addCharToBuffer(c,draw_x,draw_y,sx,sy);
+			}
+			drawBuffer();
+		}
+		
+		
+		
+		/// NOTE: not related to c printf, rather wordwrap etc
+		public void printf		(String text, float param_x, float param_y, float limit, AlignMode align) {
+			g.vm.NotImplemented("love.graphics.printf");
+			int len = text.length();
+			prepareBuffer(len);
+			float x = param_x; // TODO: align here
+			float y = param_y;
+			// TODO: ignores word boundaries for now, lookahead ? 
+			for (int i=0;i<len;++i) {
+				char c = text.charAt(i);
+				float draw_x = x;
+				float draw_y = y;
+				if (!isWhiteSpace(c)) {
+					float mx = getGlyphMoveX(c);
+					if (x + mx < limit) {
+						x += mx;
+					} else {
+						draw_x = 0; // TODO: align here
+						draw_y = y + line_h*font_h;
+						x = draw_x + mx;
+						y = draw_y;
+					}
+				} else {
+					if (c == ' ' ) x += getGlyphMoveX(c);
+					if (c == '\t') x += getGlyphMoveX(c);
+					if (c == '\n') {
+						x = 0f; // TODO: align here
+						y += line_h*font_h;
+					}
+				}
+				addCharToBuffer(c,draw_x,draw_y);
+			}
+			// TODO: center/right align line-wise : getLineW(substr(... till next newline))
+			drawBuffer();
+		}
+		
+		/// doesn't support newlines
+		public float getLineW (String text) {
+			float x = 0f;
+			for (int i=0;i<text.length();++i) x += getGlyphMoveX(text.charAt(i));
+			return x;
+		}
+		
+		public static LuanFont self (Varargs args) { return (LuanFont)args.checkuserdata(1,LuanFont.class); }
+		
 		public static LuaTable CreateMetaTable (final LuanGraphics g) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
@@ -588,19 +771,19 @@ public class LuanGraphics extends LuanBase {
 			
 			/// height = Font:getHeight( )
 			/// TODO:dummy
-			t.set("getHeight",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("Font:getHeight"); return LuaValue.valueOf(123); } });
+			t.set("getHeight",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("Font:getHeight"); return LuaValue.valueOf(self(args).font_h); } });
 			
 			/// height = Font:getLineHeight( )
 			/// TODO:dummy
-			t.set("getLineHeight",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("Font:getLineHeight"); return LuaValue.valueOf(123); } });
+			t.set("getLineHeight",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("Font:getLineHeight"); return LuaValue.valueOf(self(args).line_h); } });
 			
 			/// width = Font:getWidth( line )
 			/// TODO:dummy
-			t.set("getWidth", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("Font:getWidth"); return LuaValue.valueOf(123); } });
+			t.set("getWidth", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("Font:getWidth"); return LuaValue.valueOf(self(args).getLineW(args.checkjstring(2))); } });
 			
 			/// Font:setLineHeight( height )
 			/// TODO:dummy
-			t.set("setLineHeight", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("Font:setLineHeight"); return LuaValue.NONE; } });
+			t.set("setLineHeight", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("Font:setLineHeight"); self(args).line_h = (float)args.checkdouble(2); return LuaValue.NONE; } });
 			
 			/// Font:getWrap(text, width)
 			/// TODO:dummy
@@ -649,7 +832,7 @@ public class LuanGraphics extends LuanBase {
 			this.sw = sw;
 			this.sh = sh;
 			vb_Tex = LuanCreateBuffer(4*2);
-			g.Log("LuanQuad request="+x+","+y+"  "+ w+","+h+"  "+ sw+","+sh);
+			//~ g.Log("LuanQuad request="+x+","+y+"  "+ w+","+h+"  "+ sw+","+sh);
 			setViewport(x,y,w,h);
 		}
 		
@@ -664,7 +847,7 @@ public class LuanGraphics extends LuanBase {
 			//~ float[]		spriteTexFloats = { u0,v1, u1,v1, u0,v0, u1,v0 }; // cloud test ok ? my
 			float[]		spriteTexFloats = { u0,v0, u1,v0, u0,v1, u1,v1 };  // 2011-11-04 direct coord system test
 			//~ g.Log("LuanQuad texcoords="+u0+","+v1+"  "+ u1+","+v1+"  "+ u0+","+v0+"  "+ u1+","+v0);
-			g.Log("LuanQuad texcoords="+u0+","+v0+"  "+ u1+","+v0+"  "+ u0+","+v1+"  "+ u1+","+v1);
+			//~ g.Log("LuanQuad texcoords="+u0+","+v0+"  "+ u1+","+v0+"  "+ u0+","+v1+"  "+ u1+","+v1);
 			LuanFillBuffer(vb_Tex,spriteTexFloats); // assuming the sprite thing is always the full texture and not a subthing
 		}
 		
