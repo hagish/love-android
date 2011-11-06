@@ -1,5 +1,34 @@
 -- called after setting up the java part of the love api
 
+
+-- luaj bug test
+if (1==2) then
+	-- from love2d game Stealth2D(git) TLbind.lua
+	local hold = {}
+	hold["release"			] = {}
+	hold["controlPressed"	] = function () end
+	hold["escape"			] = false
+	hold["up"				] = false
+	hold["down"				] = false
+	hold["vert"				] = 0
+	hold["left"				] = false
+	hold["right"			] = false
+	hold["horiz"			] = 0
+	hold["tap"				] = {}
+	hold["release"			] = {}
+	hold["controlPressed"	] = function () end
+	hold["escape"			] = false
+	
+	print("ROBLOG: luaj-array-bug-test "..tostring(hold))
+	for k,v in pairs(hold) do print("ROBLOG:test:hold["..tostring(k).."] = "..tostring(v)) end -- works fine
+	for k,v in pairs(hold) do print("ROBLOG:real:hold["..tostring(k).."] = "..tostring(v)) if type(v)=="boolean" then hold[k] = nil end end -- throws "invalid key to 'next'" on android luaj
+	print("ROBLOG: hold iter done.")
+	-- confirmed 2011-11-06
+end
+
+
+
+
 function love.draw() end
 function love.focus() end
 function love.joystickpressed() end
