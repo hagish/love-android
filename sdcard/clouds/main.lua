@@ -29,6 +29,12 @@ function love.load()
 	
 	love.audio.play(music, 0)
 	
+	-- love-android font test 
+	fontimg = love.graphics.newImage("imgfont.png")
+	fontimg:setFilter("nearest","nearest")
+	imgfont = love.graphics.newImageFont(fontimg," abcdefghijklmnopqrstuvwxyz0123456789.!'-:·")
+	imgfont:setLineHeight(2)
+	love.graphics.setFont(imgfont)
 end
 
 function love.update(dt)
@@ -92,6 +98,7 @@ function love_android_test_disable_orig () return 2 == 1 end
 -- ***** ***** ***** ***** ***** end love-android test stuff 
 
 function love.draw()
+	love.graphics.print("hallo welt!",10,10)
 	love_android_test_draw()
 	if (love_android_test_disable_orig()) then return end
 
