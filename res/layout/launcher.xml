@@ -11,18 +11,10 @@
         android:layout_height="wrap_content"
         android:src="@drawable/launcher_logo" />
 
-    <LinearLayout
+    <ListView
         android:id="@+id/gameList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/exampleButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Button" />
+        android:layout_height="wrap_content" >
+    </ListView>
 
 </LinearLayout>

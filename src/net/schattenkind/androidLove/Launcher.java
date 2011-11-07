@@ -1,20 +1,25 @@
 package net.schattenkind.androidLove;
 
 import java.io.File;
+import java.util.LinkedList;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 public class Launcher extends Activity {
 	private static final String loveRootOnSdCard = "/love/";
 	public static String launchMeGameName;
 	public static String launchMeGamePath;
+
+	private LinkedList<String> gameListName = new LinkedList<String>();
+	private LinkedList<String> gameListPath = new LinkedList<String>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -23,9 +28,18 @@ public class Launcher extends Activity {
 
 		populateGameList();
 
-		// hide template button
-		Button exampleButton = (Button) findViewById(R.id.exampleButton);
-		exampleButton.setVisibility(View.GONE);
+		ListView gameListView = (ListView) this.findViewById(R.id.gameList);
+		gameListView.setAdapter(new ArrayAdapter<String>(this,
+				android.R.layout.simple_list_item_1, gameListName));
+
+		gameListView.setTextFilterEnabled(true);
+		gameListView.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				
+				launchGame(gameListName.get(position), gameListPath.get(position));
+			}
+		});
 	}
 
 	private void populateGameList() {
@@ -47,28 +61,13 @@ public class Launcher extends Activity {
 		if (main.isFile()) {
 			// TODO read gamename from conf.lua
 			String name = path.getPath();
-			addGameStartButton(name, path.getPath());
+			addGameToList(name, path.getPath());
 		}
 	}
 
-	private void addGameStartButton(final String name, final String path) {
-		LinearLayout gameList = (LinearLayout) findViewById(R.id.gameList);
-
-		Button exampleButton = (Button) findViewById(R.id.exampleButton);
-
-		Button gameStartButton = new Button(getApplicationContext());
-		gameStartButton.setLayoutParams(exampleButton.getLayoutParams());
-
-		gameStartButton.setText(name);
-
-		gameStartButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				launchGame(name, path);
-			}
-		});
-
-		gameList.addView(gameStartButton);
+	private void addGameToList(final String name, final String path) {
+		gameListName.add(name);
+		gameListPath.add(path);
 	}
 
 	private void launchGame(String name, String path) {
