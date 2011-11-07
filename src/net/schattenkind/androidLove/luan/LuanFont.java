@@ -31,6 +31,7 @@ public class LuanFont {
 	public float font_h = 0f; // TODO: set from letter 'a' ? probably just the height of the whole image
 	public float line_h = 1f; ///< Gets the line height. This will be the value previously set by Font:setLineHeight, or 1.0 by default. 
 	
+	
 	public class GlyphInfo {
 		public float w;
 		public float movex;
@@ -80,6 +81,7 @@ public class LuanFont {
 	/// imageFont
 	public LuanFont (LuanGraphics g,LuanImage img,String glyphs) {
 		this.g = g;
+		this.img = img;
 		/*
 		The imagefont file is an image file in a format that Löve can load. It can contain transparent pixels, so a PNG file is preferable, and it also needs to contain spacer color that will separate the different font glyphs.
 		The upper left pixel of the image file is always taken to be the spacer color. All columns that have this color as their uppermost pixel are interpreted as separators of font glyphs. The areas between these separators are interpreted as the actual font glyphs.
@@ -120,16 +122,67 @@ public class LuanFont {
 	}
 	
 	
+	// render buffer 
+	
+	private FloatBuffer	mVB_Pos;
+	private FloatBuffer	mVB_Tex;
+	int					mBufferVertices;
+	
 	public void prepareBuffer (int maxglyphs) { prepareBuffer(maxglyphs,0f); }
 	public void prepareBuffer (int maxglyphs,float fRotate) {
-		// TODO: alloc/resize float buffers
+		// alloc/resize float buffers
+		mVB_Pos = LuanGraphics.LuanCreateBuffer(maxglyphs*6*2); // TODO: memleak?  reuse/clear existing possible ? 
+		mVB_Tex = LuanGraphics.LuanCreateBuffer(maxglyphs*6*2);
+		mBufferVertices = 0;
 	}
 	public void addCharToBuffer(char c,float draw_x,float draw_y) { addCharToBuffer(c,draw_x,draw_y,1f,1f); }
 	public void addCharToBuffer(char c,float draw_x,float draw_y, float sx, float sy) {
-		// TODO: add geometry to float buffers if possible
+		GlyphInfo gi = getGlyphInfo(c);
+		if (gi == null) return;
+		if (mVB_Pos == null) { Log.i("LuanFont","addCharToBuffer:mVB_Pos = null"); return; }
+		if (mVB_Tex == null) { Log.i("LuanFont","addCharToBuffer:mVB_Tex = null"); return; }
+			
+		// add geometry to float buffers if possible
+		
+		float ax = draw_x;
+		float ay = draw_y;
+		float vx_x = gi.w*sx;
+		float vx_y = 0; // todo : rotate ?
+		float vy_x = 0; // todo : rotate ?
+		float vy_y = font_h*sy;
+		
+		mBufferVertices += 6;
+		
+		// triangle1  lt-rt-lb
+		mVB_Tex.put(gi.u0); mVB_Pos.put(ax);
+		mVB_Tex.put(gi.v0); mVB_Pos.put(ay);
+		mVB_Tex.put(gi.u1); mVB_Pos.put(ax + vx_x);
+		mVB_Tex.put(gi.v0); mVB_Pos.put(ay + vx_y);
+		mVB_Tex.put(gi.u0); mVB_Pos.put(ax + vy_x);
+		mVB_Tex.put(gi.v1); mVB_Pos.put(ay + vy_y);
+		
+		// triangle2 lb-rt-rb
+		mVB_Tex.put(gi.u0); mVB_Pos.put(ax + vy_x);
+		mVB_Tex.put(gi.v1); mVB_Pos.put(ay + vy_y);
+		mVB_Tex.put(gi.u1); mVB_Pos.put(ax + vx_x);
+		mVB_Tex.put(gi.v0); mVB_Pos.put(ay + vx_y);
+		mVB_Tex.put(gi.u1); mVB_Pos.put(ax + vx_x + vy_x);
+		mVB_Tex.put(gi.v1); mVB_Pos.put(ay + vx_y + vy_y);
+		
 	}
 	public void drawBuffer () {
+		if (mVB_Pos == null) { Log.i("LuanFont","drawBuffer:mVB_Pos = null"); return; }
+		if (mVB_Tex == null) { Log.i("LuanFont","drawBuffer:mVB_Tex = null"); return; }
+		if (g == null) { Log.i("LuanFont","drawBuffer:g = null"); return; }
+		GL10 gl = g.getGL();
+		if (gl == null) { Log.i("LuanFont","drawBuffer:gl = null"); return; }
+		if (img == null) { Log.i("LuanFont","drawBuffer:img = null"); return; }
 		// TODO: send geometry to ogre
+		mVB_Pos.position(0); // set the buffer to read the first coordinate
+		mVB_Tex.position(0); // set the buffer to read the first coordinate
+		g.setVertexBuffersToCustom(mVB_Pos,mVB_Tex);
+		gl.glBindTexture(GL10.GL_TEXTURE_2D, img.GetTextureID());
+		gl.glDrawArrays(GL10.GL_TRIANGLES, 0, mBufferVertices);
 	}
 	
 	public void print		(String text, float param_x, float param_y, float r, float sx, float sy) {

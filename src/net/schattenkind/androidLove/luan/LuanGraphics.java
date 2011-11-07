@@ -115,7 +115,7 @@ public class LuanGraphics extends LuanBase {
 				float r = (IsArgSet(args,4)) ? ((float)args.checkdouble(4)) : 0f;
 				float sx = (IsArgSet(args,5)) ? ((float)args.checkdouble(5)) : 1f;
 				float sy = (IsArgSet(args,6)) ? ((float)args.checkdouble(6)) : sx;
-				Log("print:"+s);
+				//~ Log("print:"+s);
 				if (mFont != null) mFont.print(s, x, y, r, sx, sy);
 				return LuaValue.NONE;
 			}
@@ -449,6 +449,20 @@ public class LuanGraphics extends LuanBase {
 		}
 	}
 	
+	public boolean bVertexBuffersSprite = false;
+	public void setVertexBuffersToSprite () {
+		if (bVertexBuffersSprite) return;
+		bVertexBuffersSprite = true;
+		// Point to our vertex buffer
+		gl.glVertexPointer(2, GL10.GL_FLOAT, 0, spriteVB_Pos);
+		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, spriteVB_Tex);
+	}
+	public void setVertexBuffersToCustom (FloatBuffer pos,FloatBuffer tex) {
+		bVertexBuffersSprite = false;
+		gl.glVertexPointer(2, GL10.GL_FLOAT, 0, pos);
+		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, tex);
+	}
+	
 	public void notifyFrameStart		(GL10 gl) {
 		this.gl = gl;
 		
@@ -471,10 +485,9 @@ public class LuanGraphics extends LuanBase {
 		//~ gl.glColor4f(1f, 1f, 1f, 1f); // todo : love global color ?
 			 
 		
-		// Point to our vertex buffer
-		gl.glVertexPointer(2, GL10.GL_FLOAT, 0, spriteVB_Pos);
-		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, spriteVB_Tex);
 		//~ Log("notifyFrameStart");
+		bVertexBuffersSprite = false;
+		setVertexBuffersToSprite();
 		
 		// init pixel coordinatesystem
 		resetTransformMatrix(gl);
@@ -570,7 +583,7 @@ public class LuanGraphics extends LuanBase {
 		
 		
 		LuanFillBuffer(spriteVB_Pos,spritePosFloats);
-	
+		setVertexBuffersToSprite();
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, iTextureID);
 		gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 	}
