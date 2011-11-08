@@ -40,8 +40,6 @@ public class LoveVM {
 
 	public void RobLog (String s) { Log.i("LoveVMRobLog", s.toString()); }
 	
-	public InputStream getResourceInputStream(int id) { return attachedToThisActivity.getResources().openRawResource(id); }
-	
 	private LuanGraphics mLuanGraphics;
 	private LuanAudio mLuanAudio;
 	private LuanMouse mLuanMouse;
@@ -73,6 +71,8 @@ public class LoveVM {
 		this.attachedToThisActivity = attachedToThisActivity;
 		this.storage = storage;
 	}
+	
+	public LuanGraphics getLuanGraphics() { return mLuanGraphics; }
 	
 	public int convertMouseX(int mouseX,int mouseY) { return mLuanGraphics.convertMouseX(mouseX,mouseY); }
 	public int convertMouseY(int mouseX,int mouseY) { return mLuanGraphics.convertMouseY(mouseX,mouseY); }
@@ -344,9 +344,13 @@ public class LoveVM {
 		return mLuanKeyboard.feedKey(keyCode, isDown);
 	}
 
+	public Activity getActivity() {
+		return attachedToThisActivity;
+	}
 	public Resources getResources() {
 		return attachedToThisActivity.getResources();
 	}
+	public InputStream getResourceInputStream(int id) { return attachedToThisActivity.getResources().openRawResource(id); }
 
 	public LoveStorage getStorage() {
 		return storage;

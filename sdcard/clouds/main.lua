@@ -30,11 +30,26 @@ function love.load()
 	love.audio.play(music, 0)
 	
 	-- love-android font test 
-	fontimg = love.graphics.newImage("imgfont.png")
-	fontimg:setFilter("nearest","nearest")
-	imgfont = love.graphics.newImageFont(fontimg," abcdefghijklmnopqrstuvwxyz0123456789.!'-:·")
-	imgfont:setLineHeight(2)
-	love.graphics.setFont(imgfont)
+	--~ fontimg = love.graphics.newImage("imgfont.png")
+	--~ fontimg:setFilter("nearest","nearest")
+	--~ imgfont = love.graphics.newImageFont(fontimg," abcdefghijklmnopqrstuvwxyz0123456789.!'-:·")
+	--~ imgfont:setLineHeight(2)
+	--~ love.graphics.setFont(imgfont)
+	
+	if (love.android and 1 == 2) then
+		--~ local sResName = "raw/imgfont.png"
+		local sResName = "raw/imgfont"
+		local sPackName = love.android.getPackageName() -- net.schattenkind.androidLove
+		local sResName2 = love.android.getResourceName(0x7f040001) --  net.schattenkind.androidLove:raw/imgfont
+
+		print("love.android",sResName,sPackName,sResName2)
+		--~ local iResID = 0x7f040001
+		local iResID = love.android.getResourceID(sResName,nil,sPackName)
+		local iResID2 = love.android.getResourceID("net.schattenkind.androidLove:raw/imgfont")
+		gAndroidTestImg = (iResID and iResID ~= 0) and love.android.newResourceImage(iResID) -- 0x7f040001 ?
+		print("love.android",iResID,gAndroidTestImg)
+		print("love.android iResID2=",iResID2)
+	end
 end
 
 function love.update(dt)
@@ -99,6 +114,8 @@ function love_android_test_disable_orig () return 2 == 1 end
 
 function love.draw()
 	love.graphics.print("hallo welt!",10,10)
+	--~ if (gAndroidTestImg) then love.graphics.draw(gAndroidTestImg,0,0) end
+	
 	love_android_test_draw()
 	if (love_android_test_disable_orig()) then return end
 

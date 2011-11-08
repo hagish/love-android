@@ -30,9 +30,9 @@ public class LuanGraphics extends LuanBase {
 	protected static final String TAG = "LoveGraphics";
 	
 	public LuanGraphics (LoveVM vm) { super(vm); }
-	static final String sMetaName_LuanImage = "__MetaLuanImage";
-	static final String sMetaName_LuanQuad = "__MetaLuanQuad";
-	static final String sMetaName_LuanFont = "__MetaLuanFont";
+	public static final String sMetaName_LuanImage = "__MetaLuanImage";
+	public static final String sMetaName_LuanQuad = "__MetaLuanQuad";
+	public static final String sMetaName_LuanFont = "__MetaLuanFont";
 	
 	public boolean bResolutionOverrideActive = false;
 	public int mfResolutionOverrideX;
