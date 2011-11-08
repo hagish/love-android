@@ -132,7 +132,7 @@ public class LuanGraphics extends LuanBase {
 				float y = (float)args.checkdouble(3);
 				float limit = (float)args.checkdouble(4);
 				String align = (IsArgSet(args,5)) ? args.checkjstring(5) : "left";
-				Log("printf:"+s);
+				//~ Log("printf:"+align+":"+s);
 				if (mFont != null) mFont.printf(s,x,y,limit,LuanFont.Text2Align(align));
 				return LuaValue.NONE;
 			}

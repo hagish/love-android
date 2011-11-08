@@ -38,10 +38,10 @@ public class LuanImage extends LuanDrawable {
 	public static LuanImage self (Varargs args) { return (LuanImage)args.checkuserdata(1,LuanImage.class); }
 	
 	public static String	Filter2Str	(int	a) { return (a == GL10.GL_LINEAR)?"linear":"nearest"; }
-	public static int		Str2Filter	(String a) { return (a == "linear")?GL10.GL_LINEAR:GL10.GL_NEAREST; }
+	public static int		Str2Filter	(String a) { return (a.equals("linear"))?GL10.GL_LINEAR:GL10.GL_NEAREST; }
 	
 	public static String	Wrap2Str	(int	a) { return (a == GL10.GL_CLAMP_TO_EDGE)?"clamp":"repeat"; }
-	public static int		Str2Wrap	(String a) { return (a == "clamp")?GL10.GL_CLAMP_TO_EDGE:GL10.GL_REPEAT; }
+	public static int		Str2Wrap	(String a) { return (a.equals("clamp"))?GL10.GL_CLAMP_TO_EDGE:GL10.GL_REPEAT; }
 	
 	public int getColAtPos (int x,int y) { return (mBitmap != null) ? mBitmap.getPixel(x,y) : 0; }
 	
