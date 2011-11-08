@@ -48,6 +48,12 @@ public class LuanGraphics extends LuanBase {
 	
 	public LuaTable InitLib () {
 		InitSpriteBuffer();
+		try {
+			mFont = new LuanFont(this);
+		} catch (Exception e) {
+			Log("warning, failed to load default font in LuanGraphics:InitLib");
+			//~ vm.handleError(e);
+		}
 		LuaTable t = LuaValue.tableOf();
 		LuaValue _G = vm.get_G();
 		
@@ -187,7 +193,12 @@ public class LuanGraphics extends LuanBase {
 					return LuaValue.NONE;
 				} else {
 					int iSize = (IsArgSet(args,1)) ? args.checkint(1) : 12;
-					return LuaValue.userdataOf(new LuanFont(LuanGraphics.this,iSize),vm.get_G().get(sMetaName_LuanFont));
+					try {
+						return LuaValue.userdataOf(new LuanFont(LuanGraphics.this,iSize),vm.get_G().get(sMetaName_LuanFont));
+					} catch (Exception e) {
+						vm.handleError(e);
+					}
+					return LuaValue.NONE;
 				}
 			}
 		});

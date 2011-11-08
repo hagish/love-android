@@ -2,6 +2,7 @@ package net.schattenkind.androidLove.luan;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import javax.microedition.khronos.opengles.GL10;
 
 import net.schattenkind.androidLove.LoveVM;
+import net.schattenkind.androidLove.R;
 import net.schattenkind.androidLove.luan.LuanGraphics;
 import net.schattenkind.androidLove.luan.LuanImage;
 
@@ -20,6 +22,9 @@ import org.luaj.vm2.lib.VarArgFunction;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
 import android.opengl.GLUtils;
 import android.util.Log;
 
@@ -30,6 +35,7 @@ public class LuanFont {
 	public float w_space = 0f; // TODO: set from letter 'a' ? 
 	public float font_h = 0f; // TODO: set from letter 'a' ? probably just the height of the whole image
 	public float line_h = 1f; ///< Gets the line height. This will be the value previously set by Font:setLineHeight, or 1.0 by default. 
+	public boolean bForceLowerCase = false;
 	
 	public enum AlignMode {
 		CENTER, LEFT, RIGHT
@@ -70,10 +76,13 @@ public class LuanFont {
 	
 	
 	/// ttf font
-	public LuanFont (LuanGraphics g,String ttf_filename,int iSize) { this.g = g; g.vm.NotImplemented("font:ttf"); }
+	public LuanFont (LuanGraphics g,String ttf_filename,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf"); }
 	
 	/// ttf font, default ttf_filename to verdana sans
-	public LuanFont (LuanGraphics g,int iSize) { this.g = g; g.vm.NotImplemented("font:ttf"); } 
+	public LuanFont (LuanGraphics g,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf with size"); } 
+	
+	/// fall back to image font in resources
+	public LuanFont (LuanGraphics g) throws IOException { this(g,new LuanImage(g,R.raw.imgfont)," abcdefghijklmnopqrstuvwxyz0123456789.!'-:Â·"); this.g = g; bForceLowerCase = true; } 
 	
 	/// imageFont
 	public LuanFont (LuanGraphics g,String filename,String glyphs) throws FileNotFoundException { this(g,new LuanImage(g,filename),glyphs); }
@@ -83,7 +92,7 @@ public class LuanFont {
 		this.g = g;
 		this.img = img;
 		/*
-		The imagefont file is an image file in a format that Löve can load. It can contain transparent pixels, so a PNG file is preferable, and it also needs to contain spacer color that will separate the different font glyphs.
+		The imagefont file is an image file in a format that Lï¿½ve can load. It can contain transparent pixels, so a PNG file is preferable, and it also needs to contain spacer color that will separate the different font glyphs.
 		The upper left pixel of the image file is always taken to be the spacer color. All columns that have this color as their uppermost pixel are interpreted as separators of font glyphs. The areas between these separators are interpreted as the actual font glyphs.
 		The width of the separator areas affect the spacing of the font glyphs. It is possible to have more areas in the image than are required for the font in the love.graphics.newImageFont() call. The extra areas are ignored. 
 		*/
@@ -192,6 +201,7 @@ public class LuanFont {
 	
 	public void print		(String text, float param_x, float param_y, float r, float sx, float sy) {
 		if (r != 0f) g.vm.NotImplemented("love.graphics.print !rotation!");
+		if (bForceLowerCase) text = text.toLowerCase();
 		
 		int len = text.length();
 		prepareBuffer(len,r);
@@ -222,6 +232,7 @@ public class LuanFont {
 	
 	/// NOTE: not related to c printf, rather wordwrap etc
 	public void printf		(String text, float param_x, float param_y, float limit, AlignMode align) {
+		if (bForceLowerCase) text = text.toLowerCase();
 		int len = text.length();
 		prepareBuffer(len);
 		float x = param_x; // TODO: align here

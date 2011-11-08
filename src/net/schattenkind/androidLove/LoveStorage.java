@@ -31,14 +31,6 @@ public class LoveStorage {
 	public void setAppRootOnSdCard(String loveAppRootOnSdCard) {
 		this.loveAppRootOnSdCard = loveAppRootOnSdCard;
 	}
-
-	public BitmapDrawable loadBitmapDrawable(String file)
-			throws FileNotFoundException {
-		InputStream input = getFileStreamFromSdCard(file);
-		// ressources needed for "density" / dpi etc ? no idea
-		BitmapDrawable bmd = new BitmapDrawable(activity.getResources(), input);
-		return bmd;
-	}
 	
 	public String convertFilePath (String relpath) {
 		return Environment.getExternalStorageDirectory() + "/" + loveAppRootOnSdCard + "/" + relpath; 
