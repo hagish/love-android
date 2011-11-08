@@ -19,7 +19,7 @@ public class LoveAndroid extends Activity {
 	//~ private final static String		kGamePath = "/mnt/sdcard/love/clouds/";
 	//~ private final static String		kGamePath = "/mnt/sdcard/love/iyfct/";
 	//~ private final static String		kGamePath = "/mnt/sdcard/love/love_for_zombies/";
-	private final static String		kGamePath = "/mnt/sdcard/love/Stealth2D/";
+	private final static String		kGamePath = "/mnt/sdcard/love/test/";
 
 	@SuppressWarnings("unused")
 	private MouseHandler mouseHandler;
