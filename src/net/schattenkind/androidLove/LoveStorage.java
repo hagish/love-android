@@ -6,13 +6,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 
 import android.app.Activity;
-import android.graphics.drawable.BitmapDrawable;
 
 public class LoveStorage {
 	public enum FileType {
@@ -29,14 +27,6 @@ public class LoveStorage {
 
 	public void setAppRootOnSdCard(String loveAppRootOnSdCard) {
 		this.loveAppRootOnSdCard = loveAppRootOnSdCard;
-	}
-
-	public BitmapDrawable loadBitmapDrawable(String file)
-			throws FileNotFoundException {
-		InputStream input = getFileStreamFromSdCard(file);
-		// ressources needed for "density" / dpi etc ? no idea
-		BitmapDrawable bmd = new BitmapDrawable(activity.getResources(), input);
-		return bmd;
 	}
 	
 	public String convertFilePath (String relpath) {

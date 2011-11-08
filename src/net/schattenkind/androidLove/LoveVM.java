@@ -2,6 +2,7 @@ package net.schattenkind.androidLove;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -38,6 +39,8 @@ public class LoveVM {
 	private LuaValue _G;
 
 	public void RobLog (String s) { Log.i("LoveVMRobLog", s.toString()); }
+	
+	public InputStream getResourceInputStream(int id) { return attachedToThisActivity.getResources().openRawResource(id); }
 	
 	private LuanGraphics mLuanGraphics;
 	private LuanAudio mLuanAudio;
@@ -144,7 +147,7 @@ public class LoveVM {
 	private void loadFileFromRes(int id, String filename) {
 		try {
 			LoadState.load(
-					attachedToThisActivity.getResources().openRawResource(id),
+					getResourceInputStream(id),
 					filename, _G).call();
 		} catch (NotFoundException e) {
 			Log.e(TAG, e.getMessage());

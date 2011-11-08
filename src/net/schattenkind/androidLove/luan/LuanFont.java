@@ -1,10 +1,13 @@
 package net.schattenkind.androidLove.luan;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 
 import javax.microedition.khronos.opengles.GL10;
+
+import net.schattenkind.androidLove.R;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -20,7 +23,11 @@ public class LuanFont {
 	public float w_space = 0f; // TODO: set from letter 'a' ? 
 	public float font_h = 0f; // TODO: set from letter 'a' ? probably just the height of the whole image
 	public float line_h = 1f; ///< Gets the line height. This will be the value previously set by Font:setLineHeight, or 1.0 by default. 
+	public boolean bForceLowerCase = false;
 	
+	public enum AlignMode {
+		CENTER, LEFT, RIGHT
+	};
 	
 	public class GlyphInfo {
 		public float w;
@@ -42,13 +49,10 @@ public class LuanFont {
 	
 	public GlyphInfo getGlyphInfo (char c) { return (GlyphInfo)mGlyphInfos.get(c); }
 	
-	public enum AlignMode {
-		CENTER, LEFT, RIGHT
-	};
 	
 	public static AlignMode	Text2Align (String s) {
-		if (s == "center") return AlignMode.CENTER;
-		if (s == "right") return AlignMode.RIGHT;
+		if (s.equals("center")) return AlignMode.CENTER;
+		if (s.equals("right")) return AlignMode.RIGHT;
 		return AlignMode.LEFT;
 	}
 	
@@ -60,10 +64,13 @@ public class LuanFont {
 	
 	
 	/// ttf font
-	public LuanFont (LuanGraphics g,String ttf_filename,int iSize) { this.g = g; g.vm.NotImplemented("font:ttf"); }
+	public LuanFont (LuanGraphics g,String ttf_filename,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf"); }
 	
 	/// ttf font, default ttf_filename to verdana sans
-	public LuanFont (LuanGraphics g,int iSize) { this.g = g; g.vm.NotImplemented("font:ttf"); } 
+	public LuanFont (LuanGraphics g,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf with size"); } 
+	
+	/// fall back to image font in resources
+	public LuanFont (LuanGraphics g) throws IOException { this(g,new LuanImage(g, R.raw.imgfont)," abcdefghijklmnopqrstuvwxyz0123456789.!'-:·"); this.g = g; bForceLowerCase = true; } 
 	
 	/// imageFont
 	public LuanFont (LuanGraphics g,String filename,String glyphs) throws FileNotFoundException { this(g,new LuanImage(g,filename),glyphs); }
@@ -81,6 +88,7 @@ public class LuanFont {
 		int x = 0;
 		int imgw = (int)img.mWidth;
 		font_h = (int)img.mHeight;
+		w_space = 0f;
 		while (x < imgw && img.getColAtPos(x,0) == col) ++x; // skip first separator column
 		
 		for (int i=0;i<glyphs.length();++i) {
@@ -98,8 +106,12 @@ public class LuanFont {
 			//~ Log.i("LuanFont","glyph:"+c+":x="+x+",w="+w+",spacing="+spacing);
 			mGlyphInfos.put(c,new GlyphInfo(w,w+spacing,(float)x/(float)imgw,(float)(x+w)/(float)imgw));
 			
+			if (w_space == 0f) w_space = w;
 			x += w+spacing;
 		}
+		
+		GlyphInfo gi = getGlyphInfo(' '); 
+		if (gi != null) w_space = gi.movex;
 	}
 	
 	public boolean isWhiteSpace (char c) { return c == ' ' || c == '\t' || c == '\r' || c == '\n'; }
@@ -176,7 +188,8 @@ public class LuanFont {
 	}
 	
 	public void print		(String text, float param_x, float param_y, float r, float sx, float sy) {
-		g.vm.NotImplemented("love.graphics.print");
+		if (r != 0f) g.vm.NotImplemented("love.graphics.print !rotation!");
+		if (bForceLowerCase) text = text.toLowerCase();
 		
 		int len = text.length();
 		prepareBuffer(len,r);
@@ -194,7 +207,7 @@ public class LuanFont {
 				if (c == ' ' ) x += getGlyphMoveX(c);
 				if (c == '\t') x += getGlyphMoveX(c);
 				if (c == '\n') {
-					x = 0f;
+					x = param_x;
 					y += line_h*font_h;
 				}
 			}
@@ -207,32 +220,47 @@ public class LuanFont {
 	
 	/// NOTE: not related to c printf, rather wordwrap etc
 	public void printf		(String text, float param_x, float param_y, float limit, AlignMode align) {
-		g.vm.NotImplemented("love.graphics.printf");
+		if (bForceLowerCase) text = text.toLowerCase();
 		int len = text.length();
 		prepareBuffer(len);
 		float x = param_x; // TODO: align here
 		float y = param_y;
-		// TODO: ignores word boundaries for now, lookahead ? 
+		boolean bAlignRecalcNeeded = true;
+		// TODO: wrap ignores word boundaries for now, lookahead ? 
+		//~ Log.i("LuanFont","printf:"+param_x+","+param_y+","+limit+","+Align2Text(align)+" :"+text); 
 		for (int i=0;i<len;++i) {
 			char c = text.charAt(i);
+			if (bAlignRecalcNeeded) {
+				bAlignRecalcNeeded = false;
+				if (align != AlignMode.LEFT) {
+					float linew = getLineW((i > 0) ? text : text.substring(i)); // getLineW automatically stops at newline
+					//~ Log.i("LuanFont","printf:["+i+"] linew="+linew+","+Align2Text(align)+" :"+text); 
+					if (linew > limit) linew = limit; // small inaccuracy here, but shouldn't matter much
+					if (align == AlignMode.RIGHT) x += (limit - linew); 
+					if (align == AlignMode.CENTER) x += (limit - linew)/2f; // text is in the middle between param_x and param_x+limit
+				}
+			}
+			
 			float draw_x = x;
 			float draw_y = y;
 			if (!isWhiteSpace(c)) {
 				float mx = getGlyphMoveX(c);
-				if (x + mx < limit) {
+				if (x + mx < param_x + limit) {
 					x += mx;
 				} else {
-					draw_x = 0; // TODO: align here
+					draw_x = param_x; // TODO: align here
 					draw_y = y + line_h*font_h;
 					x = draw_x + mx;
 					y = draw_y;
+					bAlignRecalcNeeded = true;
 				}
 			} else {
 				if (c == ' ' ) x += getGlyphMoveX(c);
 				if (c == '\t') x += getGlyphMoveX(c);
 				if (c == '\n') {
-					x = 0f; // TODO: align here
+					x = param_x; // TODO: align here
 					y += line_h*font_h;
+					bAlignRecalcNeeded = true;
 				}
 			}
 			addCharToBuffer(c,draw_x,draw_y);
@@ -244,7 +272,11 @@ public class LuanFont {
 	/// doesn't support newlines
 	public float getLineW (String text) {
 		float x = 0f;
-		for (int i=0;i<text.length();++i) x += getGlyphMoveX(text.charAt(i));
+		for (int i=0;i<text.length();++i) {
+			char c = text.charAt(i);
+			x += getGlyphMoveX(c);
+			if (c == '\n') return x; // early out
+		}
 		return x;
 	}
 	
@@ -256,24 +288,21 @@ public class LuanFont {
 		mt.set("__index",t);
 		
 		/// height = Font:getHeight( )
-		/// TODO:dummy
-		t.set("getHeight",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("Font:getHeight"); return LuaValue.valueOf(self(args).font_h); } });
+		t.set("getHeight",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).font_h); } });
 		
 		/// height = Font:getLineHeight( )
-		/// TODO:dummy
-		t.set("getLineHeight",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("Font:getLineHeight"); return LuaValue.valueOf(self(args).line_h); } });
+		t.set("getLineHeight",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).line_h); } });
 		
 		/// width = Font:getWidth( line )
-		/// TODO:dummy
-		t.set("getWidth", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("Font:getWidth"); return LuaValue.valueOf(self(args).getLineW(args.checkjstring(2))); } });
+		t.set("getWidth", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).getLineW(args.checkjstring(2))); } });
 		
 		/// Font:setLineHeight( height )
-		/// TODO:dummy
-		t.set("setLineHeight", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("Font:setLineHeight"); self(args).line_h = (float)args.checkdouble(2); return LuaValue.NONE; } });
+		t.set("setLineHeight", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { self(args).line_h = (float)args.checkdouble(2); return LuaValue.NONE; } });
 		
 		/// Font:getWrap(text, width)
+		/// Returns how many lines text would be wrapped to. This function accounts for newlines correctly (i.e. '\n') 
 		/// TODO:dummy
-		t.set("getWrap", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("Font:getWrap"); return LuaValue.valueOf(123); } });
+		t.set("getWrap", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("Font:getWrap"); return LuaValue.valueOf(1); } });
 		
 		/// type = Object:type()  , e.g. "Image" or audio:"Source"
 		t.set("type", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf("Font"); } });
