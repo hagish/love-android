@@ -3,3 +3,4 @@ gen/
 downloads/luaj-2.0.2/
 adb
 eclipse
+tools/push_dir.db

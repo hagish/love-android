@@ -15,13 +15,57 @@ then
 	ADB=$ANDROID_HOME/platform-tools/adb 
 fi
 
+if [ -z "$DB" ]
+then 
+	DB="$SRC/../tools/push_dir.db"
+fi
+
+
 ######################################################
 
+function file_already_there ()
+{
+	if [ -f $DB ]
+	then
+		cat $DB | grep "$1 $2" | wc -l 
+	else
+		echo 0
+	fi
+}
+
+function sync_file ()
+{
+	echo "$1 $2 -> $3"
+	$ADB push $2 $3
+	T=`tempfile`
+	touch "$DB"
+	cat "$DB" | grep -v " $2" > $T
+	echo "$1 $2" >> $T
+	mv $T "$DB"
+}
+
+######################################################
+
+echo "to retransmit everything remove '$DB'"
 echo "using adb : $ADB"
 
 for X in `find $SRC -type f|grep -v .git`
 do
 	D=`echo $X|sed -e "s#$SRC#$DST#g"`
-	echo "$X -> $D : "
-	$ADB push $X $D
+	#~ echo "$X -> $D : "
+	#~ $ADB push $X $D
+	MD5=`md5sum $X|awk '{print $1}'`
+	C=$(file_already_there "$MD5" "$X")
+	
+	if [ "$C" -ne 1 ]
+	then
+		sync_file $MD5 $X $D
+	fi
 done
+
+echo done
+
+
+# ${workspace_loc:/love-android/tools/push_dir.sh}
+# ADB /opt/android-sdk-linux_x86/platform-tools/adb
+# SRC ${workspace_loc}/love-android/sdcard
