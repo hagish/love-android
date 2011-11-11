@@ -154,6 +154,9 @@ public class LoveVM {
 			setupCoreFunctions();
 			setupLoveFunctions();
 
+			RobLog("exec pairs_hack.lua...");
+			loadFileFromRes(R.raw.pairs_hack, "pairs_hack.lua");
+
 			RobLog("exec core.lua...");
 			loadFileFromRes(R.raw.core, "core.lua");
 

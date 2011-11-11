@@ -29,3 +29,7 @@ to write generic code that detects android, check for love.android being set, th
 ### WARNING
 * 2011-11-04 luaj 2.0.2 : it seems i found a bug, testing Stealth2D(git) i get "invalid key to 'next'" when removing entries from table during pairs-iteration, sample snippet in core.lua for testing =(
 	bugtracker entry already exists : http://sourceforge.net/tracker/?func=detail&aid=3430986&group_id=197627&atid=962226
+
+### Things not supported by luaj
+* newproxy
+* module

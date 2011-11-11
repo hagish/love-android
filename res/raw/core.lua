@@ -43,7 +43,9 @@ function love.run() end
 function love.update() end
 
 function require(file)
-	if (string.sub(file,-4) ~= ".lua") then file = file .. ".lua" end
+	if (string.sub(file,-4) == ".lua") then file = string.sub(file, 1, -5) end
+	file = string.gsub(file, "%.", "/")
+	file = file .. ".lua"
 	print("love-android require:".."'"..tostring(file).."'")
 	return love.filesystem.load(file)()
 end
