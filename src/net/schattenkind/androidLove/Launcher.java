@@ -13,7 +13,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class Launcher extends Activity {
+public class Launcher extends ActivitiyWithExitMenu {
 	private static final String loveRootOnSdCard = "/love/";
 	public static String launchMeGameName;
 	public static String launchMeGamePath;
