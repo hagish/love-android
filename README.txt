@@ -26,3 +26,18 @@ MISSING FUNCTIONALITY
 WARNING:
 2011-11-04 luaj 2.0.2 : it seems i found a bug, testing Stealth2D(git) i get "invalid key to 'next'" when removing entries from table during pairs-iteration, sample snippet in core.lua for testing =(
 	bugtracker entry already exists : http://sourceforge.net/tracker/?func=detail&aid=3430986&group_id=197627&atid=962226
+
+
+SETUP of sdk : 
+(if you want to use eclipse to compile, e.g. for standalone or to help out in this project) 
+
+in linux : 
+adjust your ~/.bashrc to set ANDROID_HOME before launching eclipse
+export ANDROID_HOME=/home/ghoul/cavern/eclipse-workspace/android-sdk-linux
+when launching eclipse, launch it from bash 
+
+you have to adjust  
+./tools/push_dir.sh:5:  SRC=/home/hagish/workspace/adt/love-android/sdcard/
+to the absolute path to this dir for automatic-copy-to-sdcard to work during development
+
+
