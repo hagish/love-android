@@ -1,4 +1,5 @@
-// android specific extensions
+// phone/android/iphone specific extensions
+// set love.phone, so android-aware games can detect it, might be used for additional util functions later
 
 package net.schattenkind.androidLove.luan;
 
@@ -20,22 +21,22 @@ import org.luaj.vm2.lib.VarArgFunction;
 
 import android.util.Log;
 
-public class LuanAndroid extends LuanBase {
+public class LuanPhone extends LuanBase {
 
-	protected static final String TAG = "LoveAndroid";
+	protected static final String TAG = "LovePhone";
 
-	public LuanAndroid(LoveVM vm) {
+	public LuanPhone(LoveVM vm) {
 		super(vm);
 	}
 	
-	public void Log (String s) { Log.i("LoveAndroid", s); }
+	public void Log (String s) { Log.i(TAG, s); }
 
 	public LuaTable InitLib() {
 		LuaTable t = LuaValue.tableOf();
 		
-		// TODO: add android specific api additions here, e.g. multi-touch event stuff, accelerometer, gravity sensor, maybe intent/running apps/network/start browser etc ?
+		// TODO: add phone/android/iphone specific api additions here, e.g. multi-touch event stuff, accelerometer, gravity sensor, maybe intent/running apps/network/start browser etc ?
 		
-		/// img = love.android.newResourceImage(int iResID)
+		/// img = love.phone.newResourceImage(int iResID)
 		/// loads an image from a resource id
 		t.set("newResourceImage", new VarArgFunction() {
 			@Override public Varargs invoke(Varargs args) {
@@ -49,11 +50,11 @@ public class LuanAndroid extends LuanBase {
 			}
 		});
 		
-		/// String 	love.android.getPackageName()
+		/// String 	love.phone.getPackageName()
 		/// Return the name of this application's package.
 		t.set("getPackageName", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(vm.getActivity().getPackageName()); } });
 		
-		/// String 	love.android.getResourceName(int iResID)
+		/// String 	love.phone.getResourceName(int iResID)
 		/// Return the full name for a given resource identifier.
 		t.set("getResourceName", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { 
 			try {
@@ -64,7 +65,7 @@ public class LuanAndroid extends LuanBase {
 			return LuaValue.NONE;
 		} });
 		
-		/// iResID = love.android.getResourceID(String name, String defType, String defPackage)
+		/// iResID = love.phone.getResourceID(String name, String defType, String defPackage)
 		/// @name 	The name of the desired resource.
 		/// @defType 	Optional default resource type to find, if "type/" is not included in the name. Can be null to require an explicit type.
 		/// @defPackage 	Optional default package to find, if "package:" is not included in the name. Can be null to require an explicit package.
