@@ -19,8 +19,6 @@ public class LuanEvent extends LuanBase {
 	public LuaTable InitLib() {
 		LuaTable t = LuaValue.tableOf();
 		
-		LuaValue _G = vm.get_G();
-
 		/// love.event.clear() 
 		/// Clears the event queue. 
 		/// TODO: not yet implemented

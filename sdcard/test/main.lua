@@ -44,9 +44,10 @@ function love.draw()
 	--~ local od = 0,0
 	local sx,sy = 2*s,1*s
 	local ox,oy = od,od
-	love.graphics.draw(gMyImg,   0,   0, t*4, sx,sy, ox,oy)
+--	love.graphics.draw(gMyImg,   0,   0, t*4, sx,sy, ox,oy)
 	love.graphics.draw(gMyImg, 200, 200, t*4, sx,sy, ox,oy)
 	love.graphics.draw(gMyImg, 480, 775, t*4, sx,sy, ox,oy)
 
+	love.graphics.setColor(255,0,0)
 	love.graphics.print("hello world", 10,10)
 end

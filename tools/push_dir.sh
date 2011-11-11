@@ -20,6 +20,13 @@ then
 	DB="$SRC/../tools/push_dir.db"
 fi
 
+if [ -f "$ADB" ]
+then
+	echo "using adb : $ADB"
+else
+	echo "could not file ADB, please set ANDROID_HOME environment variable to your android sdk"
+	exit 1
+fi
 
 ######################################################
 
@@ -47,7 +54,6 @@ function sync_file ()
 ######################################################
 
 echo "to retransmit everything remove '$DB'"
-echo "using adb : $ADB"
 
 for X in `find $SRC -type f|grep -v .git`
 do

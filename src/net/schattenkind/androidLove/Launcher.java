@@ -36,8 +36,9 @@ public class Launcher extends Activity {
 		gameListView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				
-				launchGame(gameListName.get(position), gameListPath.get(position));
+
+				launchGame(gameListName.get(position),
+						gameListPath.get(position));
 			}
 		});
 	}
@@ -60,8 +61,20 @@ public class Launcher extends Activity {
 		File main = new File(path.getPath() + "/main.lua");
 		if (main.isFile()) {
 			// TODO read gamename from conf.lua
-			String name = path.getPath();
+			String name = loadTitleFromConfigInPath(path.getPath());
 			addGameToList(name, path.getPath());
+		}
+	}
+
+	private String loadTitleFromConfigInPath(String path) {
+		try {
+			LoveConfig config = new LoveConfig();
+			config.title = path;
+			LoveVM.loadConfigFromFile(config, new LoveStorage(this, path),
+					"conf.lua");
+			return config.title;
+		} catch (Exception e) {
+			return path;
 		}
 	}
 
