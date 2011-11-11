@@ -1,6 +1,9 @@
-port of the love2d api to android using luaj and opengl
+Port of the Love2D api to Android using LuaJ and OpenGl
+=======================================================
 
-about : 
+About
+-----
+
 can start existing .love files from sd card (currently need to be unpacked manually, but we want to add .love direct loading eventually)
 currently the path to the .love folder on the sd card is hardcoded in LoveAndroid.java
 we should be able to add a file browser for loading eventually.
@@ -17,12 +20,12 @@ for android-aware games :
 set t.android_native_screen = true in conf.lua to keep the native screen resolution, otherwise it'll rescale to the pc resolution
 to write generic code that detects android, check for love.android being set, this will be set to an empty table for now, but might get android specific functions later
 
-MISSING FUNCTIONALITY
+### MISSING FUNCTIONALITY
 * lots of api calls still need to be implemented, currently(2011-11-06) print,font,audio
 * ttf/truetype fonts won't be available anytime soon, help appreciated
 * love.physics / box2d will probably not be available anytime soon, help appreciated
 * love.threads has dummy stubs, so calling doesn't trigger errors, but the thread-code will never be executed, probably won't be implemented anytime soon, help appreciated
 
-WARNING:
-2011-11-04 luaj 2.0.2 : it seems i found a bug, testing Stealth2D(git) i get "invalid key to 'next'" when removing entries from table during pairs-iteration, sample snippet in core.lua for testing =(
+### WARNING
+* 2011-11-04 luaj 2.0.2 : it seems i found a bug, testing Stealth2D(git) i get "invalid key to 'next'" when removing entries from table during pairs-iteration, sample snippet in core.lua for testing =(
 	bugtracker entry already exists : http://sourceforge.net/tracker/?func=detail&aid=3430986&group_id=197627&atid=962226
