@@ -10,10 +10,13 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
 import android.util.Log;
+import android.media.SoundPool;
+import android.media.AudioManager;
 
 public class LuanAudio extends LuanBase {
 	public static final String SOURCE_TYPE_STATIC = "static";
 	public static final String SOURCE_TYPE_STREAM = "stream";
+	public SoundPool mSoundPool;
 
 	private Vector3 orientationUp = new Vector3(0.0f, 0.0f, 1.0f);
 	private Vector3 orientationForward = new Vector3(1.0f, 0.0f, 0.0f);
@@ -23,6 +26,8 @@ public class LuanAudio extends LuanBase {
 	static final String sMetaName_LuanSource = "__MetaLuanSource";
 	static final String sMetaName_LuanDecoder = "__MetaLuanDecoder";
 	static final String sMetaName_LuanSoundData = "__MetaLuanSoundData";
+	
+	public static final int kAudioChannels = 4; // max number of concurrent sounds playing at the same time, SoundPool constructor
 	
 	public static void Log (String s) { Log.i("LuanAudio", s); }
 	
@@ -40,6 +45,7 @@ public class LuanAudio extends LuanBase {
 	}
 
 	public LuaTable InitLib() {
+		mSoundPool = new SoundPool(kAudioChannels,AudioManager.STREAM_MUSIC,0);
 		LuaTable t = LuaValue.tableOf();
 		
 		LuaValue _G = vm.get_G();
@@ -138,12 +144,13 @@ public class LuanAudio extends LuanBase {
 			}
 		});
 
-		// love.audio.play( source )
+		/// love.audio.play( source )
+		///Plays the specified Source. 
 		t.set("play", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
-				// TODO
-				vm.NotImplemented("love.audio.play");
+				LuanSource src = (LuanSource)args.checkuserdata(1,LuanSource.class);
+				src.play();
 				return LuaValue.NONE;
 			}
 		});
@@ -267,13 +274,35 @@ public class LuanAudio extends LuanBase {
 	
 	public static class LuanSource {
 		private LuanAudio	audio;
+		private String filename;
+		public int miSoundID = 0;
 		
-		public LuanSource (LuanAudio audio,String filename,String type) { this.audio = audio; }
+		public LuanSource (LuanAudio audio,String filename,String type) { 
+			this.audio = audio;
+			this.filename = filename;
+			Log.i("LuanSource","constructor filename="+filename);
+			int iPriority = 0; // determines which sound gets halted if there's not enough channels
+			
+			miSoundID = audio.mSoundPool.load(audio.vm.getStorage().convertFilePath(filename),0);
+			// note : http://stackoverflow.com/questions/2458833/how-do-i-get-a-wav-sound-to-play-android
+		}
 		
 		public LuanSource (LuanAudio audio,LuanDecoder decoder,String type) { this.audio = audio; }
 		
 		public LuanSource (LuanAudio audio,LuanSoundData data) { this.audio = audio; }
 			
+		public static LuanSource self (Varargs args) { return (LuanSource)args.checkuserdata(1,LuanSource.class); }
+	
+		public void play () {
+			Log.i("LuanSource","play filename="+filename+" miSoundID="+miSoundID);
+			float fLeftVol = 1f;
+			float fRightVol = 1f;
+			int iPrio = 0;
+			int iLoopMode = 0;
+			float fRate = 1f;
+			audio.mSoundPool.play(miSoundID,fLeftVol,fRightVol,iPrio,iLoopMode,fRate);
+		}
+		
 		public static LuaTable CreateMetaTable (final LuanAudio audio) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
@@ -289,7 +318,6 @@ public class LuanAudio extends LuanBase {
 			t.set("isStatic",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"isStatic"		);	return LuaValue.NONE; } });		
 			t.set("isStopped",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"isStopped"		);	return LuaValue.NONE; } });	
 			t.set("pause",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"pause"			);	return LuaValue.NONE; } });	
-			t.set("play",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"play"			);	return LuaValue.NONE; } });		
 			t.set("resume",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"resume"		);	return LuaValue.NONE; } });	
 			t.set("rewind",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"rewind"		);	return LuaValue.NONE; } });	
 			t.set("setDirection",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"setDirection"	);	return LuaValue.NONE; } });		
@@ -299,7 +327,12 @@ public class LuanAudio extends LuanBase {
 			t.set("setVelocity",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"setVelocity"	);	return LuaValue.NONE; } });		
 			t.set("setVolume",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"setVolume"		);	return LuaValue.NONE; } });	
 			t.set("stop",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { audio.vm.NotImplemented("AudioSource:"+"stop"			);	return LuaValue.NONE; } });		
-
+			
+			/// Source:play()
+			/// Starts playing the Source. 
+			t.set("play",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { self(args).play(); return LuaValue.NONE; } });		
+			
+			
 			/// type = Object:type()  , e.g. "Image" or audio:"Source"
 			t.set("type", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf("Source"); } });
 			
