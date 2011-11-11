@@ -110,7 +110,7 @@ public class LuanQuad {
 		/// b = Object:typeOf( name )
 		t.set("typeOf", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { 
 			String s = args.checkjstring(2); 
-			return LuaValue.valueOf(s == "Object" || s == "Quad"); 
+			return LuaValue.valueOf(s.equals("Object") || s.equals("Quad")); 
 		} });
 		
 		

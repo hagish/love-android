@@ -81,7 +81,7 @@ public class LuanImage extends LuanDrawable {
 		/// b = Object:typeOf( name )
 		t.set("typeOf", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { 
 			String s = args.checkjstring(2); 
-			return LuaValue.valueOf(s == "Object" || s == "Drawable" || s == "Image"); 
+			return LuaValue.valueOf(s.equals("Object") || s.equals("Drawable") || s.equals("Image")); 
 		} });
 		
 		
