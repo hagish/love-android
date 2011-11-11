@@ -3,7 +3,6 @@ package net.schattenkind.androidLove;
 import java.io.File;
 import java.util.LinkedList;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
