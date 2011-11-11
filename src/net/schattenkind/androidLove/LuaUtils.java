@@ -1,7 +1,14 @@
 package net.schattenkind.androidLove;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringBufferInputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import org.luaj.vm2.LoadState;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaString;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -80,5 +87,15 @@ public class LuaUtils {
 		}
 
 		return cur;
+	}
+
+	public static void executeCode(LuaTable g, String code)
+			throws UnsupportedEncodingException, LuaError {
+		InputStream is = new ByteArrayInputStream(code.getBytes("UTF-8"));
+		try {
+			LoadState.load(is, "code", g).call();
+		} catch (IOException e) {
+			// ignored, because strings dont have io problems :)
+		}
 	}
 }
