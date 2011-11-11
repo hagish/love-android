@@ -9,8 +9,6 @@ import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
-import android.R;
-
 public class TestJLua extends TestCase {
 	private LuaTable g;
 	private String pairs_hack = "local _pairs = pairs\npairs = function(t)\n	-- generate a map to map each key to its successor\n	local map_cur_key_to_next = {}\n	local last_key = nil\n	local fist_key = nil\n	\n	for k,v in _pairs(t) do \n		if last_key then\n			map_cur_key_to_next[last_key] = k\n		else\n			first_key = k\n		end\n\n		last_key = k\n	end\n	\n	local local_next = function(t, index) \n		if index == nil then\n			return first_key, t[first_key]\n		elseif index == last_key or t == nil then\n			return nil\n		else\n			local k = map_cur_key_to_next[index]\n			return k, t[k]\n		end\n		\n		return next(t, index) \n	end\n	\n	-- next,t,nil\n	return local_next, t, nil\nend";

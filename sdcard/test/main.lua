@@ -48,6 +48,6 @@ function love.draw()
 	love.graphics.draw(gMyImg, 200, 200, t*4, sx,sy, ox,oy)
 	love.graphics.draw(gMyImg, 480, 775, t*4, sx,sy, ox,oy)
 
-	love.graphics.setColor(255,0,0)
+	love.graphics.setColor(255,255,255)
 	love.graphics.print("hello world", 10,10)
 end
