@@ -2,6 +2,7 @@ package net.schattenkind.androidLove;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.luaj.vm2.LoadState;
 import org.luaj.vm2.LuaTable;
@@ -108,7 +109,7 @@ public class LoveConfig {
 				modules_physics);
 	}
 
-	public void loadFromFileStream(FileInputStream configFileInputStream) throws IOException {
+	public void loadFromFileStream(InputStream configFileInputStream) throws IOException {
 		LuaTable g = JsePlatform.debugGlobals();
 
 		g.set("love", new LuaTable());

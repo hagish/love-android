@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
+import java.io.IOException;
 
 public class LoveAndroid extends ActivitiyWithExitMenu {
+	private static final String TAG = "LoveAndroid";
 	private static final long updateDelayMillis = 1000 / 30;
 	private LoveVM vm;
 	private GLSurfaceView mGLView;
@@ -69,7 +71,15 @@ public class LoveAndroid extends ActivitiyWithExitMenu {
 			path = Launcher.launchMeGamePath;
 		}
 
-		vm = new LoveVM(this, new LoveStorage(this, path));
+		LoveStorage storage = null;
+		try {
+			storage = new LoveStorage(this, path);
+		} catch (IOException e) {
+			// failed to load .zip/.love or similar, exit
+			LoveVM.LoveLog(TAG,"failed to load storage:"+path);
+			System.exit(0);
+		}
+		vm = new LoveVM(this, storage);
 
 		// Create a GLSurfaceView instance and set it
 		// as the ContentView for this Activity.

@@ -3,6 +3,8 @@ package net.schattenkind.androidLove.luan;
 import net.schattenkind.androidLove.LoveVM;
 import net.schattenkind.androidLove.Vector3;
 
+import java.io.IOException;
+
 import org.luaj.vm2.LuaNumber;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -15,6 +17,8 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 
 public class LuanAudio extends LuanBase {
+	protected static final String TAG = "LoveAudio";
+	
 	public static final String SOURCE_TYPE_STATIC = "static";
 	public static final String SOURCE_TYPE_STREAM = "stream";
 	public SoundPool mSoundPool;
@@ -30,7 +34,7 @@ public class LuanAudio extends LuanBase {
 	
 	public static final int kAudioChannels = 4; // max number of concurrent sounds playing at the same time, SoundPool constructor
 	
-	public static void Log (String s) { LoveVM.LoveLog("LuanAudio", s); }
+	public static void Log (String s) { LoveVM.LoveLog(TAG, s); }
 	
 	
 	// 0.0f - 1.0f
@@ -274,6 +278,8 @@ public class LuanAudio extends LuanBase {
 	// ***** ***** ***** ***** *****  LuanSource
 	
 	public static class LuanSource {
+		protected static final String TAG = "LoveSource";
+		
 		private LuanAudio	audio;
 		private String filename;
 		public int miSoundID = 0;
@@ -291,7 +297,7 @@ public class LuanAudio extends LuanBase {
 				filename.toLowerCase().endsWith("xm"))  // NOTE: clouds demo has xm(tracker music), but fails to load
 				bMusic = true;
 			
-			LoveVM.LoveLog("LuanSource","constructor filename="+filename+" type="+type+" bMusic="+bMusic);
+			LoveVM.LoveLog(TAG,"constructor filename="+filename+" type="+type+" bMusic="+bMusic);
 			
 			if (bMusic) {
 				mp = MediaPlayer.create(audio.vm.getActivity(), iResID );
@@ -314,32 +320,40 @@ public class LuanAudio extends LuanBase {
 			// would need autodetect to decide if mSoundPool can work 
 			// otherwise we'd loose a lot of compatibilty with existing love games not aware of android/soundbuf
 			
-			LoveVM.LoveLog("LuanSource","constructor filename="+filename+" type="+type+" bMusic="+bMusic);
+			LoveVM.LoveLog(TAG,"constructor filename="+filename+" type="+type+" bMusic="+bMusic);
 			
-			if (bMusic) {
-				// NOTE : 	MediaPlayer.create(Context context, int resid)
-				// NOTE : 	MediaPlayer.create(Context context, Uri uri)
-				// note : http://blog.endpoint.com/2011/03/api-gaps-android-mediaplayer-example.html
-				// note : http://stackoverflow.com/questions/2458833/how-do-i-get-a-wav-sound-to-play-android
-				// http://www.helloandroid.com/taxonomy/term/14
-				// NOTE : tracker files like .xm in clouds demo : http://stackoverflow.com/questions/5597624/how-to-play-tracker-modules-on-android
-				mp = MediaPlayer.create(audio.vm.getActivity(), Uri.fromFile(audio.vm.getStorage().getFileFromSdCard(filename)) );
-			} else {
-				miSoundID = audio.mSoundPool.load(audio.vm.getStorage().convertFilePath(filename),iPriority);
+			try {
+				if (bMusic) {
+					// NOTE : 	MediaPlayer.create(Context context, int resid)
+					// NOTE : 	MediaPlayer.create(Context context, Uri uri)
+					// note : http://blog.endpoint.com/2011/03/api-gaps-android-mediaplayer-example.html
+					// note : http://stackoverflow.com/questions/2458833/how-do-i-get-a-wav-sound-to-play-android
+					// http://www.helloandroid.com/taxonomy/term/14
+					// NOTE : tracker files like .xm in clouds demo : http://stackoverflow.com/questions/5597624/how-to-play-tracker-modules-on-android
+					mp = MediaPlayer.create(audio.vm.getActivity(), Uri.fromFile(audio.vm.getStorage().forceGetFileFromLovePath(filename)) );
+				} else {
+					// TODO : load from zip ?  	load(AssetFileDescriptor afd, int priority)
+					// http://developer.android.com/reference/android/content/res/AssetManager.html
+					miSoundID = audio.mSoundPool.load(audio.vm.getStorage().forceGetFilePathFromLovePath(filename),iPriority);
+				}
+			} catch (IOException e) {
+				LoveVM.LoveLogE(TAG,"constructor failed",e);
 			}
 		}
 		
-		public LuanSource (LuanAudio audio,LuanDecoder decoder,String type) { this.audio = audio; }
+		/// load from LuanDecoder
+		public LuanSource (LuanAudio audio,LuanDecoder decoder,String type) { this.audio = audio; audio.vm.NotImplemented("AudioSource: construct from Decoder"); } // TODO
 		
-		public LuanSource (LuanAudio audio,LuanSoundData data) { this.audio = audio; }
+		/// load from LuanSoundData
+		public LuanSource (LuanAudio audio,LuanSoundData data) { this.audio = audio; audio.vm.NotImplemented("AudioSource: construct from SoundData"); } // TODO
 			
-		public static LuanSource self (Varargs args) { return (LuanSource)args.checkuserdata(1,LuanSource.class); }
 	
+		/// start
 		public void play () {
-			LoveVM.LoveLog("LuanSource","play filename="+filename+" miSoundID="+miSoundID+" bMusic="+bMusic);
+			LoveVM.LoveLog(TAG,"play filename="+filename+" miSoundID="+miSoundID+" bMusic="+bMusic);
 			if (bMusic) {
 				if (mp != null) mp.start();
-			} else {
+			} else if (miSoundID != 0) {
 				float fLeftVol = 1f;
 				float fRightVol = 1f;
 				int iPrio = 0;
@@ -348,6 +362,8 @@ public class LuanAudio extends LuanBase {
 				audio.mSoundPool.play(miSoundID,fLeftVol,fRightVol,iPrio,iLoopMode,fRate);
 			}
 		}
+		
+		public static LuanSource self (Varargs args) { return (LuanSource)args.checkuserdata(1,LuanSource.class); }
 		
 		public static LuaTable CreateMetaTable (final LuanAudio audio) {
 			LuaTable mt = LuaValue.tableOf();

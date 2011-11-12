@@ -27,7 +27,7 @@ public class LuanFilesystem extends LuanBase {
 		super(vm);
 	}
 	
-	public void Log (String s) { LoveVM.LoveLog("LuanFilesystem", s); }
+	public void Log (String s) { LoveVM.LoveLog(TAG, s); }
 
 	public LuaTable InitLib() {
 		LuaTable t = LuaValue.tableOf();
@@ -163,7 +163,7 @@ public class LuanFilesystem extends LuanBase {
 				String filename = args.arg1().toString();
 				try {
 					LuaFunction f = LoadState.load(vm.getStorage()
-							.getFileStreamFromSdCard(filename), filename, vm
+							.getFileStreamFromLovePath(filename), filename, vm
 							.get_G());
 					return f;
 				} catch (FileNotFoundException e) {

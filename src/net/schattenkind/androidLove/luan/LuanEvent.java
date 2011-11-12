@@ -8,7 +8,8 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
 public class LuanEvent extends LuanBase {
-	public static void Log (String s) { LoveVM.LoveLog("LuanEvent", s); }
+	protected static final String TAG = "LoveEvent";
+	public static void Log (String s) { LoveVM.LoveLog(TAG, s); }
 	
 	public LuanEvent(LoveVM vm) {
 		super(vm);

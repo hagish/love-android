@@ -12,6 +12,8 @@ import android.os.SystemClock;
 
 
 public class LuanTimer extends LuanBase {
+	protected static final String TAG = "LoveTimer";
+	
 	private float lastFrameStartInSec;
 	private float lastFrameDeltaInSec;
 	private long timerStartInMs;
@@ -69,7 +71,7 @@ public class LuanTimer extends LuanBase {
 				try {
 					Thread.sleep(args.arg1().toint(), 0);
 				} catch (InterruptedException e) {
-					LoveVM.LoveLogE("LuanTimer", e.getMessage());
+					LoveVM.LoveLogE(TAG, e.getMessage());
 				}
 
 				return LuaValue.NONE;

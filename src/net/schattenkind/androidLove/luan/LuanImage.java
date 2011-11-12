@@ -22,6 +22,8 @@ import android.opengl.GLUtils;
 
 
 public class LuanImage extends LuanDrawable {
+	protected static final String TAG = "LoveImage";
+	
 	private LuanGraphics	g;
 	private int				miTextureID = 0;
 	public float			mWidth;
@@ -143,13 +145,13 @@ public class LuanImage extends LuanDrawable {
 	
 	/// load image from file
 	public LuanImage (LuanGraphics g,String filepath) throws FileNotFoundException {
-		this(g,g.vm.getStorage().getFileStreamFromSdCard(filepath)); 
+		this(g,g.vm.getStorage().getFileStreamFromLovePath(filepath)); 
 		// TODO: store origin for reload
 		// TODO : throw lua error if file not found ?
 		//g.getActivity().openFileInput(filepath);
 		//~ Drawable d = Drawable.createFromStream(input,filepath);
-		//~ LoveVM.LoveLog("LuanImage","InputStream ok");
-		//~ LoveVM.LoveLog("LuanImage","constructor:"+filepath);
+		//~ LoveVM.LoveLog(TAG,"InputStream ok");
+		//~ LoveVM.LoveLog(TAG,"constructor:"+filepath);
 	}
 	
 	/// don't allow public call, since we need to store the origin of the image stream somehow, so we can reload the file image after context-switch
@@ -166,9 +168,9 @@ public class LuanImage extends LuanDrawable {
 		//~ static Drawable 	Drawable.createFromStream(InputStream is, String srcName)
 		
 		BitmapDrawable bmd = new BitmapDrawable(g.vm.getResources(),input); // ressources needed for "density" / dpi etc ?  no idea
-		LoveVM.LoveLog("LuanImage","BitmapDrawable ok");
+		LoveVM.LoveLog(TAG,"BitmapDrawable ok");
 		Bitmap bm = bmd.getBitmap();
-		LoveVM.LoveLog("LuanImage","Bitmap ok w="+bm.getWidth()+",h="+bm.getHeight());
+		LoveVM.LoveLog(TAG,"Bitmap ok w="+bm.getWidth()+",h="+bm.getHeight());
 		mWidth = bm.getWidth();
 		mHeight = bm.getHeight();
 		// TODO : auto-scale to 2^n resolution ? naaaah.
@@ -176,11 +178,11 @@ public class LuanImage extends LuanDrawable {
 		
 		// load into texture
 		LoadFromBitmap(bm);
-		LoveVM.LoveLog("LuanImage","LoadFromBitmap done.");
+		LoveVM.LoveLog(TAG,"LoadFromBitmap done.");
 		
 		// release bitmap ram
 		//~ bm.recycle(); // MEMORY LEAK.. needed for font glyph stuff tho. or store path and re-load on demand
 		
-		LoveVM.LoveLog("LuanImage","constructor done.");
+		LoveVM.LoveLog(TAG,"constructor done.");
 	}
 }

@@ -31,24 +31,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
-//~ import android.util.Log;		// TODO: disable for release
+import android.util.Log;		// TODO: disable for release
 import android.widget.Toast;
 
 public class LoveVM {
 	private static final String TAG = "LoveVM";
 	private Activity attachedToThisActivity;
 	private LuaValue _G;
-	
-	public static void LoveLogE(String sTag,String sTxt,Exception e) {
-		//~ Log.e(sTag,sTxt, e);	// TODO: disable for release
-	}
-	public static void LoveLogE(String sTag,String sTxt) {
-		//~ Log.e(sTag,sTxt);	// TODO: disable for release
-	}
-	public static void LoveLog(String sTag,String sTxt) {
-		//~ Log.i(sTag, s.toString()); // TODO: disable for release
-	}
-	public static void LoveLog(String s) { LoveLog(TAG,s); }
 
 	private LuanGraphics mLuanGraphics;
 	private LuanAudio mLuanAudio;
@@ -82,37 +71,31 @@ public class LoveVM {
 
 	private LoveStorage storage;
 
+	// ***** ***** ***** ***** ***** constructor
+	
 	public LoveVM(Activity attachedToThisActivity, LoveStorage storage) {
 		this.attachedToThisActivity = attachedToThisActivity;
 		this.storage = storage;
 		this.config = new LoveConfig();
 	}
 
-	public LuanGraphics getLuanGraphics() {
-		return mLuanGraphics;
-	}
+	// ***** ***** ***** ***** ***** log 
 	
-	public LuanAudio getLuanAudio() {
-		return mLuanAudio;
+	public static void LoveLogE(String sTag,String sTxt,Exception e) {
+		Log.e(sTag,sTxt, e);	// TODO: disable for release
 	}
-
-	public int convertMouseX(int mouseX, int mouseY) {
-		return mLuanGraphics.convertMouseX(mouseX, mouseY);
+	public static void LoveLogE(String sTag,String sTxt) {
+		Log.e(sTag,sTxt);	// TODO: disable for release
 	}
-
-	public int convertMouseY(int mouseX, int mouseY) {
-		return mLuanGraphics.convertMouseY(mouseX, mouseY);
+	public static void LoveLog(String sTag,String sTxt) {
+		Log.i(sTag, sTxt.toString()); // TODO: disable for release
 	}
+	public static void LoveLog(String s) { LoveLog(TAG,s); }
+	
 
-	// / access to latest valid gl object
-	public GL10 getGL() {
-		return gl;
-	}
-
-	public LuaValue get_G() {
-		return _G;
-	}
-
+	// ***** ***** ***** ***** ***** init
+	
+	/// check if all ainit conditions are satisified and if yes run init if it hasn't been run already
 	public void checkAllInitOk() {
 		if (!bInitDone && gl != null && bInitCondition_onCreate
 				&& bInitCondition_ScreenSize && bInitCondition_NotifyGL
@@ -120,32 +103,6 @@ public class LoveVM {
 			bInitCondition_initAlreadyCalled = true;
 			init();
 		}
-	}
-
-	// seems to be called LATE! after notifyGL, so made this an init condition
-	// to avoid screensize being unavailable during love.load
-	public void notifyScreenSize(float w, float h) {
-		LoveLog("notifyScreenSize:" + w + "," + h);
-		mfScreenW = w;
-		mfScreenH = h;
-		bInitCondition_ScreenSize = true;
-		checkAllInitOk();
-	}
-
-	// / called when gl context is created or updated
-	public void notifyGL(GL10 gl) {
-		if (!bInitCondition_NotifyGL)
-			LoveLog("notifyGL");
-		this.gl = gl;
-		bInitCondition_NotifyGL = true;
-		checkAllInitOk();
-	}
-
-	// / called when activity.onCreate has finished setting up the window
-	public void notifyOnCreateDone() {
-		LoveLog("notifyOnCreateDone");
-		bInitCondition_onCreate = true;
-		checkAllInitOk();
 	}
 
 	// / may only be called after BOTH notifyGL AND notifyOnCreateDone have been
@@ -178,46 +135,59 @@ public class LoveVM {
 			handleLuaError(e);
 		}
 
+		// call love.load() in main.lua
 		this.load();
 		bInitDone = true;
 		bInitInProgress = false;
 	}
-
-	private void loadConfig() {
+	
+	/// call user defined love.load() in main.lua
+	public void load() {
+		assert (bInitDone);
 		try {
-			String confFile = "conf.lua";
-			
-			loadConfigFromFile(config, storage, confFile);
-			if (storage.getFileType(confFile) == FileType.FILE)
-			{
-				loadFileFromSdCard(confFile);
-			}
-		} catch (Exception e) {
-			LoveLogE(TAG, "error loading config file", e);
+			LoveLog("calling love.load...");
+			_G.get("love").get("load").call();
+		} catch (LuaError e) {
+			handleLuaError(e);
 		}
 	}
-
-	private void loadFileFromRes(int id, String filename) {
-		try {
-			LoadState.load(getResourceInputStream(id), filename, _G).call();
-		} catch (NotFoundException e) {
-			LoveLogE(TAG, e.getMessage());
-		} catch (IOException e) {
-			LoveLogE(TAG, e.getMessage());
-		}
+	
+	// ***** ***** ***** ***** ***** notifications
+	
+	
+	// seems to be called LATE! after notifyGL, so made this an init condition
+	// to avoid screensize being unavailable during love.load
+	public void notifyScreenSize(float w, float h) {
+		LoveLog("notifyScreenSize:" + w + "," + h);
+		mfScreenW = w;
+		mfScreenH = h;
+		bInitCondition_ScreenSize = true;
+		checkAllInitOk();
 	}
 
-	private void loadFileFromSdCard(String filename) {
-		try {
-			LoadState.load(storage.getFileStreamFromSdCard(filename), filename,
-					_G).call();
-		} catch (FileNotFoundException e) {
-			LoveLogE(TAG, e.getMessage());
-		} catch (IOException e) {
-			LoveLogE(TAG, e.getMessage());
-		}
+	// / called when gl context is created or updated
+	public void notifyGL(GL10 gl) {
+		if (!bInitCondition_NotifyGL)
+			LoveLog("notifyGL");
+		this.gl = gl;
+		bInitCondition_NotifyGL = true;
+		checkAllInitOk();
 	}
 
+	// / called when activity.onCreate has finished setting up the window
+	public void notifyOnCreateDone() {
+		LoveLog("notifyOnCreateDone");
+		bInitCondition_onCreate = true;
+		checkAllInitOk();
+	}
+	
+	public void notifyUpdateTimerMainThread(float dt) {
+		if (!bCallUpdateDuringDraw)
+			update(dt);
+	}
+	
+	// ***** ***** ***** ***** ***** lua api
+	
 	private void setupCoreFunctions() {
 		_G.set("print", new VarArgFunction() {
 			@Override
@@ -260,18 +230,6 @@ public class LoveVM {
 		});
 	}
 
-	public void toast(final String string) {
-		attachedToThisActivity.runOnUiThread(new Runnable() {
-			public void run() {
-				Context context = attachedToThisActivity
-						.getApplicationContext();
-				int duration = Toast.LENGTH_SHORT;
-
-				Toast toast = Toast.makeText(context, string, duration);
-				toast.show();
-			}
-		});
-	}
 
 	private void setupLoveFunctions() {
 		_G.set("love", LuaValue.tableOf());
@@ -308,16 +266,9 @@ public class LoveVM {
 		_G.get("love").set("phone", mLuanPhone.InitLib());
 	}
 
-	public void load() {
-		assert (bInitDone);
-		try {
-			LoveLog("calling love.load...");
-			_G.get("love").get("load").call();
-		} catch (LuaError e) {
-			handleLuaError(e);
-		}
-	}
-
+	
+	// ***** ***** ***** ***** ***** errors, warnings, notifications
+	
 	public void handleError(Exception e) {
 		LoveLogE(TAG, "ERROR: " + e.getMessage());
 		toast("ERROR: " + e.getMessage());
@@ -330,16 +281,32 @@ public class LoveVM {
 		isBroken = true;
 	}
 
-	// warn first time, then ignore
 	HashSet<String> mSetKnownNotImplemented = new HashSet<String>();
 
+	/// warn first time, then ignore
 	public void NotImplemented(String s) {
 		if (mSetKnownNotImplemented.contains(s))
 			return;
 		mSetKnownNotImplemented.add(s);
 		LoveLogE(TAG, "WARNING:NotImplemented: " + s);
 	}
+	
+	/// android style popup notification
+	public void toast(final String string) {
+		attachedToThisActivity.runOnUiThread(new Runnable() {
+			public void run() {
+				Context context = attachedToThisActivity
+						.getApplicationContext();
+				int duration = Toast.LENGTH_SHORT;
 
+				Toast toast = Toast.makeText(context, string, duration);
+				toast.show();
+			}
+		});
+	}
+	
+	// ***** ***** ***** ***** ***** draw
+	
 	public void draw(GL10 gl) {
 		if (!bInitDone || isBroken)
 			return;
@@ -364,11 +331,9 @@ public class LoveVM {
 		mLuanGraphics.notifyFrameEnd(gl);
 	}
 
-	public void notifyUpdateTimerMainThread(float dt) {
-		if (!bCallUpdateDuringDraw)
-			update(dt);
-	}
 
+	// ***** ***** ***** ***** ***** update
+	
 	public void update(float dt) {
 		if (!bInitDone || isBroken)
 			return;
@@ -385,6 +350,9 @@ public class LoveVM {
 		}
 	}
 
+	
+	// ***** ***** ***** ***** ***** input
+	
 	public void feedPosition(int x, int y) {
 		if (!bInitDone)
 			return;
@@ -400,30 +368,90 @@ public class LoveVM {
 	public boolean feedKey(int keyCode, boolean isDown) {
 		return mLuanKeyboard.feedKey(keyCode, isDown);
 	}
+	
+	public int convertMouseX(int mouseX, int mouseY) {
+		return mLuanGraphics.convertMouseX(mouseX, mouseY);
+	}
 
+	public int convertMouseY(int mouseX, int mouseY) {
+		return mLuanGraphics.convertMouseY(mouseX, mouseY);
+	}
+	
+
+	// ***** ***** ***** ***** ***** api access to other modules
+	
 	public Activity getActivity() {
 		return attachedToThisActivity;
 	}
-
-	public Resources getResources() {
-		return attachedToThisActivity.getResources();
-	}
-
-	public InputStream getResourceInputStream(int id) {
-		return attachedToThisActivity.getResources().openRawResource(id);
-	}
-
+	
 	public LoveStorage getStorage() {
 		return storage;
 	}
+	public LuanGraphics getLuanGraphics() {
+		return mLuanGraphics;
+	}
+	
+	public LuanAudio getLuanAudio() {
+		return mLuanAudio;
+	}
 
+	// / access to latest valid gl object
+	public GL10 getGL() {
+		return gl;
+	}
+
+	public LuaValue get_G() {
+		return _G;
+	}
+	
+	// ***** ***** ***** ***** ***** file access functions
+	
+	private void loadConfig() {
+		try {
+			String confFile = "conf.lua";
+			
+			loadConfigFromFile(config, storage, confFile);
+			if (storage.getFileType(confFile) == FileType.FILE)
+			{
+				loadFileFromSdCard(confFile);
+			}
+		} catch (Exception e) {
+			LoveLogE(TAG, "error loading config file", e);
+		}
+	}
+	
 	public static void loadConfigFromFile(LoveConfig config,
 			LoveStorage storage, String filename) throws FileNotFoundException,
 			IOException, LuaError {
 
 		if (storage.getFileType(filename) == FileType.FILE) {
-			config.loadFromFileStream(storage.getFileStreamFromSdCard(filename));
+			config.loadFromFileStream(storage.getFileStreamFromLovePath(filename));
 		}
-
 	}
+
+	private void loadFileFromRes(int id, String filename) {
+		try {
+			LoadState.load(getResourceInputStream(id), filename, _G).call();
+		} catch (NotFoundException e) {
+			LoveLogE(TAG, e.getMessage());
+		} catch (IOException e) {
+			LoveLogE(TAG, e.getMessage());
+		}
+	}
+
+	private void loadFileFromSdCard(String filename) {
+		try {
+			LoadState.load(storage.getFileStreamFromLovePath(filename), filename, _G).call();
+		} catch (FileNotFoundException e) {
+			LoveLogE(TAG, e.getMessage());
+		} catch (IOException e) {
+			LoveLogE(TAG, e.getMessage());
+		}
+	}
+	
+	public Resources getResources() {
+		return attachedToThisActivity.getResources();
+	}
+
+	public InputStream getResourceInputStream (int id) { return storage.getResourceInputStream(id); }
 }
