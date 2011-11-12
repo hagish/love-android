@@ -40,4 +40,5 @@ you have to adjust
 ./tools/push_dir.sh:5:  SRC=/home/hagish/workspace/adt/love-android/sdcard/
 to the absolute path to this dir for automatic-copy-to-sdcard to work during development
 
+if you want to copy everything to the sd card again, delete ./tools/push_dir.db  (a database file where it stores md5-sum)
 
