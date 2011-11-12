@@ -307,10 +307,13 @@ public class LuanAudio extends LuanBase {
 			this.filename = filename;
 			int iPriority = 0; // determines which sound gets halted if there's not enough channels
 			if (type == "stream" || 
-				filename.toLowerCase().endsWith("mp3") || 
-				filename.toLowerCase().endsWith("ogg") || 
+				filename.toLowerCase().endsWith("mp3") ||
+				filename.toLowerCase().endsWith("ogg") ||
 				filename.toLowerCase().endsWith("xm"))  // NOTE: clouds demo has xm(tracker music), but fails to load
 				bMusic = true;
+			// TODO: only if stream ? might work for short sounds, didn't try, 
+			// would need autodetect to decide if mSoundPool can work 
+			// otherwise we'd loose a lot of compatibilty with existing love games not aware of android/soundbuf
 			
 			Log.i("LuanSource","constructor filename="+filename+" type="+type+" bMusic="+bMusic);
 			
