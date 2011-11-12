@@ -15,6 +15,7 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
 import android.util.Log;
+//~ import android.renderscript.Font; // TTF try : android.renderscript cannot be resolved =(
 
 
 public class LuanFont {
@@ -65,6 +66,9 @@ public class LuanFont {
 	
 	/// ttf font
 	public LuanFont (LuanGraphics g,String ttf_filename,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf"); }
+	
+	/// ttf font
+	public LuanFont (LuanGraphics g,int ttf_ResID,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf"); }
 	
 	/// ttf font, default ttf_filename to verdana sans
 	public LuanFont (LuanGraphics g,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf with size"); } 

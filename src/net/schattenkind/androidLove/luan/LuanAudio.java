@@ -281,6 +281,27 @@ public class LuanAudio extends LuanBase {
 		public boolean bMusic = false;
 		public MediaPlayer mp;
 		
+		/// load from resource without sdcard access
+		public LuanSource (LuanAudio audio,int iResID,String type) { 
+			this.audio = audio;
+			this.filename = "res:"+iResID; // debug output only?
+			int iPriority = 0; // determines which sound gets halted if there's not enough channels
+			if (type == "stream" || 
+				filename.toLowerCase().endsWith("mp3") || 
+				filename.toLowerCase().endsWith("ogg") || 
+				filename.toLowerCase().endsWith("xm"))  // NOTE: clouds demo has xm(tracker music), but fails to load
+				bMusic = true;
+			
+			Log.i("LuanSource","constructor filename="+filename+" type="+type+" bMusic="+bMusic);
+			
+			if (bMusic) {
+				mp = MediaPlayer.create(audio.vm.getActivity(), iResID );
+			} else {
+				miSoundID = audio.mSoundPool.load(audio.vm.getActivity(),iResID,iPriority);
+			}
+		}
+		
+		/// load from file
 		public LuanSource (LuanAudio audio,String filename,String type) { 
 			this.audio = audio;
 			this.filename = filename;
@@ -302,7 +323,7 @@ public class LuanAudio extends LuanBase {
 				// NOTE : tracker files like .xm in clouds demo : http://stackoverflow.com/questions/5597624/how-to-play-tracker-modules-on-android
 				mp = MediaPlayer.create(audio.vm.getActivity(), Uri.fromFile(audio.vm.getStorage().getFileFromSdCard(filename)) );
 			} else {
-				miSoundID = audio.mSoundPool.load(audio.vm.getStorage().convertFilePath(filename),0);
+				miSoundID = audio.mSoundPool.load(audio.vm.getStorage().convertFilePath(filename),iPriority);
 			}
 		}
 		

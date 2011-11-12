@@ -41,6 +41,26 @@ public class LuanPhone extends LuanBase {
 			}
 		});
 		
+		
+		/// source = love.phone.newResourceAudioSource(int iResID,string type)
+		/// loads a sound/music/audio source from a resource id
+		t.set("newResourceAudioSource", new VarArgFunction() {
+			@Override public Varargs invoke(Varargs args) {
+				int iResID = args.checkint(1);
+				try {
+					String sType = IsArgSet(args,2) ? args.checkjstring(2) : "static";
+					return LuaValue.userdataOf(new LuanAudio.LuanSource(vm.getLuanAudio(),iResID,sType),vm.get_G().get(LuanAudio.sMetaName_LuanSource));
+				} catch (Exception e) {
+					vm.handleError(e);
+				}
+				return LuaValue.NONE;
+			}
+		});
+		
+		// TODO: newResourceFontTTF !!!
+		/// source = love.phone.newResourceFontTTF(int iResID,int iSize)
+		/// loads a ttf from ressource id
+		
 		/// String 	love.phone.getPackageName()
 		/// Return the name of this application's package.
 		t.set("getPackageName", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(vm.getActivity().getPackageName()); } });

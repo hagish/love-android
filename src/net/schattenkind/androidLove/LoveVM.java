@@ -84,6 +84,10 @@ public class LoveVM {
 	public LuanGraphics getLuanGraphics() {
 		return mLuanGraphics;
 	}
+	
+	public LuanAudio getLuanAudio() {
+		return mLuanAudio;
+	}
 
 	public int convertMouseX(int mouseX, int mouseY) {
 		return mLuanGraphics.convertMouseX(mouseX, mouseY);
