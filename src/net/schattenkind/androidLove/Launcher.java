@@ -3,7 +3,6 @@ package net.schattenkind.androidLove;
 import java.io.File;
 import java.util.LinkedList;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -13,7 +12,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class Launcher extends Activity {
+public class Launcher extends ActivitiyWithExitMenu {
 	private static final String loveRootOnSdCard = "/love/";
 	public static String launchMeGameName;
 	public static String launchMeGamePath;

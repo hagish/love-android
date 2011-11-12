@@ -1,17 +1,13 @@
 package net.schattenkind.androidLove;
 
-import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
-public class LoveAndroid extends Activity {
+public class LoveAndroid extends ActivitiyWithExitMenu {
 	private static final long updateDelayMillis = 1000 / 30;
 	private LoveVM vm;
 	private GLSurfaceView mGLView;
@@ -61,25 +57,6 @@ public class LoveAndroid extends Activity {
 	public void _update() {
 		vm.notifyUpdateTimerMainThread(updateDelayMillis / 1000.0f);
 		mUpdateHandler.sleep(updateDelayMillis);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main_menu, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle item selection
-		switch (item.getItemId()) {
-		case R.id.exit:
-			System.exit(0);
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
 	}
 
 	@Override

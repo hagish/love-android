@@ -58,7 +58,7 @@ public class LuanFilesystem extends LuanBase {
 			@Override
 			public Varargs invoke(Varargs args) {
 				return LuaBoolean.valueOf(vm.getStorage().getFileType(
-						args.arg1().toString()) == LoveStorage.FileType.NONE);
+						args.arg1().toString()) != LoveStorage.FileType.NONE);
 			}
 		});
 

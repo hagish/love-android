@@ -145,14 +145,18 @@ public class LoveVM {
 			return; // multithread problem??
 		bInitInProgress = true;
 
-		loadConfig();
-
 		// _G = JsePlatform.standardGlobals();
 		_G = JsePlatform.debugGlobals();
 
 		try {
 			setupCoreFunctions();
 			setupLoveFunctions();
+
+			RobLog("exec pairs_hack.lua...");
+			loadFileFromRes(R.raw.pairs_hack, "pairs_hack.lua");
+
+			RobLog("exec conf.lua...");
+			loadConfig();
 
 			RobLog("exec core.lua...");
 			loadFileFromRes(R.raw.core, "core.lua");
@@ -170,7 +174,13 @@ public class LoveVM {
 
 	private void loadConfig() {
 		try {
-			loadConfigFromFile(config, storage, "conf.lua");
+			String confFile = "conf.lua";
+			
+			loadConfigFromFile(config, storage, confFile);
+			if (storage.getFileType(confFile) == FileType.FILE)
+			{
+				loadFileFromSdCard(confFile);
+			}
 		} catch (Exception e) {
 			Log.e(TAG, "error loading config file", e);
 		}

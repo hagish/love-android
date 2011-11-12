@@ -43,7 +43,9 @@ function love.run() end
 function love.update() end
 
 function require(file)
-	if (string.sub(file,-4) ~= ".lua") then file = file .. ".lua" end
+	if (string.sub(file,-4) == ".lua") then file = string.sub(file, 1, -5) end
+	file = string.gsub(file, "%.", "/")
+	file = file .. ".lua"
 	print("love-android require:".."'"..tostring(file).."'")
 	return love.filesystem.load(file)()
 end
@@ -57,14 +59,15 @@ function love_andorid_list_iter (t)
 	end
 end
 
--- default love.conf
 local default_screen_w = 800 -- todo: nil for native ? might be trouble 
 local default_screen_h = 600
+--[[
+-- default love.conf
 function love.conf(t)
     t.title = "Untitled"        -- The title of the window the game is in (string)
     t.author = "Unnamed"        -- The author of the game (string)
     t.identity = nil            -- The name of the save directory (string)
-    t.version = 0               -- The LÖVE version this game was made for (number)
+    t.version = 0               -- The Lï¿½VE version this game was made for (number)
     t.console = false           -- Attach a console (boolean, Windows only)
     t.release = false           -- Enable release mode (boolean)
     t.screen.width = default_screen_w -- 800        -- The window width (number)
@@ -83,10 +86,12 @@ function love.conf(t)
     t.modules.sound = true      -- Enable the sound module (boolean)
     t.modules.physics = true    -- Enable the physics module (boolean)
 end
+]]
 
 function love_andorid_exec_conf ()
 	local t = { screen={}, modules={} }
-	love.conf(t)
+	if love.conf then print("*****************") love.conf(t) end
+	
 	if (not t.android_native_screen) then
 		local w = t.screen and t.screen.width or default_screen_w
 		local h = t.screen and t.screen.height or default_screen_h
