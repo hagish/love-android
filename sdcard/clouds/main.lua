@@ -12,6 +12,7 @@ function love.load()
 	mySounds[3] = love.audio.newSource("select.wav"	,"static")
 	mySounds[4] = love.audio.newSource("chasing-rainbows.mp3"		,"stream")
 	mySounds[5] = love.audio.newSource("bgm.ogg"					,"stream")
+	mySounds[6] = love.audio.newSource("prondisk.xm"				,"stream")
 	
 	-- The amazing music.
 	music = love.audio.newSource("prondisk.xm")
@@ -119,7 +120,7 @@ function love_android_test_disable_orig () return 2 == 1 end
 -- ***** ***** ***** ***** ***** end love-android test stuff 
 
 function love.draw()
-	love.graphics.print("test001!",10,10)
+	love.graphics.print("test002!",10,10)
 	--~ if (gAndroidTestImg) then love.graphics.draw(gAndroidTestImg,0,0) end
 	
 	love_android_test_draw()
@@ -173,6 +174,7 @@ function love.keypressed(k)
 	if k == "3" then mySounds[3]:play() end
 	if k == "4" then mySounds[4]:play() end
 	if k == "5" then mySounds[5]:play() end
+	if k == "6" then mySounds[6]:play() end
 	
 	
 	if k == "9" then

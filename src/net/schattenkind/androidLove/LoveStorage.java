@@ -34,6 +34,10 @@ public class LoveStorage {
 		return loveAppRootOnSdCard + "/" + relpath; 
 	}
 
+	public File getFileFromSdCard(String filename) {
+		return new File(convertFilePath(filename));
+	}
+	
 	public FileInputStream getFileStreamFromSdCard(String filename)
 			throws FileNotFoundException {
 		File f = new File(convertFilePath(filename));

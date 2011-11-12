@@ -9,9 +9,11 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
+import android.net.Uri;
 import android.util.Log;
 import android.media.SoundPool;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 
 public class LuanAudio extends LuanBase {
 	public static final String SOURCE_TYPE_STATIC = "static";
@@ -276,15 +278,31 @@ public class LuanAudio extends LuanBase {
 		private LuanAudio	audio;
 		private String filename;
 		public int miSoundID = 0;
+		public boolean bMusic = false;
+		public MediaPlayer mp;
 		
 		public LuanSource (LuanAudio audio,String filename,String type) { 
 			this.audio = audio;
 			this.filename = filename;
-			Log.i("LuanSource","constructor filename="+filename);
 			int iPriority = 0; // determines which sound gets halted if there's not enough channels
+			if (type == "stream" || 
+				filename.toLowerCase().endsWith("mp3") || 
+				filename.toLowerCase().endsWith("ogg") || 
+				filename.toLowerCase().endsWith("xm"))  // NOTE: clouds demo has xm(tracker music), but fails to load
+				bMusic = true;
 			
-			miSoundID = audio.mSoundPool.load(audio.vm.getStorage().convertFilePath(filename),0);
-			// note : http://stackoverflow.com/questions/2458833/how-do-i-get-a-wav-sound-to-play-android
+			Log.i("LuanSource","constructor filename="+filename+" type="+type+" bMusic="+bMusic);
+			
+			if (bMusic) {
+				// NOTE : 	MediaPlayer.create(Context context, int resid)
+				// NOTE : 	MediaPlayer.create(Context context, Uri uri)
+				// note : http://blog.endpoint.com/2011/03/api-gaps-android-mediaplayer-example.html
+				// note : http://stackoverflow.com/questions/2458833/how-do-i-get-a-wav-sound-to-play-android
+				// http://www.helloandroid.com/taxonomy/term/14
+				mp = MediaPlayer.create(audio.vm.getActivity(), Uri.fromFile(audio.vm.getStorage().getFileFromSdCard(filename)) );
+			} else {
+				miSoundID = audio.mSoundPool.load(audio.vm.getStorage().convertFilePath(filename),0);
+			}
 		}
 		
 		public LuanSource (LuanAudio audio,LuanDecoder decoder,String type) { this.audio = audio; }
@@ -294,13 +312,17 @@ public class LuanAudio extends LuanBase {
 		public static LuanSource self (Varargs args) { return (LuanSource)args.checkuserdata(1,LuanSource.class); }
 	
 		public void play () {
-			Log.i("LuanSource","play filename="+filename+" miSoundID="+miSoundID);
-			float fLeftVol = 1f;
-			float fRightVol = 1f;
-			int iPrio = 0;
-			int iLoopMode = 0;
-			float fRate = 1f;
-			audio.mSoundPool.play(miSoundID,fLeftVol,fRightVol,iPrio,iLoopMode,fRate);
+			Log.i("LuanSource","play filename="+filename+" miSoundID="+miSoundID+" bMusic="+bMusic);
+			if (bMusic) {
+				if (mp != null) mp.start();
+			} else {
+				float fLeftVol = 1f;
+				float fRightVol = 1f;
+				int iPrio = 0;
+				int iLoopMode = 0;
+				float fRate = 1f;
+				audio.mSoundPool.play(miSoundID,fLeftVol,fRightVol,iPrio,iLoopMode,fRate);
+			}
 		}
 		
 		public static LuaTable CreateMetaTable (final LuanAudio audio) {
