@@ -46,3 +46,16 @@ when launching eclipse, launch it from bash
 
 if you want to copy everything to the sd card again, delete ./tools/push_dir.db  (a database file where it stores md5-sum)
 
+NOTE : this guide looks a bit like what we did : http://linuxconfig.org/get-started-with-android-application-development-using-linux-and-android-sdk
+
+### BUILD publish/release a binary/apk
+
+remove all Log.i() and Log.e() calls and the import line (central function in LoveVM.java)
+
+eclipse : open manifest editor : scroll down in manifest tab : 
+Use the Export Wizard to export and sign an AP			<---- USED
+
+for android 2.1 : change project.properties : 
+target=android-8
+to
+target=android-7
