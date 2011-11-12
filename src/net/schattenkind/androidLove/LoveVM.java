@@ -31,17 +31,24 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
-import android.util.Log;
+//~ import android.util.Log;		// TODO: disable for release
 import android.widget.Toast;
 
 public class LoveVM {
 	private static final String TAG = "LoveVM";
 	private Activity attachedToThisActivity;
 	private LuaValue _G;
-
-	public void RobLog(String s) {
-		Log.i("LoveVMRobLog", s.toString());
+	
+	public static void LoveLogE(String sTag,String sTxt,Exception e) {
+		//~ Log.e(sTag,sTxt, e);	// TODO: disable for release
 	}
+	public static void LoveLogE(String sTag,String sTxt) {
+		//~ Log.e(sTag,sTxt);	// TODO: disable for release
+	}
+	public static void LoveLog(String sTag,String sTxt) {
+		//~ Log.i(sTag, s.toString()); // TODO: disable for release
+	}
+	public static void LoveLog(String s) { LoveLog(TAG,s); }
 
 	private LuanGraphics mLuanGraphics;
 	private LuanAudio mLuanAudio;
@@ -118,7 +125,7 @@ public class LoveVM {
 	// seems to be called LATE! after notifyGL, so made this an init condition
 	// to avoid screensize being unavailable during love.load
 	public void notifyScreenSize(float w, float h) {
-		RobLog("notifyScreenSize:" + w + "," + h);
+		LoveLog("notifyScreenSize:" + w + "," + h);
 		mfScreenW = w;
 		mfScreenH = h;
 		bInitCondition_ScreenSize = true;
@@ -128,7 +135,7 @@ public class LoveVM {
 	// / called when gl context is created or updated
 	public void notifyGL(GL10 gl) {
 		if (!bInitCondition_NotifyGL)
-			RobLog("notifyGL");
+			LoveLog("notifyGL");
 		this.gl = gl;
 		bInitCondition_NotifyGL = true;
 		checkAllInitOk();
@@ -136,7 +143,7 @@ public class LoveVM {
 
 	// / called when activity.onCreate has finished setting up the window
 	public void notifyOnCreateDone() {
-		RobLog("notifyOnCreateDone");
+		LoveLog("notifyOnCreateDone");
 		bInitCondition_onCreate = true;
 		checkAllInitOk();
 	}
@@ -156,16 +163,16 @@ public class LoveVM {
 			setupCoreFunctions();
 			setupLoveFunctions();
 
-			RobLog("exec pairs_hack.lua...");
+			LoveLog("exec pairs_hack.lua...");
 			loadFileFromRes(R.raw.pairs_hack, "pairs_hack.lua");
 
-			RobLog("exec conf.lua...");
+			LoveLog("exec conf.lua...");
 			loadConfig();
 
-			RobLog("exec core.lua...");
+			LoveLog("exec core.lua...");
 			loadFileFromRes(R.raw.core, "core.lua");
 
-			RobLog("exec main.lua...");
+			LoveLog("exec main.lua...");
 			loadFileFromSdCard("main.lua");
 		} catch (LuaError e) {
 			handleLuaError(e);
@@ -186,7 +193,7 @@ public class LoveVM {
 				loadFileFromSdCard(confFile);
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "error loading config file", e);
+			LoveLogE(TAG, "error loading config file", e);
 		}
 	}
 
@@ -194,9 +201,9 @@ public class LoveVM {
 		try {
 			LoadState.load(getResourceInputStream(id), filename, _G).call();
 		} catch (NotFoundException e) {
-			Log.e(TAG, e.getMessage());
+			LoveLogE(TAG, e.getMessage());
 		} catch (IOException e) {
-			Log.e(TAG, e.getMessage());
+			LoveLogE(TAG, e.getMessage());
 		}
 	}
 
@@ -205,9 +212,9 @@ public class LoveVM {
 			LoadState.load(storage.getFileStreamFromSdCard(filename), filename,
 					_G).call();
 		} catch (FileNotFoundException e) {
-			Log.e(TAG, e.getMessage());
+			LoveLogE(TAG, e.getMessage());
 		} catch (IOException e) {
-			Log.e(TAG, e.getMessage());
+			LoveLogE(TAG, e.getMessage());
 		}
 	}
 
@@ -226,7 +233,7 @@ public class LoveVM {
 					s.append(args.arg(i).toString());
 				}
 
-				Log.i(TAG, s.toString());
+				LoveLog(TAG, s.toString());
 
 				return LuaValue.NONE;
 			}
@@ -304,7 +311,7 @@ public class LoveVM {
 	public void load() {
 		assert (bInitDone);
 		try {
-			RobLog("calling love.load...");
+			LoveLog("calling love.load...");
 			_G.get("love").get("load").call();
 		} catch (LuaError e) {
 			handleLuaError(e);
@@ -312,13 +319,13 @@ public class LoveVM {
 	}
 
 	public void handleError(Exception e) {
-		Log.e(TAG, "ERROR: " + e.getMessage());
+		LoveLogE(TAG, "ERROR: " + e.getMessage());
 		toast("ERROR: " + e.getMessage());
 		isBroken = true;
 	}
 
 	public void handleLuaError(LuaError e) {
-		Log.e(TAG, "LUA ERROR: " + e.getMessage());
+		LoveLogE(TAG, "LUA ERROR: " + e.getMessage());
 		toast("LUA ERROR: " + e.getMessage());
 		isBroken = true;
 	}
@@ -330,7 +337,7 @@ public class LoveVM {
 		if (mSetKnownNotImplemented.contains(s))
 			return;
 		mSetKnownNotImplemented.add(s);
-		Log.e(TAG, "WARNING:NotImplemented: " + s);
+		LoveLogE(TAG, "WARNING:NotImplemented: " + s);
 	}
 
 	public void draw(GL10 gl) {
@@ -348,7 +355,7 @@ public class LoveVM {
 		}
 
 		mLuanGraphics.notifyFrameStart(gl);
-		// ~ RobLog("calling love.draw...");
+		// ~ LoveLog("calling love.draw...");
 		try {
 			_G.get("love").get("draw").call();
 		} catch (LuaError e) {
@@ -370,7 +377,7 @@ public class LoveVM {
 		// bCallUpdateDuringDraw=true! otherwise we get weird behavior in
 		// love_for_zombies tho...)
 
-		// ~ RobLog("calling love.update..."+dt);
+		// ~ LoveLog("calling love.update..."+dt);
 		try {
 			_G.get("love").get("update").call(LuaNumber.valueOf(dt));
 		} catch (LuaError e) {

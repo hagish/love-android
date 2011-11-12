@@ -7,8 +7,6 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
-import android.util.Log;
-
 public class LuanThread extends LuanBase {
 	static final String sMetaName_LuanThread = "__MetaLuanThread";
 
@@ -18,7 +16,7 @@ public class LuanThread extends LuanBase {
 		super(vm);
 	}
 	
-	public void Log (String s) { Log.i(TAG, s); }
+	public void Log (String s) { LoveVM.LoveLog(TAG, s); }
 
 	public LuaTable InitLib() {
 		LuaTable t = LuaValue.tableOf();

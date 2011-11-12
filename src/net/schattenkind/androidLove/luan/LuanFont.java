@@ -1,5 +1,7 @@
 package net.schattenkind.androidLove.luan;
 
+import net.schattenkind.androidLove.LoveVM;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.FloatBuffer;
@@ -14,7 +16,6 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
-import android.util.Log;
 //~ import android.renderscript.Font; // TTF try : android.renderscript cannot be resolved =(
 
 
@@ -107,7 +108,7 @@ public class LuanFont {
 			while (x+w+spacing < imgw && img.getColAtPos(x+w+spacing,0) == col) ++spacing;
 			
 			// register glyph
-			//~ Log.i("LuanFont","glyph:"+c+":x="+x+",w="+w+",spacing="+spacing);
+			//~ LoveVM.LoveLog("LuanFont","glyph:"+c+":x="+x+",w="+w+",spacing="+spacing);
 			mGlyphInfos.put(c,new GlyphInfo(w,w+spacing,(float)x/(float)imgw,(float)(x+w)/(float)imgw));
 			
 			if (w_space == 0f) w_space = w;
@@ -145,8 +146,8 @@ public class LuanFont {
 	public void addCharToBuffer(char c,float draw_x,float draw_y, float sx, float sy) {
 		GlyphInfo gi = getGlyphInfo(c);
 		if (gi == null) return;
-		if (mVB_Pos == null) { Log.i("LuanFont","addCharToBuffer:mVB_Pos = null"); return; }
-		if (mVB_Tex == null) { Log.i("LuanFont","addCharToBuffer:mVB_Tex = null"); return; }
+		if (mVB_Pos == null) { LoveVM.LoveLog("LuanFont","addCharToBuffer:mVB_Pos = null"); return; }
+		if (mVB_Tex == null) { LoveVM.LoveLog("LuanFont","addCharToBuffer:mVB_Tex = null"); return; }
 			
 		// add geometry to float buffers if possible
 		
@@ -177,12 +178,12 @@ public class LuanFont {
 		
 	}
 	public void drawBuffer () {
-		if (mVB_Pos == null) { Log.i("LuanFont","drawBuffer:mVB_Pos = null"); return; }
-		if (mVB_Tex == null) { Log.i("LuanFont","drawBuffer:mVB_Tex = null"); return; }
-		if (g == null) { Log.i("LuanFont","drawBuffer:g = null"); return; }
+		if (mVB_Pos == null) { LoveVM.LoveLog("LuanFont","drawBuffer:mVB_Pos = null"); return; }
+		if (mVB_Tex == null) { LoveVM.LoveLog("LuanFont","drawBuffer:mVB_Tex = null"); return; }
+		if (g == null) { LoveVM.LoveLog("LuanFont","drawBuffer:g = null"); return; }
 		GL10 gl = g.getGL();
-		if (gl == null) { Log.i("LuanFont","drawBuffer:gl = null"); return; }
-		if (img == null) { Log.i("LuanFont","drawBuffer:img = null"); return; }
+		if (gl == null) { LoveVM.LoveLog("LuanFont","drawBuffer:gl = null"); return; }
+		if (img == null) { LoveVM.LoveLog("LuanFont","drawBuffer:img = null"); return; }
 		// TODO: send geometry to ogre
 		mVB_Pos.position(0); // set the buffer to read the first coordinate
 		mVB_Tex.position(0); // set the buffer to read the first coordinate
@@ -231,14 +232,14 @@ public class LuanFont {
 		float y = param_y;
 		boolean bAlignRecalcNeeded = true;
 		// TODO: wrap ignores word boundaries for now, lookahead ? 
-		//~ Log.i("LuanFont","printf:"+param_x+","+param_y+","+limit+","+Align2Text(align)+" :"+text); 
+		//~ LoveVM.LoveLog("LuanFont","printf:"+param_x+","+param_y+","+limit+","+Align2Text(align)+" :"+text); 
 		for (int i=0;i<len;++i) {
 			char c = text.charAt(i);
 			if (bAlignRecalcNeeded) {
 				bAlignRecalcNeeded = false;
 				if (align != AlignMode.LEFT) {
 					float linew = getLineW((i > 0) ? text : text.substring(i)); // getLineW automatically stops at newline
-					//~ Log.i("LuanFont","printf:["+i+"] linew="+linew+","+Align2Text(align)+" :"+text); 
+					//~ LoveVM.LoveLog("LuanFont","printf:["+i+"] linew="+linew+","+Align2Text(align)+" :"+text); 
 					if (linew > limit) linew = limit; // small inaccuracy here, but shouldn't matter much
 					if (align == AlignMode.RIGHT) x += (limit - linew); 
 					if (align == AlignMode.CENTER) x += (limit - linew)/2f; // text is in the middle between param_x and param_x+limit

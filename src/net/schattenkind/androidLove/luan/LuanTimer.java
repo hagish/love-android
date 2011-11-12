@@ -9,7 +9,7 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
 import android.os.SystemClock;
-import android.util.Log;
+
 
 public class LuanTimer extends LuanBase {
 	private float lastFrameStartInSec;
@@ -69,7 +69,7 @@ public class LuanTimer extends LuanBase {
 				try {
 					Thread.sleep(args.arg1().toint(), 0);
 				} catch (InterruptedException e) {
-					Log.e("LuanTimer", e.getMessage());
+					LoveVM.LoveLogE("LuanTimer", e.getMessage());
 				}
 
 				return LuaValue.NONE;

@@ -20,8 +20,10 @@ for android-aware games :
 set t.android_native_screen = true in conf.lua to keep the native screen resolution, otherwise it'll rescale to the pc resolution
 to write generic code that detects android, check for love.android being set, this will be set to an empty table for now, but might get android specific functions later
 
+website : http://ghoulsblade.schattenkind.net/wiki/index.php/Love2d-android
+
 ### MISSING FUNCTIONALITY
-* lots of api calls still need to be implemented, currently(2011-11-06) print,font,audio
+* lots of api calls still need to be implemented
 * ttf/truetype fonts won't be available anytime soon, help appreciated
 * love.physics / box2d will probably not be available anytime soon, help appreciated
 * love.threads has dummy stubs, so calling doesn't trigger errors, but the thread-code will never be executed, probably won't be implemented anytime soon, help appreciated

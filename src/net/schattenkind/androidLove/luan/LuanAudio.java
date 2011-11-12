@@ -10,7 +10,6 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
 import android.net.Uri;
-import android.util.Log;
 import android.media.SoundPool;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -31,7 +30,7 @@ public class LuanAudio extends LuanBase {
 	
 	public static final int kAudioChannels = 4; // max number of concurrent sounds playing at the same time, SoundPool constructor
 	
-	public static void Log (String s) { Log.i("LuanAudio", s); }
+	public static void Log (String s) { LoveVM.LoveLog("LuanAudio", s); }
 	
 	
 	// 0.0f - 1.0f
@@ -292,7 +291,7 @@ public class LuanAudio extends LuanBase {
 				filename.toLowerCase().endsWith("xm"))  // NOTE: clouds demo has xm(tracker music), but fails to load
 				bMusic = true;
 			
-			Log.i("LuanSource","constructor filename="+filename+" type="+type+" bMusic="+bMusic);
+			LoveVM.LoveLog("LuanSource","constructor filename="+filename+" type="+type+" bMusic="+bMusic);
 			
 			if (bMusic) {
 				mp = MediaPlayer.create(audio.vm.getActivity(), iResID );
@@ -315,7 +314,7 @@ public class LuanAudio extends LuanBase {
 			// would need autodetect to decide if mSoundPool can work 
 			// otherwise we'd loose a lot of compatibilty with existing love games not aware of android/soundbuf
 			
-			Log.i("LuanSource","constructor filename="+filename+" type="+type+" bMusic="+bMusic);
+			LoveVM.LoveLog("LuanSource","constructor filename="+filename+" type="+type+" bMusic="+bMusic);
 			
 			if (bMusic) {
 				// NOTE : 	MediaPlayer.create(Context context, int resid)
@@ -337,7 +336,7 @@ public class LuanAudio extends LuanBase {
 		public static LuanSource self (Varargs args) { return (LuanSource)args.checkuserdata(1,LuanSource.class); }
 	
 		public void play () {
-			Log.i("LuanSource","play filename="+filename+" miSoundID="+miSoundID+" bMusic="+bMusic);
+			LoveVM.LoveLog("LuanSource","play filename="+filename+" miSoundID="+miSoundID+" bMusic="+bMusic);
 			if (bMusic) {
 				if (mp != null) mp.start();
 			} else {

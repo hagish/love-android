@@ -1,5 +1,7 @@
 package net.schattenkind.androidLove.luan;
 
+import net.schattenkind.androidLove.LoveVM;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +18,7 @@ import org.luaj.vm2.lib.VarArgFunction;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.opengl.GLUtils;
-import android.util.Log;
+
 
 
 public class LuanImage extends LuanDrawable {
@@ -146,8 +148,8 @@ public class LuanImage extends LuanDrawable {
 		// TODO : throw lua error if file not found ?
 		//g.getActivity().openFileInput(filepath);
 		//~ Drawable d = Drawable.createFromStream(input,filepath);
-		//~ Log.i("LuanImage","InputStream ok");
-		//~ Log.i("LuanImage","constructor:"+filepath);
+		//~ LoveVM.LoveLog("LuanImage","InputStream ok");
+		//~ LoveVM.LoveLog("LuanImage","constructor:"+filepath);
 	}
 	
 	/// don't allow public call, since we need to store the origin of the image stream somehow, so we can reload the file image after context-switch
@@ -164,9 +166,9 @@ public class LuanImage extends LuanDrawable {
 		//~ static Drawable 	Drawable.createFromStream(InputStream is, String srcName)
 		
 		BitmapDrawable bmd = new BitmapDrawable(g.vm.getResources(),input); // ressources needed for "density" / dpi etc ?  no idea
-		Log.i("LuanImage","BitmapDrawable ok");
+		LoveVM.LoveLog("LuanImage","BitmapDrawable ok");
 		Bitmap bm = bmd.getBitmap();
-		Log.i("LuanImage","Bitmap ok w="+bm.getWidth()+",h="+bm.getHeight());
+		LoveVM.LoveLog("LuanImage","Bitmap ok w="+bm.getWidth()+",h="+bm.getHeight());
 		mWidth = bm.getWidth();
 		mHeight = bm.getHeight();
 		// TODO : auto-scale to 2^n resolution ? naaaah.
@@ -174,11 +176,11 @@ public class LuanImage extends LuanDrawable {
 		
 		// load into texture
 		LoadFromBitmap(bm);
-		Log.i("LuanImage","LoadFromBitmap done.");
+		LoveVM.LoveLog("LuanImage","LoadFromBitmap done.");
 		
 		// release bitmap ram
 		//~ bm.recycle(); // MEMORY LEAK.. needed for font glyph stuff tho. or store path and re-load on demand
 		
-		Log.i("LuanImage","constructor done.");
+		LoveVM.LoveLog("LuanImage","constructor done.");
 	}
 }

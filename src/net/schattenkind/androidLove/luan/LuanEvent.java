@@ -7,10 +7,8 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
-import android.util.Log;
-
 public class LuanEvent extends LuanBase {
-	public static void Log (String s) { Log.i("LuanEvent", s); }
+	public static void Log (String s) { LoveVM.LoveLog("LuanEvent", s); }
 	
 	public LuanEvent(LoveVM vm) {
 		super(vm);

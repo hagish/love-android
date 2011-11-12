@@ -17,7 +17,7 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
-import android.util.Log;
+
 
 public class LuanFilesystem extends LuanBase {
 
@@ -27,7 +27,7 @@ public class LuanFilesystem extends LuanBase {
 		super(vm);
 	}
 	
-	public void Log (String s) { Log.i("LuanFilesystem", s); }
+	public void Log (String s) { LoveVM.LoveLog("LuanFilesystem", s); }
 
 	public LuaTable InitLib() {
 		LuaTable t = LuaValue.tableOf();
@@ -167,10 +167,10 @@ public class LuanFilesystem extends LuanBase {
 							.get_G());
 					return f;
 				} catch (FileNotFoundException e) {
-					Log.e(TAG, e.getMessage());
+					LoveVM.LoveLogE(TAG, e.getMessage());
 					return LuaValue.NONE;
 				} catch (IOException e) {
-					Log.e(TAG, e.getMessage());
+					LoveVM.LoveLogE(TAG, e.getMessage());
 					return LuaValue.NONE;
 				}
 			}
