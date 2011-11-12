@@ -43,14 +43,19 @@ public class Launcher extends ActivitiyWithExitMenu {
 	}
 
 	private void populateGameList() {
-		File rootDir = new File(Environment.getExternalStorageDirectory() + "/"
-				+ loveRootOnSdCard);
+		try {
+			File rootDir = new File(Environment.getExternalStorageDirectory() + "/"
+					+ loveRootOnSdCard);
 
-		File[] files = rootDir.listFiles();
-		for (File f : files) {
-			if (f.isDirectory()) {
-				tryToPopulateGameFromDirectory(f);
+			File[] files = rootDir.listFiles();
+			for (File f : files) {
+				if (f.isDirectory()) {
+					tryToPopulateGameFromDirectory(f);
+				}
 			}
+		} catch (Exception e) {
+			// avoid crash if /mnt/sdcard/love doesn't exist
+			// Environment.getExternalStorageDirectory()
 		}
 	}
 
