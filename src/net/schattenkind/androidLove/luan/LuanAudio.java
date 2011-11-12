@@ -299,6 +299,7 @@ public class LuanAudio extends LuanBase {
 				// note : http://blog.endpoint.com/2011/03/api-gaps-android-mediaplayer-example.html
 				// note : http://stackoverflow.com/questions/2458833/how-do-i-get-a-wav-sound-to-play-android
 				// http://www.helloandroid.com/taxonomy/term/14
+				// NOTE : tracker files like .xm in clouds demo : http://stackoverflow.com/questions/5597624/how-to-play-tracker-modules-on-android
 				mp = MediaPlayer.create(audio.vm.getActivity(), Uri.fromFile(audio.vm.getStorage().getFileFromSdCard(filename)) );
 			} else {
 				miSoundID = audio.mSoundPool.load(audio.vm.getStorage().convertFilePath(filename),0);
