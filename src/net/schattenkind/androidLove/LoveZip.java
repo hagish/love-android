@@ -81,7 +81,7 @@ public class LoveZip {
 	
 	/// warning, might be slow, shouldn't be used for every file access
 	private static boolean zipPeekHasFileName (File f,String sSearchFileName) {
-		LoveVM.LoveLog(TAG,"zipPeekHasFileName path='"+f.getPath()+"' search='"+sSearchFileName+"'");
+		//~ LoveVM.LoveLog(TAG,"zipPeekHasFileName path='"+f.getPath()+"' search='"+sSearchFileName+"'");
 		try {
 			InputStream is = new FileInputStream(f);
 			ZipInputStream zis = new ZipInputStream(new BufferedInputStream(is,8*1024));
@@ -89,7 +89,7 @@ public class LoveZip {
 				ZipEntry ze;
 				while ((ze = zis.getNextEntry()) != null) {
 					String filename = ze.getName();
-					LoveVM.LoveLog(TAG,"zipPeekHasFileName filename='"+filename+"'");
+					//~ LoveVM.LoveLog(TAG,"zipPeekHasFileName filename='"+filename+"'");
 					if (filename.equals(sSearchFileName)) return true;
 				}
 			} finally {
@@ -115,25 +115,26 @@ public class LoveZip {
 		res = res.replaceAll(S+"[^"+S+"]+"+S+"+.."+S,S); 
 		res = res.replaceAll(S+".."+S,S); // remove any remaining that couldn't be resolved
 		res = res.replaceAll(S+"+",S); // summarize separators
+		res = res.replaceAll("^"+S,""); // remove first
 		// String 	replaceAll(String regularExpression, String replacement)
 		return res;
 	}
 	
 	/// dirlist/enumerate childs
 	public String[] 			getChildren(String sPath) {
-		LoveVM.LoveLog(TAG,"getChildren path='"+sPath+"'");
+		//~ LoveVM.LoveLog(TAG,"getChildren path='"+sPath+"'");
 		String sBasePath = NormalizePath(sPath);
 		if (!sBasePath.endsWith(PATH_SEP)) sBasePath += PATH_SEP; // make sure sBasePath ends with /
 		if (sBasePath.length() == 1) sBasePath = ""; // turn / into empty string
 			
-		LoveVM.LoveLog(TAG,"getChildren normalized='"+sBasePath+"'");
+		//~ LoveVM.LoveLog(TAG,"getChildren normalized='"+sBasePath+"'");
 		
 		// NOTE : it doesn't matter if dir isn't found inn zip entries, e.g. .
 		
 		int iRelPathStart = sBasePath.length();
 		
 		// list all files and dirs directly below
-		ArrayList arrlist = new ArrayList<String>();
+		ArrayList<String> arrlist = new ArrayList<String>();
 		for (Map.Entry<String,LoveZipEntry> entry : mLoveZipEntryMap.entrySet()) {
 			LoveZipEntry e = entry.getValue();
 			String sFilePath = e.sFilePath;
@@ -141,11 +142,11 @@ public class LoveZip {
 			// example file : gfx/imgfont.png
 			
 			// check if filepath is below
-			if (iRelPathStart == 0 || sFilePath.startsWith(sPath)) {
+			if (iRelPathStart == 0 || sFilePath.startsWith(sBasePath)) {
 				// search first separator /
 				int sep = sFilePath.indexOf(PATH_SEP_C,iRelPathStart);
 				boolean bIsDirectChild = e.isDirectory() ? (sep >= 0 && sep == sFilePath.length() - 1) : (sep == -1);
-				LoveVM.LoveLog(TAG,"found '"+sFilePath+"' sep="+sep+" bIsDirectChild="+bIsDirectChild);
+				//~ LoveVM.LoveLog(TAG,"found '"+sFilePath+"' sep="+sep+" bIsDirectChild="+bIsDirectChild);
 				
 				// only accept if it is a direct child rather than a child of a subdir.  directory filepath ends with / and subdirs are listed
 				if (bIsDirectChild) {
@@ -155,7 +156,11 @@ public class LoveZip {
 				}
 			}
 		}
-		return (String[])arrlist.toArray();
+		//~ LoveVM.LoveLog(TAG,"getChildren finished...");
+		String[] res = new String[arrlist.size()];
+		res = arrlist.toArray(res);
+		// TODO: sort by filename, ArrayUtils or sth...
+		return res;
 	}
 	
 	/// avoid if possible, use getFileStreamFromPath instead. 2011-11-12 needed by SoundBuffer and MediaPlayer
