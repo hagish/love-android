@@ -70,6 +70,10 @@ public class LoveConfig {
 	// Enable the physics module (boolean)
 	public boolean modules_physics = true;
 
+	// Use android native screen resolution and don't
+	// scale the graphics
+	public boolean android_native_screen = true;
+
 	public void loadFromLuaTable(LuaTable t) {
 		title = LuaUtils.getFromTableByPath(t, "title", title);
 		author = LuaUtils.getFromTableByPath(t, "author", author);
@@ -106,9 +110,13 @@ public class LoveConfig {
 				modules_sound);
 		modules_physics = LuaUtils.getFromTableByPath(t, "modules.physics",
 				modules_physics);
+
+		android_native_screen = LuaUtils.getFromTableByPath(t,
+				"android_native_screen", android_native_screen);
 	}
 
-	public void loadFromFileStream(InputStream configFileInputStream) throws IOException {
+	public void loadFromFileStream(InputStream configFileInputStream)
+			throws IOException {
 		LuaTable g = JsePlatform.debugGlobals();
 
 		g.set("love", new LuaTable());
@@ -117,12 +125,12 @@ public class LoveConfig {
 		LuaValue conf = LuaUtils.getFromTableByPath(g, "love.conf");
 		if (!conf.equals(LuaValue.NIL)) {
 			LuaTable t = new LuaTable();
-			
+
 			t.set("modules", new LuaTable());
 			t.set("screen", new LuaTable());
-			
+
 			conf.call(t);
-			
+
 			loadFromLuaTable(t);
 		}
 	}

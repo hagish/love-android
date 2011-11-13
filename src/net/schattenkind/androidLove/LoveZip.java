@@ -30,6 +30,8 @@ public class LoveZip {
 	private HashMap<String, LoveZipEntry> mLoveZipEntryMap = new HashMap<String, LoveZipEntry>();
 	
 	public LoveStorage storage;
+
+	private HashMap<String, File> unzippedTempFileMap = new HashMap<String, File>();
 	
 	// ***** ***** ***** ***** ***** constructor
 	
@@ -160,33 +162,48 @@ public class LoveZip {
 		return res;
 	}
 	
-	/// avoid if possible, use getFileStreamFromPath instead. 2011-11-12 needed by SoundBuffer and MediaPlayer
-	/// writes contents of file entry in zip to temporary file, this might not work due to permissions etc
-	public File 				forceExtractToTempFile		(String sPath) throws IOException {
+	public void unzipFile(String fileInZip, String destFile) throws IOException
+	{
 		// open input stream of file in zip
-		InputStream	is = getFileStreamFromPath(sPath);
+		InputStream	is = getFileStreamFromPath(fileInZip);
 		
-		// calc tempname
-		String sTempPrefix = sPath.replaceAll(PATH_SEP_REGEX_ESCAPED,PATH_SEP_REPLACE);
-		String sTempSuffix = ".tmp";
-		LoveVM.LoveLog(TAG,"forceExtractToTempFile path='"+sPath+"' pre='"+sTempPrefix+"' suf='"+sTempSuffix+"'");
-		
-		// open output file in temp dir
-		// TODO: check if tempdir has to be set ? 3rd parameter to createTempFile, defaults to java.io.tmpdir
-		File fTempDir = storage.getSdCardRootDir();
-		File f = File.createTempFile(sTempPrefix,sTempSuffix,fTempDir);
-		LoveVM.LoveLog(TAG,"forceExtractToTempFile temppath='"+f.getPath()+"'");
+		File f = new File(destFile);
 		
 		// copy data
 		int count;
 		byte data[] = new byte[BUFFER_SIZE_EXTRACT_TO_TMP];
 		FileOutputStream		fos		= new FileOutputStream(f);
 		BufferedOutputStream	dest	= new BufferedOutputStream(fos, BUFFER_SIZE_EXTRACT_TO_TMP);
+		
 		while ((count = is.read(data, 0, BUFFER_SIZE_EXTRACT_TO_TMP)) != -1) {
 			dest.write(data, 0, count);
 		}
+
 		dest.flush();
 		dest.close();
+	}
+	
+	/// avoid if possible, use getFileStreamFromPath instead. 2011-11-12 needed by SoundBuffer and MediaPlayer
+	/// writes contents of file entry in zip to temporary file, this might not work due to permissions etc
+	/// temp file get removed after vm exit
+	public File 				forceExtractToTempFile		(String sPath) throws IOException {
+		if (unzippedTempFileMap.containsKey(sPath))
+		{
+			return unzippedTempFileMap.get(sPath);
+		}
+		
+		// open output file in temp dir
+		// TODO: check if tempdir has to be set ? 3rd parameter to createTempFile, defaults to java.io.tmpdir
+		File fTempDir = storage.getSdCardRootDir();
+		File f = File.createTempFile(sTempPrefix,sTempSuffix,fTempDir);
+		f.deleteOnExit();
+
+		LoveVM.LoveLog(TAG,"forceExtractToTempFile temppath='"+f.getPath()+"'");
+		
+		unzipFile(sPath, f.getPath());
+		
+		unzippedTempFileMap.put(sPath, f);
+		
 		return f;
 	}
 	
