@@ -20,16 +20,16 @@ public class MouseHandler implements OnClickListener, OnLongClickListener,
 		this.view.setOnTouchListener(this);
 	}
 
-	@Override
+	//~ @Override // compile error on arch linux sun java
 	public boolean onLongClick(View v) {
 		return false;
 	}
 
-	@Override
+	//~ @Override // compile error on arch linux sun java
 	public void onClick(View v) {
 	}
 
-	@Override
+	//~ @Override // compile error on arch linux sun java
 	public boolean onTouch(View v, MotionEvent event) {
 		int x = (int) event.getX();
 		int y = (int) event.getY();
