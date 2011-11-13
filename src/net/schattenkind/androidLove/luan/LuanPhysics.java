@@ -65,6 +65,21 @@ public class LuanPhysics extends LuanBase {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
 			mt.set("__index",t);
+			
+			t.set("type"			,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("World:"+"type"			);	return LuaValue.NONE; } });	
+			t.set("typeOf"			,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("World:"+"typeOf"		);	return LuaValue.NONE; } });	
+			t.set("getBodyCount"	,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("World:"+"getBodyCount"	);	return LuaValue.NONE; } });	
+			t.set("getCallbacks"	,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("World:"+"getCallbacks"	);	return LuaValue.NONE; } });	
+			t.set("getGravity"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("World:"+"getGravity"	);	return LuaValue.NONE; } });	
+			t.set("getJointCount"	,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("World:"+"getJointCount"	);	return LuaValue.NONE; } });	
+			t.set("getMeter"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("World:"+"getMeter"		);	return LuaValue.NONE; } });	
+			t.set("isAllowSleep"	,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("World:"+"isAllowSleep"	);	return LuaValue.NONE; } });	
+			t.set("setAllowSleep"	,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("World:"+"setAllowSleep"	);	return LuaValue.NONE; } });	
+			t.set("setCallbacks"	,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("World:"+"setCallbacks"	);	return LuaValue.NONE; } });	
+			t.set("setGravity"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("World:"+"setGravity"	);	return LuaValue.NONE; } });	
+			t.set("setMeter"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("World:"+"setMeter"		);	return LuaValue.NONE; } });	
+			t.set("update"			,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("World:"+"update"		);	return LuaValue.NONE; } });	
+
 			return mt;
 		}
 	}
@@ -180,7 +195,13 @@ public class LuanPhysics extends LuanBase {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
 			mt.set("__index",t);
+			
 			LuanShape.AddMethodsToTable(phys,t);
+			
+			t.set("getLocalCenter"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("CircleShape:"+"getLocalCenter"		);	return LuaValue.NONE; } });	
+			t.set("getRadius"			,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("CircleShape:"+"getRadius"		);	return LuaValue.NONE; } });	
+			t.set("getWorldCenter"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("CircleShape:"+"getWorldCenter"		);	return LuaValue.NONE; } });	
+			
 			return mt;
 		}
 	}
@@ -192,10 +213,15 @@ public class LuanPhysics extends LuanBase {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
 			mt.set("__index",t);
+			
 			LuanShape.AddMethodsToTable(phys,t);
+			
+			t.set("getPoints"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("PolygonShape:"+"getPoints"		);	return LuaValue.NONE; } });	
+			
 			return mt;
 		}
 	}
+	
 	// ***** ***** ***** ***** ***** LuanContact
 	public static class LuanContact {
 		public LuanPhysics phys;
@@ -204,9 +230,20 @@ public class LuanPhysics extends LuanBase {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
 			mt.set("__index",t);
+			
+			t.set("getFriction"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Contact:"+"getFriction"		);	return LuaValue.NONE; } });	
+			t.set("getNormal"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Contact:"+"getNormal"		);	return LuaValue.NONE; } });	
+			t.set("getPosition"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Contact:"+"getPosition"		);	return LuaValue.NONE; } });	
+			t.set("getRestitution"			,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Contact:"+"getRestitution"	);	return LuaValue.NONE; } });	
+			t.set("getSeparation"			,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Contact:"+"getSeparation"	);	return LuaValue.NONE; } });	
+			t.set("getVelocity"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Contact:"+"getVelocity"		);	return LuaValue.NONE; } });	
+			t.set("type"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Contact:"+"type"			);	return LuaValue.NONE; } });	
+			t.set("typeOf"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Contact:"+"typeOf"			);	return LuaValue.NONE; } });	
+
 			return mt;
 		}
 	}
+	
 	// ***** ***** ***** ***** ***** LuanJoint
 	public static class LuanJoint {
 		public LuanPhysics phys;
@@ -215,7 +252,27 @@ public class LuanPhysics extends LuanBase {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
 			mt.set("__index",t);
+			
+			t.set("destroy"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Joint:"+"destroy"					);	return LuaValue.NONE; } });	
+			t.set("getAnchors"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Joint:"+"getAnchors"				);	return LuaValue.NONE; } });	
+			t.set("getCollideConnected"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Joint:"+"getCollideConnected"		);	return LuaValue.NONE; } });	
+			t.set("getReactionForce"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Joint:"+"getReactionForce"		);	return LuaValue.NONE; } });	
+			t.set("getReactionTorque"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Joint:"+"getReactionTorque"		);	return LuaValue.NONE; } });	
+			t.set("getType"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Joint:"+"getType"					);	return LuaValue.NONE; } });	
+			t.set("setCollideConnected"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Joint:"+"setCollideConnected"		);	return LuaValue.NONE; } });	
+			t.set("type"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Joint:"+"type"					);	return LuaValue.NONE; } });	
+			t.set("typeOf"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Joint:"+"typeOf"					);	return LuaValue.NONE; } });	
+						
 			return mt;
 		}
 	}
+	/*
+	LuanJoint subtypes:
+	DistanceJoint
+	GearJoint
+	MouseJoint
+	PrismaticJoint
+	PulleyJoint
+	RevoluteJoint
+	*/
 }
