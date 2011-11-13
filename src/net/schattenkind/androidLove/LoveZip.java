@@ -192,13 +192,18 @@ public class LoveZip {
 			return unzippedTempFileMap.get(sPath);
 		}
 		
+		// calc tempname
+		String sTempPrefix = sPath.replaceAll(PATH_SEP_REGEX_ESCAPED,PATH_SEP_REPLACE);
+		String sTempSuffix = ".tmp";
+		LoveVM.LoveLog(TAG,"forceExtractToTempFile path='"+sPath+"' pre='"+sTempPrefix+"' suf='"+sTempSuffix+"'");
+		
 		// open output file in temp dir
 		// TODO: check if tempdir has to be set ? 3rd parameter to createTempFile, defaults to java.io.tmpdir
 		File fTempDir = storage.getSdCardRootDir();
 		File f = File.createTempFile(sTempPrefix,sTempSuffix,fTempDir);
-		f.deleteOnExit();
-
 		LoveVM.LoveLog(TAG,"forceExtractToTempFile temppath='"+f.getPath()+"'");
+
+		f.deleteOnExit();
 		
 		unzipFile(sPath, f.getPath());
 		

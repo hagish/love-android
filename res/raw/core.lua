@@ -61,7 +61,7 @@ end
 
 local default_screen_w = 800 -- todo: nil for native ? might be trouble 
 local default_screen_h = 600
---[[
+
 -- default love.conf
 function love.conf(t)
     t.title = "Untitled"        -- The title of the window the game is in (string)
@@ -86,7 +86,6 @@ function love.conf(t)
     t.modules.sound = true      -- Enable the sound module (boolean)
     t.modules.physics = true    -- Enable the physics module (boolean)
 end
-]]
 
 function love_andorid_exec_conf ()
 	local t = { screen={}, modules={} }
@@ -101,15 +100,4 @@ function love_andorid_exec_conf ()
 		print("love-android: conf.lua android_native_screen=true, skipping love.graphics.setMode") 
 	end
 end
-
--- load and run conf.lua if available, or use default options if not
-local mycode = love.filesystem.load("conf.lua")
-if (mycode) then 
-	print("love-android: conf.lua loaded, executing...") 
-	mycode()
-else
-	print("love-android: loading conf.lua failed, falling back to default") 
-end
-love_andorid_exec_conf()
-
 	

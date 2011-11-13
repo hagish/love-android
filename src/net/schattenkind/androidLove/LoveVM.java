@@ -36,6 +36,9 @@ import android.util.Log;		// TODO: disable for release
 import android.widget.Toast;
 
 public class LoveVM {
+	// TODO: disable for release
+	private static final boolean loggingEnabled = true;
+	
 	private static final String TAG = "LoveVM";
 	private Activity attachedToThisActivity;
 	private LuaValue _G;
@@ -84,13 +87,13 @@ public class LoveVM {
 	// ***** ***** ***** ***** ***** log 
 	
 	public static void LoveLogE(String sTag,String sTxt,Exception e) {
-		Log.e(sTag,sTxt, e);	// TODO: disable for release
+		if(loggingEnabled)Log.e(sTag,sTxt, e);
 	}
 	public static void LoveLogE(String sTag,String sTxt) {
-		Log.e(sTag,sTxt);	// TODO: disable for release
+		if(loggingEnabled)Log.e(sTag,sTxt);
 	}
 	public static void LoveLog(String sTag,String sTxt) {
-		Log.i(sTag, sTxt.toString()); // TODO: disable for release
+		if(loggingEnabled)Log.i(sTag, sTxt.toString());
 	}
 	public static void LoveLog(String s) { LoveLog(TAG,s); }
 	
@@ -125,11 +128,14 @@ public class LoveVM {
 			LoveLog("exec pairs_hack.lua...");
 			loadFileFromRes(R.raw.pairs_hack, "pairs_hack.lua");
 
-			LoveLog("exec conf.lua...");
-			loadConfig();
-
 			LoveLog("exec core.lua...");
 			loadFileFromRes(R.raw.core, "core.lua");
+
+			LoveLog("exec conf.lua...");
+			loadConfig();
+			
+			LoveLog("exec bootstrap.lua...");
+			loadFileFromRes(R.raw.bootstrap, "bootstrap.lua");
 
 			LoveLog("exec main.lua...");
 			loadFileFromSdCard("main.lua");
