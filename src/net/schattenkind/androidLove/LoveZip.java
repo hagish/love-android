@@ -36,16 +36,19 @@ public class LoveZip {
 	
 	private HashMap<String, LoveZipEntry> mLoveZipEntryMap = new HashMap();
 	
+	public LoveStorage storage;
+	
 	// ***** ***** ***** ***** ***** constructor
 	
 	/// create from filepath
-	public LoveZip (String sPath) throws IOException { this(new File(sPath)); }
+	public LoveZip (LoveStorage storage,String sPath) throws IOException { this(storage,new File(sPath)); }
 	
 	/// create from file
-	public LoveZip (File f) throws IOException { this(new FileInputStream(f)); }
+	public LoveZip (LoveStorage storage,File f) throws IOException { this(storage,new FileInputStream(f)); }
 	
 	/// create from inputstream, e.g. resource
-	public LoveZip (InputStream is) throws IOException {
+	public LoveZip (LoveStorage storage,InputStream is) throws IOException {
+		this.storage = storage;
 		ZipInputStream zis = new ZipInputStream(new BufferedInputStream(is,8*1024));
 		try {
 			ZipEntry ze;
@@ -116,7 +119,7 @@ public class LoveZip {
 		res = res.replaceAll(S+"[^"+S+"]+"+S+"+.."+S,S); 
 		res = res.replaceAll(S+".."+S,S); // remove any remaining that couldn't be resolved
 		res = res.replaceAll(S+"+",S); // summarize separators
-		res = res.replaceAll("^"+S,""); // remove first
+		res = res.replaceAll("^"+S,""); // remove first (assumed relative, it's inside zip anyway)
 		// String 	replaceAll(String regularExpression, String replacement)
 		return res;
 	}
@@ -177,7 +180,9 @@ public class LoveZip {
 		
 		// open output file in temp dir
 		// TODO: check if tempdir has to be set ? 3rd parameter to createTempFile, defaults to java.io.tmpdir
-		File f = File.createTempFile(sTempPrefix,sTempSuffix);
+		File fTempDir = storage.getSdCardRootDir();
+		File f = File.createTempFile(sTempPrefix,sTempSuffix,fTempDir);
+		LoveVM.LoveLog(TAG,"forceExtractToTempFile temppath='"+f.getPath()+"'");
 		
 		// copy data
 		int count;

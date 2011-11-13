@@ -30,16 +30,16 @@ public class LoveStorage {
 	
 	public LoveStorage(Activity activity, int iLoveZipResID) throws IOException {
 		this.activity = activity;
-		mLoveZip = new LoveZip(getResourceInputStream(iLoveZipResID));
 		loveAppRootOnSdCard = sRootPathForZipAndResource;
+		mLoveZip = new LoveZip(this,getResourceInputStream(iLoveZipResID));
 	}
 	
 	public LoveStorage(Activity activity, String path) throws IOException {
 		this.activity = activity;
 		File f = new File(path);
 		if (Launcher.isFileLoveZip(f)) { 
-			mLoveZip = new LoveZip(f);
 			loveAppRootOnSdCard = sRootPathForZipAndResource;
+			mLoveZip = new LoveZip(this,f);
 		} else {
 			loveAppRootOnSdCard = path;
 		}
@@ -68,6 +68,8 @@ public class LoveStorage {
 		File f = new File(convertFilePath(filename));
 		return new FileInputStream(f);
 	}
+	
+	public File getSdCardRootDir() { return new File(loveAppRootOnSdCard); }
 	
 	// ***** ***** ***** ***** ***** api
 
