@@ -34,6 +34,8 @@ public class LuanImage extends LuanDrawable {
 	public int				mWrapV = GL10.GL_REPEAT;
 	public Bitmap			mBitmap;
 		
+	@Override public boolean IsImage () { return true; }
+	
 	public static LuanImage self (Varargs args) { return (LuanImage)args.checkuserdata(1,LuanImage.class); }
 	
 	public static String	Filter2Str	(int	a) { return (a == GL10.GL_LINEAR)?"linear":"nearest"; }

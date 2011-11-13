@@ -57,7 +57,8 @@ public class LoveZip {
 				} else {
 					// handle file
 					long iSize = ze.getSize();
-					ByteArrayOutputStream baos = new ByteArrayOutputStream((int)iSize); // param is just a hint for pre-alloc
+					if (iSize <= 0) LoveVM.LoveLog(TAG,"LoveZip constructor: weird size:"+iSize);
+					ByteArrayOutputStream baos = new ByteArrayOutputStream((int)((iSize > 0) ? iSize : 1024)); // param is just a hint for pre-alloc
 					
 					// read file data
 					int count;

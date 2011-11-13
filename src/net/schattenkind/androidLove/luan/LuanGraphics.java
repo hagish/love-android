@@ -23,6 +23,7 @@ public class LuanGraphics extends LuanBase {
 	public static final String sMetaName_LuanImage = "__MetaLuanImage";
 	public static final String sMetaName_LuanQuad = "__MetaLuanQuad";
 	public static final String sMetaName_LuanFont = "__MetaLuanFont";
+	public static final String sMetaName_LuanParticleSystem = "__MetaLuanParticleSystem";
 	
 	public boolean bResolutionOverrideActive = false;
 	public int mfResolutionOverrideX;
@@ -50,8 +51,7 @@ public class LuanGraphics extends LuanBase {
 		_G.set(sMetaName_LuanImage,LuanImage.CreateMetaTable(this));
 		_G.set(sMetaName_LuanQuad,LuanQuad.CreateMetaTable(this));
 		_G.set(sMetaName_LuanFont,LuanFont.CreateMetaTable(this));
-
-		
+		_G.set(sMetaName_LuanParticleSystem,LuanParticleSystem.CreateMetaTable(this));
 
 		t.set("checkMode",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"checkMode"			); return LuaValue.NONE; } }); // TODO: not yet implemented	
 		t.set("circle",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"circle"				); return LuaValue.NONE; } }); // TODO: not yet implemented
@@ -73,7 +73,6 @@ public class LuanGraphics extends LuanBase {
 		t.set("isCreated",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"isCreated"			); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("line",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"line"				); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("newFramebuffer",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"newFramebuffer"		); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("newParticleSystem",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"newParticleSystem"	); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("newScreenshot",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"newScreenshot"		); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("newSpriteBatch",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"newSpriteBatch"		); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("point",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"point"				); return LuaValue.NONE; } }); // TODO: not yet implemented
@@ -214,6 +213,20 @@ public class LuanGraphics extends LuanBase {
 			}
 		});
 		
+		/// system = love.graphics.newParticleSystem( image, buffer )
+		t.set("newParticleSystem",	new VarArgFunction() { 
+			@Override
+			public Varargs invoke(Varargs args) {
+				LuanImage img = (LuanImage)args.checkuserdata(1,LuanImage.class);
+				int iBufferSize = args.checkint(2);
+				try {
+					return LuaValue.userdataOf(new LuanParticleSystem(LuanGraphics.this,img,iBufferSize),vm.get_G().get(sMetaName_LuanParticleSystem));
+				} catch (Exception e) {
+					vm.handleError(e);
+				}
+				return LuaValue.NONE;
+			}
+		});
 		
 		/// love.graphics.setFont( font )
 		t.set("setFont", new VarArgFunction() {
@@ -227,7 +240,7 @@ public class LuanGraphics extends LuanBase {
 		t.set("draw", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
-				LuanImage img = (LuanImage)args.checkuserdata(1,LuanImage.class);
+				LuanDrawable drawable = (LuanDrawable)args.checkuserdata(1,LuanDrawable.class);
 				float x = (float)args.checkdouble(2);
 				float y = (float)args.checkdouble(3);
 				float r  = (IsArgSet(args,4)) ? ((float)args.checkdouble(4)) : 0.0f;
@@ -235,8 +248,12 @@ public class LuanGraphics extends LuanBase {
 				float sy = (IsArgSet(args,6)) ? ((float)args.checkdouble(6)) : 1.0f;
 				float ox = (IsArgSet(args,7)) ? ((float)args.checkdouble(7)) : 0.0f;
 				float oy = (IsArgSet(args,8)) ? ((float)args.checkdouble(8)) : 0.0f;
-				
-				DrawSprite(img.GetTextureID(),img.mWidth,img.mHeight,x,y,r,sx,sy,ox,oy);
+				if (drawable.IsImage()) {
+					LuanImage img = (LuanImage)drawable;
+					DrawSprite(img.GetTextureID(),img.mWidth,img.mHeight,x,y,r,sx,sy,ox,oy);
+				} else {
+					drawable.RenderSelf(x,y,r,sx,sy,ox,oy);
+				}
 				return LuaValue.NONE;
 			}
 		});
@@ -592,7 +609,8 @@ public class LuanGraphics extends LuanBase {
 	// ***** ***** ***** ***** *****  LuanDrawable
 	
 	public static class LuanDrawable {
-		
+		public boolean IsImage () { return false; }
+		public void RenderSelf (float x,float y,float r,float sx,float sy,float ox,float oy) { }
 	}
 }
 
