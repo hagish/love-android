@@ -1,18 +1,8 @@
 package net.schattenkind.androidLove;
 
-import net.schattenkind.androidLove.LoveVM;
-import net.schattenkind.androidLove.LoveStorage;
-
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
-import java.io.InputStream;
 import java.util.LinkedList;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import android.content.Intent;
 import android.os.Bundle;

@@ -2,28 +2,21 @@
 
 package net.schattenkind.androidLove;
 
-import net.schattenkind.androidLove.LoveStorage;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.InputStream;
-import java.io.ByteArrayOutputStream;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.util.ArrayList;
 
 public class LoveZip {
 	protected static final int BUFFER_SIZE_EXTRACT_TO_TMP = 1024*8;
@@ -34,7 +27,7 @@ public class LoveZip {
 	protected static final String PATH_SEP_REGEX_ESCAPED = PATH_SEP; // TODO, might be needed for String.replaceAll
 	protected static final String PATH_SEP_REPLACE = "_"; // for temp filename
 	
-	private HashMap<String, LoveZipEntry> mLoveZipEntryMap = new HashMap();
+	private HashMap<String, LoveZipEntry> mLoveZipEntryMap = new HashMap<String, LoveZipEntry>();
 	
 	public LoveStorage storage;
 	
