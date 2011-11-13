@@ -199,7 +199,7 @@ public class LoveZip {
 		
 		// open output file in temp dir
 		// TODO: check if tempdir has to be set ? 3rd parameter to createTempFile, defaults to java.io.tmpdir
-		File fTempDir = storage.getSdCardRootDir();
+		File fTempDir = storage.getWritableSdCardDir();
 		File f = File.createTempFile(sTempPrefix,sTempSuffix,fTempDir);
 		LoveVM.LoveLog(TAG,"forceExtractToTempFile temppath='"+f.getPath()+"'");
 
