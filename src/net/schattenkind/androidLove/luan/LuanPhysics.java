@@ -24,6 +24,7 @@ public class LuanPhysics extends LuanBase {
 	
 	public void Log (String s) { LoveVM.LoveLog(TAG, s); }
 	
+	public static Varargs RetVector2 (float x,float y) { return LuaValue.varargsOf(LuaValue.valueOf(x),LuaValue.valueOf(y)); }
 	
 	public LuaTable InitLib () {
 		LuaTable t = LuaValue.tableOf();
@@ -42,7 +43,7 @@ public class LuanPhysics extends LuanBase {
 		t.set("newWorld",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanWorld(LuanPhysics.this),vm.get_G().get(sMetaName_World));	} }); 		
 		t.set("newBody",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanBody(LuanPhysics.this),vm.get_G().get(sMetaName_Body));	} });
 		
-		t.set("newRectangleShape",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanShape(LuanPhysics.this),vm.get_G().get(sMetaName_Shape));	} });	
+		t.set("newRectangleShape",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanPolygonShape(LuanPhysics.this),vm.get_G().get(sMetaName_PolygonShape));	} });	
 		t.set("newCircleShape",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanCircleShape(LuanPhysics.this),vm.get_G().get(sMetaName_CircleShape));	} }); 		
 		t.set("newPolygonShape",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanPolygonShape(LuanPhysics.this),vm.get_G().get(sMetaName_PolygonShape));	} });	
 		
@@ -97,27 +98,27 @@ public class LuanPhysics extends LuanBase {
 			
 			t.set("applyForce"							,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"applyForce"							);	return LuaValue.NONE; } });	
 			t.set("applyImpulse"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"applyImpulse"						);	return LuaValue.NONE; } });	
-			t.set("applyTorque"							,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"applyTorque"							);	return LuaValue.NONE; } });	
-			t.set("destroy"								,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"destroy"								);	return LuaValue.NONE; } });	
+			t.set("applyTorque"							,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"applyTorque"						);	return LuaValue.NONE; } });	
+			t.set("destroy"								,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"destroy"							);	return LuaValue.NONE; } });	
 			t.set("getAllowSleeping"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getAllowSleeping"					);	return LuaValue.NONE; } });	
-			t.set("getAngle"							,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getAngle"							);	return LuaValue.NONE; } });	
-			t.set("getAngularDamping"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getAngularDamping"					);	return LuaValue.NONE; } });	
-			t.set("getAngularVelocity"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getAngularVelocity"					);	return LuaValue.NONE; } });	
-			t.set("getInertia"							,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getInertia"							);	return LuaValue.NONE; } });	
-			t.set("getLinearDamping"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getLinearDamping"					);	return LuaValue.NONE; } });	
-			t.set("getLinearVelocity"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getLinearVelocity"					);	return LuaValue.NONE; } });	
-			t.set("getLinearVelocityFromLocalPoint"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getLinearVelocityFromLocalPoint"		);	return LuaValue.NONE; } });	
-			t.set("getLinearVelocityFromWorldPoint"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getLinearVelocityFromWorldPoint"		);	return LuaValue.NONE; } });	
-			t.set("getLocalCenter"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getLocalCenter"						);	return LuaValue.NONE; } });	
-			t.set("getLocalPoint"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getLocalPoint"						);	return LuaValue.NONE; } });	
-			t.set("getLocalVector"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getLocalVector"						);	return LuaValue.NONE; } });	
-			t.set("getMass"								,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getMass"								);	return LuaValue.NONE; } });	
-			t.set("getPosition"							,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getPosition"							);	return LuaValue.NONE; } });	
-			t.set("getWorldCenter"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getWorldCenter"						);	return LuaValue.NONE; } });	
-			t.set("getWorldPoint"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getWorldPoint"						);	return LuaValue.NONE; } });	
-			t.set("getWorldVector"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getWorldVector"						);	return LuaValue.NONE; } });	
-			t.set("getX"								,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getX"								);	return LuaValue.NONE; } });	
-			t.set("getY"								,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getY"								);	return LuaValue.NONE; } });	
+			t.set("getAngle"							,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getAngle"							);	return LuaValue.ZERO; } });	
+			t.set("getAngularDamping"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getAngularDamping"					);	return LuaValue.ZERO; } });	
+			t.set("getAngularVelocity"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getAngularVelocity"					);	return LuaValue.ZERO; } });	
+			t.set("getInertia"							,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getInertia"							);	return LuaValue.ZERO; } });	
+			t.set("getLinearDamping"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getLinearDamping"					);	return LuaValue.ZERO; } });	
+			t.set("getLinearVelocity"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getLinearVelocity"					);	return LuanPhysics.RetVector2(0f,0f); } });	
+			t.set("getLinearVelocityFromLocalPoint"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getLinearVelocityFromLocalPoint"	);	return LuanPhysics.RetVector2(0f,0f); } });	
+			t.set("getLinearVelocityFromWorldPoint"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getLinearVelocityFromWorldPoint"	);	return LuanPhysics.RetVector2(0f,0f); } });	
+			t.set("getLocalCenter"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getLocalCenter"						);	return LuanPhysics.RetVector2(0f,0f); } });	
+			t.set("getLocalPoint"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getLocalPoint"						);	return LuanPhysics.RetVector2(0f,0f); } });	
+			t.set("getLocalVector"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getLocalVector"						);	return LuanPhysics.RetVector2(0f,0f); } });	
+			t.set("getMass"								,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getMass"							);	return LuaValue.ZERO; } });	
+			t.set("getPosition"							,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getPosition"						);	return LuanPhysics.RetVector2(0f,0f); } });	
+			t.set("getWorldCenter"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getWorldCenter"						);	return LuanPhysics.RetVector2(0f,0f); } });	
+			t.set("getWorldPoint"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getWorldPoint"						);	return LuanPhysics.RetVector2(0f,0f); } });	
+			t.set("getWorldVector"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getWorldVector"						);	return LuanPhysics.RetVector2(0f,0f); } });	
+			t.set("getX"								,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getX"								);	return LuaValue.ZERO; } });	
+			t.set("getY"								,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"getY"								);	return LuaValue.ZERO; } });	
 			t.set("isBullet"							,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"isBullet"							);	return LuaValue.NONE; } });	
 			t.set("isDynamic"							,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"isDynamic"							);	return LuaValue.NONE; } });	
 			t.set("isFrozen"							,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"isFrozen"							);	return LuaValue.NONE; } });	
@@ -133,9 +134,9 @@ public class LuanPhysics extends LuanBase {
 			t.set("setInertia"							,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"setInertia"							);	return LuaValue.NONE; } });	
 			t.set("setLinearDamping"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"setLinearDamping"					);	return LuaValue.NONE; } });	
 			t.set("setLinearVelocity"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"setLinearVelocity"					);	return LuaValue.NONE; } });	
-			t.set("setMass"								,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"setMass"								);	return LuaValue.NONE; } });	
+			t.set("setMass"								,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"setMass"							);	return LuaValue.NONE; } });	
 			t.set("setMassFromShapes"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"setMassFromShapes"					);	return LuaValue.NONE; } });	
-			t.set("setPosition"							,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"setPosition"							);	return LuaValue.NONE; } });	
+			t.set("setPosition"							,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"setPosition"						);	return LuaValue.NONE; } });	
 			t.set("setX"								,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"setX"								);	return LuaValue.NONE; } });	
 			t.set("setY"								,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"setY"								);	return LuaValue.NONE; } });	
 			t.set("wakeUp"								,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Body:"+"wakeUp"								);	return LuaValue.NONE; } });	
@@ -233,7 +234,7 @@ public class LuanPhysics extends LuanBase {
 			
 			t.set("getFriction"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Contact:"+"getFriction"		);	return LuaValue.NONE; } });	
 			t.set("getNormal"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Contact:"+"getNormal"		);	return LuaValue.NONE; } });	
-			t.set("getPosition"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Contact:"+"getPosition"		);	return LuaValue.NONE; } });	
+			t.set("getPosition"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Contact:"+"getPosition"		);	return LuanPhysics.RetVector2(0f,0f); } });	
 			t.set("getRestitution"			,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Contact:"+"getRestitution"	);	return LuaValue.NONE; } });	
 			t.set("getSeparation"			,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Contact:"+"getSeparation"	);	return LuaValue.NONE; } });	
 			t.set("getVelocity"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("Contact:"+"getVelocity"		);	return LuaValue.NONE; } });	
