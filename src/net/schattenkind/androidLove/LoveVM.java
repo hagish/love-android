@@ -86,15 +86,22 @@ public class LoveVM {
 
 	// ***** ***** ***** ***** ***** log 
 	
+	public static void logException(Exception e) {
+		LoveLogE(TAG, e.getMessage(), e);
+	}
+	
 	public static void LoveLogE(String sTag,String sTxt,Exception e) {
-		if(loggingEnabled)Log.e(sTag,sTxt, e);
+		Log.e(sTag,sTxt, e);
 	}
+	
 	public static void LoveLogE(String sTag,String sTxt) {
-		if(loggingEnabled)Log.e(sTag,sTxt);
+		Log.e(sTag,sTxt);
 	}
+	
 	public static void LoveLog(String sTag,String sTxt) {
 		if(loggingEnabled)Log.i(sTag, sTxt.toString());
 	}
+	
 	public static void LoveLog(String s) { LoveLog(TAG,s); }
 	
 
@@ -367,17 +374,35 @@ public class LoveVM {
 	public void feedPosition(int x, int y) {
 		if (!bInitDone)
 			return;
-		mLuanMouse.feedPosition(x, y);
+		try {
+			mLuanMouse.feedPosition(x, y);
+		} catch(Exception e)
+		{
+			LoveVM.logException(e);
+		}
 	}
 
 	public void feedButtonState(boolean left, boolean middle, boolean right) {
 		if (!bInitDone)
 			return;
-		mLuanMouse.feedButtonState(left, middle, right);
+		
+		try {
+			mLuanMouse.feedButtonState(left, middle, right);
+		} catch(Exception e)
+		{
+			LoveVM.logException(e);
+		}
 	}
 
 	public boolean feedKey(int keyCode, boolean isDown) {
-		return mLuanKeyboard.feedKey(keyCode, isDown);
+		try {
+			return mLuanKeyboard.feedKey(keyCode, isDown);
+		} catch(Exception e)
+		{
+			LoveVM.logException(e);
+			return false;
+		}
+		
 	}
 	
 	public int convertMouseX(int mouseX, int mouseY) {

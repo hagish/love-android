@@ -194,7 +194,7 @@ public class LoveZip {
 		
 		// calc tempname
 		String sTempPrefix = sPath.replaceAll(PATH_SEP_REGEX_ESCAPED,PATH_SEP_REPLACE);
-		String sTempSuffix = ".tmp";
+		String sTempSuffix = ".tmp." + FileUtils.getFileExtension(sPath);
 		LoveVM.LoveLog(TAG,"forceExtractToTempFile path='"+sPath+"' pre='"+sTempPrefix+"' suf='"+sTempSuffix+"'");
 		
 		// open output file in temp dir
