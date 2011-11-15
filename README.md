@@ -4,11 +4,10 @@ Port of the Love2D api to Android using LuaJ and OpenGl
 About
 -----
 
-can start existing .love files from sd card (currently need to be unpacked manually, but we want to add .love direct loading eventually)
-currently the path to the .love folder on the sd card is hardcoded in LoveAndroid.java
+can start existing .love files from sd card (/mnt/sdcard/love/mygame.love) or downloads folder
 we should be able to add a file browser for loading eventually.
 The project could be used to make a ready to use launcher with a nice menu, or to make a standalone app without using sdcard by adding the files as resources (resource load might not be implemented yet as of 2011-11-06)
-We plan to make android specific functionality like additional input available by an api extension called love.android, e.g. multi-touch, gravi and accelerometer sensors etc.
+We plan to make android specific functionality like additional input available by an api extension called love.phone, e.g. multi-touch, gravi and accelerometer sensors etc.
 
 build environment used is eclipse with android sdk
 
@@ -18,7 +17,7 @@ sdcard directory gets synced into the app directory on the phone's sdcard
 
 for android-aware games :
 set t.android_native_screen = true in conf.lua to keep the native screen resolution, otherwise it'll rescale to the pc resolution
-to write generic code that detects android, check for love.android being set, this will be set to an empty table for now, but might get android specific functions later
+to write generic code that detects android, check for love.phone being set, this will be set to an empty table for now, but might get android specific functions later
 
 website : http://ghoulsblade.schattenkind.net/wiki/index.php/Love2d-android
 
