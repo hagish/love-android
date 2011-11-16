@@ -84,6 +84,14 @@ public class LoveAndroid extends ActivitiyWithExitMenu {
 		// Create a GLSurfaceView instance and set it
 		// as the ContentView for this Activity.
 		mGLView = new HelloOpenGLES10SurfaceView(this, vm);
+		
+		// TODO: setPreserveEGLContextOnPause undefined in android 2.1 for GLSurfaceView
+		//~ try {
+			//~ mGLView.setPreserveEGLContextOnPause(true);
+		//~ } catch (IOException e) {
+			//~ LoveVM.LoveLog(TAG,"mGLView.setPreserveEGLContextOnPause failed"); // just a warning, not fatal
+		//~ }
+		
 		setContentView(mGLView);
 
 		vm.notifyOnCreateDone();

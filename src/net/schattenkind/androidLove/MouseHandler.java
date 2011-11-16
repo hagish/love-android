@@ -1,5 +1,7 @@
 package net.schattenkind.androidLove;
 
+import net.schattenkind.androidLove.luan.LuanPhone;
+
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -43,7 +45,10 @@ public class MouseHandler implements OnClickListener, OnLongClickListener,
 		} else if (action == MotionEvent.ACTION_UP) {
 			vm.feedButtonState(false, false, false);
 		}
-
+		
+		// notify custom callbacks
+		vm.getLuanPhone().onTouch(event);
+		
 		return true;
 	}
 }

@@ -28,12 +28,14 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
+import android.hardware.SensorManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.util.Log;		// TODO: disable for release
 import android.widget.Toast;
+import android.content.Context;
 
 public class LoveVM {
 	// TODO: disable for release
@@ -75,6 +77,8 @@ public class LoveVM {
 	private boolean bInitInProgress = false;
 
 	private LoveStorage storage;
+	
+	private SensorManager mSensorMgr;
 
 	// ***** ***** ***** ***** ***** constructor
 	
@@ -82,6 +86,7 @@ public class LoveVM {
 		this.attachedToThisActivity = attachedToThisActivity;
 		this.storage = storage;
 		this.config = new LoveConfig();
+		mSensorMgr = (SensorManager)getContext().getSystemService(Context.SENSOR_SERVICE);
 	}
 
 	// ***** ***** ***** ***** ***** log 
@@ -416,6 +421,9 @@ public class LoveVM {
 
 	// ***** ***** ***** ***** ***** api access to other modules
 	
+	/// check this before calling event-callbacks etc
+	public boolean isInitDone () { return bInitDone; }
+	
 	public Activity getActivity() {
 		return attachedToThisActivity;
 	}
@@ -430,7 +438,16 @@ public class LoveVM {
 	public LuanAudio getLuanAudio() {
 		return mLuanAudio;
 	}
+	
+	public LuanPhone getLuanPhone() {
+		return mLuanPhone;
+	}
+	
 
+	public Context getContext () { return attachedToThisActivity; }
+	
+	public SensorManager getSensorManager () { return mSensorMgr; }
+	
 	// / access to latest valid gl object
 	public GL10 getGL() {
 		return gl;

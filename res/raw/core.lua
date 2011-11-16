@@ -42,6 +42,11 @@ function love.quit() end
 function love.run() end
 function love.update() end
 
+-- custom events
+function love.phone.touch () end
+function love.phone.sensorevent() end
+
+
 function require(file)
 	if (string.sub(file,-4) == ".lua") then file = string.sub(file, 1, -5) end
 	file = string.gsub(file, "%.", "/")

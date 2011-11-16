@@ -194,7 +194,11 @@ public class LoveZip {
 		
 		// calc tempname
 		String sTempPrefix = sPath.replaceAll(PATH_SEP_REGEX_ESCAPED,PATH_SEP_REPLACE);
-		String sTempSuffix = ".tmp." + FileUtils.getFileExtension(sPath);
+		//~ String sTempSuffix = ".tmp." + FileUtils.getFileExtension(sPath);  // TODO: FIXME: compile error, FileUtils cannot be resolved
+		String sTempSuffix = ".tmp";
+		if (sPath.toLowerCase().endsWith(".ogg")) sTempSuffix += ".ogg";
+		if (sPath.toLowerCase().endsWith(".mp3")) sTempSuffix += ".mp3";
+		if (sPath.toLowerCase().endsWith(".wav")) sTempSuffix += ".wav";
 		LoveVM.LoveLog(TAG,"forceExtractToTempFile path='"+sPath+"' pre='"+sTempPrefix+"' suf='"+sTempSuffix+"'");
 		
 		// open output file in temp dir
