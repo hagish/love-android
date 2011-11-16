@@ -62,22 +62,22 @@ remove all Log.i() and Log.e() calls and the import line (central function in Lo
 ### android/phone specific api 
 
 
-since this section migth be outdated, see also https://github.com/hagish/love-android/blob/master/src/net/schattenkind/androidLove/luan/LuanPhone.java
+* since this section migth be outdated, see also https://github.com/hagish/love-android/blob/master/src/net/schattenkind/androidLove/luan/LuanPhone.java
 
 
-img = love.phone.newResourceImage(int iResID)
+* img = love.phone.newResourceImage(int iResID)
 * loads an image from a resource id
 
 
-source = love.phone.newResourceAudioSource(int iResID,string type)
+* source = love.phone.newResourceAudioSource(int iResID,string type)
 * loads a sound/music/audio source from a resource id
 
 
-String love.phone.getPackageName()
+* String love.phone.getPackageName()
 * Return the name of this application's package.
 
 
-String love.phone.getResourceName(int iResID)
+* String love.phone.getResourceName(int iResID)
 * Return the full name for a given resource identifier.
 * iResID = love.phone.getResourceID(String name, String defType, String defPackage)
 * @name The name of the desired resource.
@@ -85,7 +85,7 @@ String love.phone.getResourceName(int iResID)
 * @defPackage Optional default package to find, if "package:" is not included in the name. Can be null to require an explicit package.
 
 
-class LoveSensor
+* class LoveSensor
 * constructed via {sensor,..} = love.phone.getSensorList(iSensorType)  or getDefaultSensor(iSensorType)
 * int 	getLoveSensorID()	uniqueid for love.phone.sensorevent
 * float 	getMaximumRange()	maximum range of the sensor in the sensor's unit. 
@@ -99,15 +99,15 @@ class LoveSensor
 * int		getLoveSensorID()	unique id for love.phone.sensorevent
 
 
-{sensor,..} = love.phone.getSensorList(iSensorType)
+* {sensor,..} = love.phone.getSensorList(iSensorType)
 * see also love.phone.SENSOR_TYPE
 
 
-sensor = love.phone.getDefaultSensor(iSensorType)
+* sensor = love.phone.getDefaultSensor(iSensorType)
 * see also love.phone.SENSOR_TYPE
 
 
-love.phone.SENSOR_TYPE = {[name]=value,...}
+* love.phone.SENSOR_TYPE = {[name]=value,...}
 * see also http://developer.android.com/reference/android/hardware/Sensor.html
 * see also http://developer.android.com/reference/android/hardware/SensorEvent.html#values
 * TYPE_ACCELEROMETER,TYPE_ALL,TYPE_AMBIENT_TEMPERATURE,TYPE_GRAVITY,TYPE_GYROSCOPE,TYPE_LIGHT,
@@ -115,11 +115,11 @@ love.phone.SENSOR_TYPE = {[name]=value,...}
 * TYPE_RELATIVE_HUMIDITY,TYPE_ROTATION_VECTOR,
 
 
-love.phone.enableTouchEvents()
+* love.phone.enableTouchEvents()
 * must be called once for love.phone.touch callback to be enabled
 
 
-love.phone.touch(action,{id1,x1,y1,id2,x2,y2},...)
+* love.phone.touch(action,{id1,x1,y1,id2,x2,y2},...)
 * USER DEFINED CALLBACK
 * for action see also love.phone.MOTION_EVENT_ACTION_TYPE
 * you can define this callback similar to love.mousepressed to get detailed touch info
@@ -127,19 +127,19 @@ love.phone.touch(action,{id1,x1,y1,id2,x2,y2},...)
 * see http://developer.android.com/reference/android/view/MotionEvent.html for details about multitouch handling
 
 
-boolean love.phone.registerSensorListener(sensor,rate)
+* boolean love.phone.registerSensorListener(sensor,rate)
 * Registers a SensorEventListener for the given sensor.
 * will call user defined love.phone.sensorevent()
 
 
-love.phone.sensorevent(sensorid,{f1,f2,....,accuracy=?,timestamp=?})
+* love.phone.sensorevent(sensorid,{f1,f2,....,accuracy=?,timestamp=?})
 * USER DEFINED CALLBACK
 * Called when sensor values have changed.
 * you can define this callback similar to love.mousepressed to get detailed touch info
 * see also http://developer.android.com/reference/android/hardware/SensorEvent.html
 		
 
-love.phone.MOTION_EVENT_ACTION_TYPE = {[name]=value,...} 
+* love.phone.MOTION_EVENT_ACTION_TYPE = {[name]=value,...} 
 * e.g. love.phone.touch(..) event
 * see also http://developer.android.com/reference/android/view/MotionEvent.html
 * ACTION_CANCEL,ACTION_DOWN,ACTION_HOVER_ENTER,ACTION_HOVER_EXIT,ACTION_HOVER_MOVE,
