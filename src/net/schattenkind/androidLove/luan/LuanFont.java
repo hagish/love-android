@@ -114,8 +114,8 @@ public class LuanFont {
 		w_space = 0f;
 		while (x < imgw && img.getColAtPos(x,0) == col) ++x; // skip first separator column
 			
-		if (pLog != null) pLog.println("FontConstr: col="+col+" w="+imgw+" h="+font_h+" x0="+x); // TODO: remove, DEBUG only
-		LoveVM.LoveLog(TAG,"FontConstr: col="+col+" w="+imgw+" h="+font_h+" x0="+x); // TODO: remove, DEBUG only
+		if (pLog != null) pLog.println("FontConstr: img="+img.getDebugSource()+" col="+col+" w="+imgw+" h="+font_h+" x0="+x); // TODO: remove, DEBUG only
+		LoveVM.LoveLog(TAG,"FontConstr: img="+img.getDebugSource()+" col="+col+" w="+imgw+" h="+font_h+" x0="+x); // TODO: remove, DEBUG only
 		
 		for (int i=0;i<glyphs.length();++i) {
 			char c = glyphs.charAt(i);

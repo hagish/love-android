@@ -24,6 +24,7 @@ import android.opengl.GLUtils;
 public class LuanImage extends LuanDrawable {
 	protected static final String TAG = "LoveImage";
 	
+	private String			sDebugSource;
 	private LuanGraphics	g;
 	private int				miTextureID = 0;
 	public float			mWidth;
@@ -36,6 +37,7 @@ public class LuanImage extends LuanDrawable {
 		
 	@Override public boolean IsImage () { return true; }
 	
+	public String getDebugSource () { return sDebugSource; }
 	public static LuanImage self (Varargs args) { return (LuanImage)args.checkuserdata(1,LuanImage.class); }
 	
 	public static String	Filter2Str	(int	a) { return (a == GL10.GL_LINEAR)?"linear":"nearest"; }
@@ -141,13 +143,15 @@ public class LuanImage extends LuanDrawable {
 	
 	/// load image from resource id, e.g. R.raw.font
 	public LuanImage (LuanGraphics g,int iResID) throws IOException {
-		this(g,g.vm.getResourceInputStream(iResID)); 
+		this(g,g.vm.getResourceInputStream(iResID));
+		sDebugSource = "resid="+iResID;
 		// TODO: store origin for reload
 	}
 	
 	/// load image from file
 	public LuanImage (LuanGraphics g,String filepath) throws FileNotFoundException {
-		this(g,g.vm.getStorage().getFileStreamFromLovePath(filepath)); 
+		this(g,g.vm.getStorage().getFileStreamFromLovePath(filepath));
+		sDebugSource = "file="+filepath;
 		// TODO: store origin for reload
 		// TODO : throw lua error if file not found ?
 		//g.getActivity().openFileInput(filepath);
