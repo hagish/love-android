@@ -9,6 +9,7 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
+import org.luaj.vm2.LuaError;
 
 public class LuanMouse extends LuanBase {
 	private int mouseX;
@@ -51,10 +52,14 @@ public class LuanMouse extends LuanBase {
 				callback = "mousereleased";
 			}
 
-			vm.get_G().get("love")
+			try {
+				vm.get_G().get("love")
 					.get(callback)
 					.call(LuaNumber.valueOf(mouseX_for_vm()), LuaNumber.valueOf(mouseY_for_vm()),
 							LuaString.valueOf(button));
+			} catch (LuaError e) {
+				vm.handleLuaError(e);
+			}
 		}
 	}
 	

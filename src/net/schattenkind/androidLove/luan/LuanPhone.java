@@ -9,6 +9,7 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
+import org.luaj.vm2.LuaError;
 
 import java.util.List;
 
@@ -217,13 +218,17 @@ public class LuanPhone extends LuanBase {
 		if (!mbEnableTouchEvents) return;
 		if (!vm.isInitDone()) return;
 			
-		LuaTable t = new LuaTable();
-		for (int i=0;i<event.getPointerCount();++i) {
-			t.set(1+i*3+0,LuaValue.valueOf(event.getPointerId(i)));
-			t.set(1+i*3+1,LuaValue.valueOf(event.getX(i)));
-			t.set(1+i*3+2,LuaValue.valueOf(event.getY(i)));
+		try {
+			LuaTable t = new LuaTable();
+			for (int i=0;i<event.getPointerCount();++i) {
+				t.set(1+i*3+0,LuaValue.valueOf(event.getPointerId(i)));
+				t.set(1+i*3+1,LuaValue.valueOf(event.getX(i)));
+				t.set(1+i*3+2,LuaValue.valueOf(event.getY(i)));
+			}
+			vm.get_G().get("love").get("phone").get("touch").call(LuaValue.valueOf(event.getAction()),t);
+		} catch (LuaError e) {
+			vm.handleLuaError(e);
 		}
-		vm.get_G().get("love").get("phone").get("touch").call(LuaValue.valueOf(event.getAction()),t);
 	}
 	
 	
@@ -260,11 +265,15 @@ public class LuanPhone extends LuanBase {
 		/// calls love.phone.sensorevent(sensorid,{f1,f2,....,accuracy=?,timestamp=?})
 		/// see also http://developer.android.com/reference/android/hardware/SensorEvent.html
 		public void 	onSensorChanged (SensorEvent event) {
-			LuaTable t = new LuaTable(event.values.length,2);
-			for (int i=0;i<event.values.length;++i) t.set(i+1,LuaValue.valueOf(event.values[i]));
-			t.set("accuracy",LuaValue.valueOf(event.accuracy));
-			t.set("timestamp",LuaValue.valueOf(event.timestamp));
-			phone.vm.get_G().get("love").get("phone").get("sensorevent").call(LuaValue.valueOf(getLoveSensorID()),t);
+			try {
+				LuaTable t = new LuaTable(event.values.length,2);
+				for (int i=0;i<event.values.length;++i) t.set(i+1,LuaValue.valueOf(event.values[i]));
+				t.set("accuracy",LuaValue.valueOf(event.accuracy));
+				t.set("timestamp",LuaValue.valueOf(event.timestamp));
+				phone.vm.get_G().get("love").get("phone").get("sensorevent").call(LuaValue.valueOf(getLoveSensorID()),t);
+			} catch (LuaError e) {
+				phone.vm.handleLuaError(e);
+			}
 		}
 		
 		// ***** ***** ***** ***** ***** methods

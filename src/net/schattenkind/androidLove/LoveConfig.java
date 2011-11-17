@@ -7,6 +7,7 @@ import org.luaj.vm2.LoadState;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
+import org.luaj.vm2.LuaError;
 
 public class LoveConfig {
 
@@ -120,7 +121,12 @@ public class LoveConfig {
 		LuaTable g = JsePlatform.debugGlobals();
 
 		g.set("love", new LuaTable());
-		LoadState.load(configFileInputStream, "conf.lua", g).call();
+		try {
+			LoadState.load(configFileInputStream, "conf.lua", g).call();
+		} catch (LuaError e) {
+			//~ vm.handleLuaError(e);
+			// ignored
+		}
 
 		LuaValue conf = LuaUtils.getFromTableByPath(g, "love.conf");
 		if (!conf.equals(LuaValue.NIL)) {
@@ -128,8 +134,13 @@ public class LoveConfig {
 
 			t.set("modules", new LuaTable());
 			t.set("screen", new LuaTable());
-
-			conf.call(t);
+			
+			try {
+				conf.call(t);
+			} catch (LuaError e) {
+				//~ vm.handleLuaError(e);
+				// ignored
+			}
 
 			loadFromLuaTable(t);
 		}

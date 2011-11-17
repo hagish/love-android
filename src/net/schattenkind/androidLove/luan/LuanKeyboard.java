@@ -11,6 +11,7 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
+import org.luaj.vm2.LuaError;
 
 import android.view.KeyEvent;
 
@@ -72,7 +73,11 @@ public class LuanKeyboard extends LuanBase {
 			}
 
 			// TODO unicode
-			vm.get_G().get("love").get(callback).call(LuaString.valueOf(luaKeyCode));
+			try {
+				vm.get_G().get("love").get(callback).call(LuaString.valueOf(luaKeyCode));
+			} catch (LuaError e) {
+				vm.handleLuaError(e);
+			}
 		}
 	}
 
