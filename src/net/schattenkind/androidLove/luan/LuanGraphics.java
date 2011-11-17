@@ -414,6 +414,13 @@ public class LuanGraphics extends LuanBase {
 		}
 	}
 	
+	// ***** ***** ***** ***** *****  font accel
+	
+	public FloatBuffer	mVB_Pos_font;
+	public FloatBuffer	mVB_Tex_font;
+	public float[]		mVB_Pos2_font;
+	public float[]		mVB_Tex2_font;
+	
 	// ***** ***** ***** ***** *****  DrawSprite function, rotate calc etc
 	
 	private float[]		spritePosFloats = new float[4*2];
@@ -436,6 +443,11 @@ public class LuanGraphics extends LuanBase {
 	//~ WARNING: probably array sent by VALUE, e.g. copy -> slow
 	public static void		LuanFillBuffer (FloatBuffer b,float[] data) {
 		b.put(data); // add the coordinates to the FloatBuffer
+		b.position(0); // set the buffer to read the first coordinate
+	}
+	
+	public static void		LuanFillBuffer (FloatBuffer b,float[] data,int len) {
+		b.put(data,0,len); // add the coordinates to the FloatBuffer
 		b.position(0); // set the buffer to read the first coordinate
 	}
 	

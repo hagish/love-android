@@ -72,7 +72,7 @@ public class LoveStorage {
 	public File getWritableSdCardDir() {
 		return Environment.getExternalStorageDirectory();
 	}
-
+	
 	// ***** ***** ***** ***** ***** api
 
 	public boolean isZip() {

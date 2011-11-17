@@ -352,7 +352,10 @@ public class LuanAudio extends LuanBase {
 		public void play () {
 			LoveVM.LoveLog(TAG,"play filename="+filename+" miSoundID="+miSoundID+" bMusic="+bMusic);
 			if (bMusic) {
-				if (mp != null) mp.start();
+				if (mp != null) {
+					mp.seekTo(0); // back to start
+					mp.start();
+				}
 			} else if (miSoundID != 0) {
 				float fLeftVol = 1f;
 				float fRightVol = 1f;

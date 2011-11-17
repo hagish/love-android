@@ -1,15 +1,16 @@
 package net.schattenkind.androidLove.luan;
 
+import net.schattenkind.androidLove.R;
 import net.schattenkind.androidLove.LoveVM;
 
+import java.io.PrintWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 
 import javax.microedition.khronos.opengles.GL10;
-
-import net.schattenkind.androidLove.R;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -21,6 +22,7 @@ import org.luaj.vm2.lib.VarArgFunction;
 
 public class LuanFont {
 	protected static final String TAG = "LoveFont";
+	public static final int kMaxGlyphsPerString = 1024;
 	
 	private LuanGraphics	g;
 	public LuanImage		img;
@@ -66,6 +68,7 @@ public class LuanFont {
 		return "left";
 	}
 	
+	// ***** ***** ***** ***** *****
 	
 	/// ttf font
 	public LuanFont (LuanGraphics g,String ttf_filename,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf"); }
@@ -77,7 +80,7 @@ public class LuanFont {
 	public LuanFont (LuanGraphics g,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf with size"); } 
 	
 	/// fall back to image font in resources
-	public LuanFont (LuanGraphics g) throws IOException { this(g,new LuanImage(g, R.raw.imgfont)," abcdefghijklmnopqrstuvwxyz0123456789.!'-:·"); this.g = g; bForceLowerCase = true; } 
+	public LuanFont (LuanGraphics g) throws IOException { this(g,new LuanImage(g, R.raw.imgfont_w)," abcdefghijklmnopqrstuvwxyz0123456789.!'-:·"); this.g = g; bForceLowerCase = true; } 
 	
 	/// imageFont
 	public LuanFont (LuanGraphics g,String filename,String glyphs) throws FileNotFoundException { this(g,new LuanImage(g,filename),glyphs); }
@@ -86,6 +89,19 @@ public class LuanFont {
 	public LuanFont (LuanGraphics g,LuanImage img,String glyphs) {
 		this.g = g;
 		this.img = img;
+		
+		// debug log
+		File fTempDir = g.vm.getStorage().getWritableSdCardDir(); // TODO: remove, DEBUG only
+		File fLog = null;
+		PrintWriter	pLog = null;
+		try {
+			fLog = File.createTempFile("fontlog",".txt",fTempDir); // TODO: remove, DEBUG only
+			pLog = new PrintWriter(fLog);
+			pLog.println("FontConstr: start "+fLog.getPath());
+		} catch (IOException e) {
+		}
+		
+		
 		/*
 		The imagefont file is an image file in a format that L�ve can load. It can contain transparent pixels, so a PNG file is preferable, and it also needs to contain spacer color that will separate the different font glyphs.
 		The upper left pixel of the image file is always taken to be the spacer color. All columns that have this color as their uppermost pixel are interpreted as separators of font glyphs. The areas between these separators are interpreted as the actual font glyphs.
@@ -97,6 +113,9 @@ public class LuanFont {
 		font_h = (int)img.mHeight;
 		w_space = 0f;
 		while (x < imgw && img.getColAtPos(x,0) == col) ++x; // skip first separator column
+			
+		pLog.println("FontConstr: col="+col+" w="+imgw+" h="+font_h+" x0="+x); // TODO: remove, DEBUG only
+		LoveVM.LoveLog(TAG,"FontConstr: col="+col+" w="+imgw+" h="+font_h+" x0="+x); // TODO: remove, DEBUG only
 		
 		for (int i=0;i<glyphs.length();++i) {
 			char c = glyphs.charAt(i);
@@ -113,12 +132,18 @@ public class LuanFont {
 			//~ LoveVM.LoveLog(TAG,"glyph:"+c+":x="+x+",w="+w+",spacing="+spacing);
 			mGlyphInfos.put(c,new GlyphInfo(w,w+spacing,(float)x/(float)imgw,(float)(x+w)/(float)imgw));
 			
+			pLog.println("glyph="+c+" x="+x+" w="+w+" spacing="+spacing); // TODO: remove, DEBUG only
+			LoveVM.LoveLog(TAG,"glyph="+c+" x="+x+" w="+w+" spacing="+spacing); // TODO: remove, DEBUG only
+			
 			if (w_space == 0f) w_space = w;
 			x += w+spacing;
 		}
 		
 		GlyphInfo gi = getGlyphInfo(' '); 
 		if (gi != null) w_space = gi.movex;
+			
+		pLog.flush();
+		pLog.close();
 	}
 	
 	public boolean isWhiteSpace (char c) { return c == ' ' || c == '\t' || c == '\r' || c == '\n'; }
@@ -135,13 +160,32 @@ public class LuanFont {
 	
 	private FloatBuffer	mVB_Pos;
 	private FloatBuffer	mVB_Tex;
+	private float[]		mVB_Pos2;
+	private float[]		mVB_Tex2;
+	
 	int					mBufferVertices;
 	
 	public void prepareBuffer (int maxglyphs) { prepareBuffer(maxglyphs,0f); }
 	public void prepareBuffer (int maxglyphs,float fRotate) {
 		// alloc/resize float buffers
-		mVB_Pos = LuanGraphics.LuanCreateBuffer(maxglyphs*6*2); // TODO: memleak?  reuse/clear existing possible ? 
-		mVB_Tex = LuanGraphics.LuanCreateBuffer(maxglyphs*6*2);
+		//~ mVB_Pos = LuanGraphics.LuanCreateBuffer(maxglyphs*6*2); // TODO: memleak?  reuse/clear existing possible ? 
+		//~ mVB_Tex = LuanGraphics.LuanCreateBuffer(maxglyphs*6*2);
+		//~ mVB_Pos2 = new float[maxglyphs*6*2];
+		//~ mVB_Tex2 = new float[maxglyphs*6*2];
+		
+		if (g.mVB_Pos_font == null) {
+			g.mVB_Pos_font = LuanGraphics.LuanCreateBuffer(kMaxGlyphsPerString*6*2); // TODO: memleak?  reuse/clear existing possible ? 
+			g.mVB_Tex_font = LuanGraphics.LuanCreateBuffer(kMaxGlyphsPerString*6*2);
+			g.mVB_Pos2_font = new float[kMaxGlyphsPerString*6*2];
+			g.mVB_Tex2_font = new float[kMaxGlyphsPerString*6*2];
+		}
+		mVB_Pos = g.mVB_Pos_font; // TODO: memleak?  reuse/clear existing possible ? 
+		mVB_Tex = g.mVB_Tex_font;
+		mVB_Pos2 = g.mVB_Pos2_font;
+		mVB_Tex2 = g.mVB_Tex2_font;
+		
+		
+		
 		mBufferVertices = 0;
 	}
 	public void addCharToBuffer(char c,float draw_x,float draw_y) { addCharToBuffer(c,draw_x,draw_y,1f,1f); }
@@ -156,12 +200,32 @@ public class LuanFont {
 		float ax = draw_x;
 		float ay = draw_y;
 		float vx_x = gi.w*sx;
-		float vx_y = 0; // todo : rotate ?
-		float vy_x = 0; // todo : rotate ?
+		float vx_y = 0f; // todo : rotate ?
+		float vy_x = 0f; // todo : rotate ?
 		float vy_y = font_h*sy;
 		
+		int i = mBufferVertices*2;
 		mBufferVertices += 6;
 		
+		// triangle1  lt-rt-lb
+		if (mBufferVertices < kMaxGlyphsPerString) {
+			mVB_Tex2[i+0] = gi.u0; mVB_Pos2[i+0] = ax;
+			mVB_Tex2[i+1] = gi.v0; mVB_Pos2[i+1] = ay;
+			mVB_Tex2[i+2] = gi.u1; mVB_Pos2[i+2] = ax + vx_x;
+			mVB_Tex2[i+3] = gi.v0; mVB_Pos2[i+3] = ay + vx_y;
+			mVB_Tex2[i+4] = gi.u0; mVB_Pos2[i+4] = ax + vy_x;
+			mVB_Tex2[i+5] = gi.v1; mVB_Pos2[i+5] = ay + vy_y;
+			
+			// triangle2 lb-rt-rb
+			mVB_Tex2[i+6] = gi.u0;  mVB_Pos2[i+6] = ax + vy_x;
+			mVB_Tex2[i+7] = gi.v1;  mVB_Pos2[i+7] = ay + vy_y;
+			mVB_Tex2[i+8] = gi.u1;  mVB_Pos2[i+8] = ax + vx_x;
+			mVB_Tex2[i+9] = gi.v0;  mVB_Pos2[i+9] = ay + vx_y;
+			mVB_Tex2[i+10] = gi.u1; mVB_Pos2[i+10] = ax + vx_x + vy_x;
+			mVB_Tex2[i+11] = gi.v1; mVB_Pos2[i+11] = ay + vx_y + vy_y;
+		}
+		
+		/*
 		// triangle1  lt-rt-lb
 		mVB_Tex.put(gi.u0); mVB_Pos.put(ax);
 		mVB_Tex.put(gi.v0); mVB_Pos.put(ay);
@@ -177,6 +241,7 @@ public class LuanFont {
 		mVB_Tex.put(gi.v0); mVB_Pos.put(ay + vx_y);
 		mVB_Tex.put(gi.u1); mVB_Pos.put(ax + vx_x + vy_x);
 		mVB_Tex.put(gi.v1); mVB_Pos.put(ay + vx_y + vy_y);
+		*/
 		
 	}
 	public void drawBuffer () {
@@ -187,8 +252,10 @@ public class LuanFont {
 		if (gl == null) { LoveVM.LoveLog(TAG,"drawBuffer:gl = null"); return; }
 		if (img == null) { LoveVM.LoveLog(TAG,"drawBuffer:img = null"); return; }
 		// TODO: send geometry to ogre
-		mVB_Pos.position(0); // set the buffer to read the first coordinate
-		mVB_Tex.position(0); // set the buffer to read the first coordinate
+		//~ mVB_Pos.position(0); // set the buffer to read the first coordinate
+		//~ mVB_Tex.position(0); // set the buffer to read the first coordinate
+		LuanGraphics.LuanFillBuffer(mVB_Pos,mVB_Pos2,mBufferVertices*2);
+		LuanGraphics.LuanFillBuffer(mVB_Tex,mVB_Tex2,mBufferVertices*2);
 		g.setVertexBuffersToCustom(mVB_Pos,mVB_Tex);
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, img.GetTextureID());
 		gl.glDrawArrays(GL10.GL_TRIANGLES, 0, mBufferVertices);
