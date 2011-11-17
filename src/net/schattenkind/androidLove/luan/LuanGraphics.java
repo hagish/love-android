@@ -34,13 +34,15 @@ public class LuanGraphics extends LuanBase {
 	public void Log (String s) { LoveVM.LoveLog(TAG, s); }
 	
 	public LuanFont mFont;
+	public LuanFont mDefaultFont;
 	
 	public float LOVE_TODEG (float fRadians) { return 360f*fRadians/(float)Math.PI; }
 	
 	public LuaTable InitLib () {
 		InitSpriteBuffer();
 		try {
-			mFont = new LuanFont(this);
+			mDefaultFont = new LuanFont(this);
+			mFont = mDefaultFont;
 		} catch (Exception e) {
 			Log("warning, failed to load default font in LuanGraphics:InitLib");
 			//~ vm.handleError(e);
@@ -231,7 +233,7 @@ public class LuanGraphics extends LuanBase {
 		/// love.graphics.setFont( font )
 		t.set("setFont", new VarArgFunction() {
 			@Override public Varargs invoke(Varargs args) {
-				mFont = (LuanFont)args.checkuserdata(1,LuanFont.class);
+				mFont = IsArgSet(args,1) ? (LuanFont)args.checkuserdata(1,LuanFont.class) : mDefaultFont;
 				return LuaValue.NONE;
 			}
 		});

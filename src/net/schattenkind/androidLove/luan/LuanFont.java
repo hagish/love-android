@@ -91,15 +91,15 @@ public class LuanFont {
 		this.img = img;
 		
 		// debug log
-		File fTempDir = g.vm.getStorage().getWritableSdCardDir(); // TODO: remove, DEBUG only
-		File fLog = null;
 		PrintWriter	pLog = null;
-		try {
-			fLog = File.createTempFile("fontlog",".txt",fTempDir); // TODO: remove, DEBUG only
-			pLog = new PrintWriter(fLog);
-			pLog.println("FontConstr: start "+fLog.getPath());
-		} catch (IOException e) {
-		}
+		//~ File fTempDir = g.vm.getStorage().getWritableSdCardDir(); // TODO: remove, DEBUG only
+		//~ File fLog = null;
+		//~ try {
+			//~ fLog = File.createTempFile("fontlog",".txt",fTempDir); // TODO: remove, DEBUG only
+			//~ pLog = new PrintWriter(fLog);
+			//~ pLog.println("FontConstr: start "+fLog.getPath());
+		//~ } catch (IOException e) {
+		//~ }
 		
 		
 		/*
@@ -114,7 +114,7 @@ public class LuanFont {
 		w_space = 0f;
 		while (x < imgw && img.getColAtPos(x,0) == col) ++x; // skip first separator column
 			
-		pLog.println("FontConstr: col="+col+" w="+imgw+" h="+font_h+" x0="+x); // TODO: remove, DEBUG only
+		if (pLog != null) pLog.println("FontConstr: col="+col+" w="+imgw+" h="+font_h+" x0="+x); // TODO: remove, DEBUG only
 		LoveVM.LoveLog(TAG,"FontConstr: col="+col+" w="+imgw+" h="+font_h+" x0="+x); // TODO: remove, DEBUG only
 		
 		for (int i=0;i<glyphs.length();++i) {
@@ -132,7 +132,7 @@ public class LuanFont {
 			//~ LoveVM.LoveLog(TAG,"glyph:"+c+":x="+x+",w="+w+",spacing="+spacing);
 			mGlyphInfos.put(c,new GlyphInfo(w,w+spacing,(float)x/(float)imgw,(float)(x+w)/(float)imgw));
 			
-			pLog.println("glyph="+c+" x="+x+" w="+w+" spacing="+spacing); // TODO: remove, DEBUG only
+			if (pLog != null) pLog.println("glyph="+c+" x="+x+" w="+w+" spacing="+spacing); // TODO: remove, DEBUG only
 			LoveVM.LoveLog(TAG,"glyph="+c+" x="+x+" w="+w+" spacing="+spacing); // TODO: remove, DEBUG only
 			
 			if (w_space == 0f) w_space = w;
@@ -142,8 +142,8 @@ public class LuanFont {
 		GlyphInfo gi = getGlyphInfo(' '); 
 		if (gi != null) w_space = gi.movex;
 			
-		pLog.flush();
-		pLog.close();
+		if (pLog != null) pLog.flush();
+		if (pLog != null) pLog.close();
 	}
 	
 	public boolean isWhiteSpace (char c) { return c == ' ' || c == '\t' || c == '\r' || c == '\n'; }
