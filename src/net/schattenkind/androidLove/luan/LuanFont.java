@@ -28,7 +28,7 @@ public class LuanFont {
 	public LuanImage		img;
 	public float w_space = 0f; // TODO: set from letter 'a' ? 
 	public float font_h = 0f; // TODO: set from letter 'a' ? probably just the height of the whole image
-	public float line_h = 1f; ///< Gets the line height. This will be the value previously set by Font:setLineHeight, or 1.0 by default. 
+	public float line_h = 1.5f; ///< Gets the line height. This will be the value previously set by Font:setLineHeight, or 1.0 by default. 
 	public boolean bForceLowerCase = false;
 	
 	public enum AlignMode {
@@ -91,7 +91,7 @@ public class LuanFont {
 		this.img = img;
 		
 		// debug log
-		PrintWriter	pLog = null;
+		//~ PrintWriter	pLog = null;
 		//~ File fTempDir = g.vm.getStorage().getWritableSdCardDir(); // TODO: remove, DEBUG only
 		//~ File fLog = null;
 		//~ try {
@@ -114,8 +114,8 @@ public class LuanFont {
 		w_space = 0f;
 		while (x < imgw && img.getColAtPos(x,0) == col) ++x; // skip first separator column
 			
-		if (pLog != null) pLog.println("FontConstr: img="+img.getDebugSource()+" col="+col+" w="+imgw+" h="+font_h+" x0="+x); // TODO: remove, DEBUG only
-		LoveVM.LoveLog(TAG,"FontConstr: img="+img.getDebugSource()+" col="+col+" w="+imgw+" h="+font_h+" x0="+x); // TODO: remove, DEBUG only
+		//~ if (pLog != null) pLog.println("FontConstr: img="+img.getDebugSource()+" col="+col+" w="+imgw+" h="+font_h+" x0="+x); // TODO: remove, DEBUG only
+		//~ LoveVM.LoveLog(TAG,"FontConstr: img="+img.getDebugSource()+" col="+col+" w="+imgw+" h="+font_h+" x0="+x); // TODO: remove, DEBUG only
 		
 		for (int i=0;i<glyphs.length();++i) {
 			char c = glyphs.charAt(i);
@@ -132,8 +132,8 @@ public class LuanFont {
 			//~ LoveVM.LoveLog(TAG,"glyph:"+c+":x="+x+",w="+w+",spacing="+spacing);
 			mGlyphInfos.put(c,new GlyphInfo(w,w+spacing,(float)x/(float)imgw,(float)(x+w)/(float)imgw));
 			
-			if (pLog != null) pLog.println("glyph="+c+" x="+x+" w="+w+" spacing="+spacing); // TODO: remove, DEBUG only
-			LoveVM.LoveLog(TAG,"glyph="+c+" x="+x+" w="+w+" spacing="+spacing); // TODO: remove, DEBUG only
+			//~ if (pLog != null) pLog.println("glyph="+c+" x="+x+" w="+w+" spacing="+spacing); // TODO: remove, DEBUG only
+			//~ LoveVM.LoveLog(TAG,"glyph="+c+" x="+x+" w="+w+" spacing="+spacing); // TODO: remove, DEBUG only
 			
 			if (w_space == 0f) w_space = w;
 			x += w+spacing;
@@ -142,8 +142,8 @@ public class LuanFont {
 		GlyphInfo gi = getGlyphInfo(' '); 
 		if (gi != null) w_space = gi.movex;
 			
-		if (pLog != null) pLog.flush();
-		if (pLog != null) pLog.close();
+		//~ if (pLog != null) pLog.flush();
+		//~ if (pLog != null) pLog.close();
 	}
 	
 	public boolean isWhiteSpace (char c) { return c == ' ' || c == '\t' || c == '\r' || c == '\n'; }

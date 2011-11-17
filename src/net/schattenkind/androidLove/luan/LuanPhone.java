@@ -208,7 +208,7 @@ public class LuanPhone extends LuanBase {
 	}
 	
 	
-	/// calls love.phone.touch(action,{id1,x1,y1,id2,x2,y2},...)
+	/// calls love.phone.touch(action,{id1,x1,y1,id2,x2,y2,...})
 	/// for action see also love.phone.MOTION_EVENT_ACTION_TYPE
 	/// you can define this callback similar to love.mousepressed to get detailed touch info
 	/// only if love.phone.enableTouchEvents() has been called
