@@ -1,5 +1,8 @@
 /bin/*
 /gen/*
+/sdcard/*/
+/sdcard/*.love
+/sdcard_unused/
 /downloads/luaj-2.0.2/
 adb
 eclipse
