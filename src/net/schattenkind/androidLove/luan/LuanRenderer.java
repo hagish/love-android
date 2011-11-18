@@ -15,6 +15,7 @@ import net.schattenkind.androidLove.LoveVM;
 // note : LuanGraphics extends LuanRenderer
 public abstract class LuanRenderer extends LuanBase {
 	protected	GL10		gl; // only valid after notifyFrameStart
+	public static final int kMaxBasicGeoVertices = 128;
 	
 	public boolean bResolutionOverrideActive = false;
 	public int mfResolutionOverrideX;
@@ -28,6 +29,10 @@ public abstract class LuanRenderer extends LuanBase {
 	public float[]		mVB_Pos2_font;
 	public float[]		mVB_Tex2_font;	
 	
+	public FloatBuffer	mVB_BasicGeo;
+	public float[]		mFB_BasicGeo;
+	public int			mi_BasicGeo_Vertices;
+	
 	public static String	DrawMode2Str	(DrawMode a) { return (a == DrawMode.FILL)?"fill":"outline"; }
 	public static DrawMode	Str2DrawMode	(String a) { return (a.equals("fill"))?DrawMode.FILL:DrawMode.OUTLINE; }
 		
@@ -40,6 +45,14 @@ public abstract class LuanRenderer extends LuanBase {
 	
 	public LuanRenderer (LoveVM vm) { super(vm); }
 	
+	// ***** ***** ***** ***** *****  init
+	
+	public void InitRenderer() {
+		InitSpriteBuffer();
+		mVB_BasicGeo = LuanGraphics.LuanCreateBuffer(kMaxBasicGeoVertices*2);
+		mFB_BasicGeo = new float[kMaxBasicGeoVertices*2];
+	}
+	
 	// ***** ***** ***** ***** *****  utils
 	
 	public float getScreenW () { return bResolutionOverrideActive ? mfResolutionOverrideX : vm.mfScreenW; }
@@ -50,31 +63,141 @@ public abstract class LuanRenderer extends LuanBase {
 	
 	public float LOVE_TODEG (float fRadians) { return 360f*fRadians/(float)Math.PI; }
 	
+	// ***** ***** ***** ***** *****  basic geometry buffers
+	
+	public void BasicGeo_Prepare (int vnum) {
+		assert(vnum <= kMaxBasicGeoVertices);
+		mi_BasicGeo_Vertices = 0;
+	}
+	
+	public void BasicGeo_Vertex (float x,float y) {
+		int i = mi_BasicGeo_Vertices*2;
+		++mi_BasicGeo_Vertices;
+		mFB_BasicGeo[i  ] = x;
+		mFB_BasicGeo[i+1] = y;
+	}
+	
+	/// mode: e.g. GL10.GL_TRIANGLES
+	///  GL_POINTS, GL_LINE_STRIP,GL_LINE_LOOP, GL_LINES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, and GL_TRIANGLES
+	public void BasicGeo_Draw (int mode) {
+		assert(mi_BasicGeo_Vertices <= kMaxBasicGeoVertices);
+		LuanGraphics.LuanFillBuffer(mVB_BasicGeo,mFB_BasicGeo,mi_BasicGeo_Vertices*2);
+		setVertexBuffersToCustom(mVB_BasicGeo);
+		gl.glDrawArrays(mode, 0, mi_BasicGeo_Vertices);
+	}
+	
+	
 	// ***** ***** ***** ***** *****  basic geometry
-	
 
-	/// TODO : move me to LuanRenderer
-	/// love.graphics.quad( mode, x1, y1, x2, y2, x3, y3, x4, y4 )
-	public void renderQuad			(DrawMode mode,float x1,float y1,float x2,float y2,float x3,float y3,float x4,float y4) { vm.NotImplemented("love.graphics."+"quad"); } // TODO: implement me
-	
-	/// love.graphics.triangle( mode, x1, y1, x2, y2, x3, y3 )
-	public void renderTriangle		(DrawMode mode,float x1,float y1,float x2,float y2,float x3,float y3) { vm.NotImplemented("love.graphics."+"triangle"); } // TODO: implement me
 	
 	/// love.graphics.circle( mode, x, y, radius, segments = 10 )
-	public void renderCircle		(DrawMode mode,float x,float y,float radius,int segments) { vm.NotImplemented("love.graphics."+"circle"); } // TODO: implement me
+	public void renderCircle		(DrawMode mode,float x,float y,float radius,int segments) {
+		BasicGeo_Prepare(segments);
+		for (int i=0;i<segments;++i) {
+			float ang = (float)Math.PI * 2f / ((float)segments);
+			float x1 = x + radius * (float)Math.sin(ang);
+			float y1 = y + radius * (float)Math.cos(ang);
+			BasicGeo_Vertex(x1,y1);
+		}
+		BasicGeo_Draw((mode == DrawMode.FILL) ? GL10.GL_TRIANGLE_FAN : GL10.GL_LINE_LOOP);
+	}
 	
-	/// love.graphics.point( x, y )
-	public void renderPoint			(DrawMode mode,float x,float y) { vm.NotImplemented("love.graphics."+"point"); } // TODO: implement me
+	
+	/// love.graphics.triangle( mode, x1, y1, x2, y2, x3, y3 )
+	public void renderTriangle		(DrawMode mode,float x1,float y1,float x2,float y2,float x3,float y3) {
+		if (mode == DrawMode.FILL) {
+			BasicGeo_Prepare(3);
+			BasicGeo_Vertex(x1,y1);
+			BasicGeo_Vertex(x2,y2);
+			BasicGeo_Vertex(x3,y3);
+			BasicGeo_Draw(GL10.GL_TRIANGLES);
+		} else {
+			BasicGeo_Prepare(4);
+			BasicGeo_Vertex(x1,y1);
+			BasicGeo_Vertex(x2,y2);
+			BasicGeo_Vertex(x3,y3);
+			BasicGeo_Vertex(x1,y1);
+			BasicGeo_Draw(GL10.GL_LINE_STRIP);
+		}
+	}
+	
+	/// love.graphics.quad( mode, x1, y1, x2, y2, x3, y3, x4, y4 )
+	public void renderQuad			(DrawMode mode,float x1,float y1,float x2,float y2,float x3,float y3,float x4,float y4) {
+		if (mode == DrawMode.FILL) {
+			BasicGeo_Prepare(4);
+			BasicGeo_Vertex(x1,y1);
+			BasicGeo_Vertex(x2,y2);
+			BasicGeo_Vertex(x3,y3);
+			BasicGeo_Vertex(x4,y4);
+			BasicGeo_Draw(GL10.GL_TRIANGLE_FAN);
+		} else {
+			BasicGeo_Prepare(5);
+			BasicGeo_Vertex(x1,y1);
+			BasicGeo_Vertex(x2,y2);
+			BasicGeo_Vertex(x3,y3);
+			BasicGeo_Vertex(x4,y4);
+			BasicGeo_Vertex(x1,y1);
+			BasicGeo_Draw(GL10.GL_LINE_STRIP);
+		}
+	}
+	
 	
 	/// love.graphics.rectangle( mode, x, y, width, height ) 
-	public void renderRectangle		(DrawMode mode,float x,float y,float w,float h) { vm.NotImplemented("love.graphics."+"rectangle"); } // TODO: implement me
+	public void renderRectangle		(DrawMode mode,float x,float y,float w,float h) {
+		if (mode == DrawMode.FILL) {
+			BasicGeo_Prepare(4);
+			BasicGeo_Vertex(x  ,y  );
+			BasicGeo_Vertex(x+w,y  );
+			BasicGeo_Vertex(x+w,y+h);
+			BasicGeo_Vertex(x  ,y+h);
+			BasicGeo_Draw(GL10.GL_TRIANGLE_FAN);
+		} else {
+			BasicGeo_Prepare(5);
+			BasicGeo_Vertex(x  ,y  );
+			BasicGeo_Vertex(x+w,y  );
+			BasicGeo_Vertex(x+w,y+h);
+			BasicGeo_Vertex(x  ,y+h);
+			BasicGeo_Vertex(x  ,y  );
+			BasicGeo_Draw(GL10.GL_LINE_STRIP);
+		}
+	}
+	
+	/// love.graphics.point( x, y )
+	public void renderPoint			(float x,float y) {
+		BasicGeo_Prepare(1);
+		BasicGeo_Vertex(x  ,y  );
+		BasicGeo_Draw(GL10.GL_POINTS);
+	}
 	
 	/// love.graphics.line( x1, y1, x2, y2, ... )
-	public void renderLine			(float x1,float y1,float x2,float y2) { vm.NotImplemented("love.graphics."+"line"); } // TODO: implement me
-	public void renderPolyLine		(float[] arr) { vm.NotImplemented("love.graphics."+"line"); } // TODO: implement me
+	public void renderLine			(float x1,float y1,float x2,float y2) {
+		BasicGeo_Prepare(2);
+		BasicGeo_Vertex(x1,y1);
+		BasicGeo_Vertex(x2,y2);
+		BasicGeo_Draw(GL10.GL_LINE_STRIP);
+	}
+	
+	/// love.graphics.line( x1, y1, x2, y2, ... )
+	public void renderPolyLine		(float[] arr) {
+		BasicGeo_Prepare(arr.length/2);
+		for (int i=0;i<2*(arr.length/2);i+=2) BasicGeo_Vertex(arr[i],arr[i+1]);
+		BasicGeo_Draw(GL10.GL_LINE_STRIP);
+	}
 	
 	/// love.graphics.polygon( mode, ... )
-	public void renderPolygon		(DrawMode mode,float[] arr) { vm.NotImplemented("love.graphics."+"polygon"); } // TODO: implement me
+	public void renderPolygon		(DrawMode mode,float[] arr) {
+		if (mode == DrawMode.FILL) {
+			BasicGeo_Prepare(arr.length/2);
+			for (int i=0;i<2*(arr.length/2);i+=2) BasicGeo_Vertex(arr[i],arr[i+1]);
+			BasicGeo_Draw(GL10.GL_TRIANGLE_FAN);
+		} else {
+			BasicGeo_Prepare(arr.length/2+1);
+			for (int i=0;i<2*(arr.length/2);i+=2) BasicGeo_Vertex(arr[i],arr[i+1]);
+			BasicGeo_Vertex(arr[0],arr[1]);
+			BasicGeo_Draw(GL10.GL_LINE_STRIP);
+		}
+	}
+	
 	
 	// ***** ***** ***** ***** *****  DrawSprite function, rotate calc etc
 	
@@ -138,11 +261,23 @@ public abstract class LuanRenderer extends LuanBase {
 		if (bVertexBuffersSprite) return;
 		bVertexBuffersSprite = true;
 		// Point to our vertex buffer
+		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 		gl.glVertexPointer(2, GL10.GL_FLOAT, 0, spriteVB_Pos);
 		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, spriteVB_Tex);
 	}
+	
+	/// texcoords disabled
+	public void setVertexBuffersToCustom (FloatBuffer pos) {
+		bVertexBuffersSprite = false;
+		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		gl.glVertexPointer(2, GL10.GL_FLOAT, 0, pos);
+		//~ gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, tex);
+	}
+	
+	/// texcoords enabled
 	public void setVertexBuffersToCustom (FloatBuffer pos,FloatBuffer tex) {
 		bVertexBuffersSprite = false;
+		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 		gl.glVertexPointer(2, GL10.GL_FLOAT, 0, pos);
 		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, tex);
 	}

@@ -32,7 +32,7 @@ public class LuanGraphics extends LuanRenderer {
 	}
 	
 	public LuaTable InitLib () {
-		InitSpriteBuffer();
+		InitRenderer();
 		try {
 			mDefaultFont = new LuanFont(this);
 			mFont = mDefaultFont;
@@ -161,10 +161,9 @@ public class LuanGraphics extends LuanRenderer {
 		
 		/// love.graphics.point( x, y )
 		t.set("point",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) {
-			DrawMode mode = Str2DrawMode(args.checkjstring(1));
-			float x = (float)args.checkdouble(2);
-			float y = (float)args.checkdouble(3);
-			renderPoint(mode, x, y);
+			float x = (float)args.checkdouble(1);
+			float y = (float)args.checkdouble(2);
+			renderPoint(x, y);
 			return LuaValue.NONE;
 		} });
 		
