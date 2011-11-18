@@ -8,7 +8,7 @@ import java.io.InputStream;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import net.schattenkind.androidLove.luan.LuanGraphics.LuanDrawable;
+import net.schattenkind.androidLove.luan.LuanRenderer.LuanDrawable;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;

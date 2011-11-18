@@ -30,4 +30,7 @@ public abstract class LuanBase {
 	}
 
 	abstract public LuaTable InitLib();
+	
+	/// should be overriden by derived classes
+	public void Log (String s) { LoveVM.LoveLog("LuanBase", s); }
 }

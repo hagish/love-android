@@ -9,7 +9,7 @@ import org.luaj.vm2.lib.VarArgFunction;
 
 public class LuanEvent extends LuanBase {
 	protected static final String TAG = "LoveEvent";
-	public static void Log (String s) { LoveVM.LoveLog(TAG, s); }
+	public void Log (String s) { LoveVM.LoveLog(TAG, s); }
 	
 	public LuanEvent(LoveVM vm) {
 		super(vm);

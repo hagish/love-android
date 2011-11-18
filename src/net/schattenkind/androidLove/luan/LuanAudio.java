@@ -34,7 +34,7 @@ public class LuanAudio extends LuanBase {
 	
 	public static final int kAudioChannels = 4; // max number of concurrent sounds playing at the same time, SoundPool constructor
 	
-	public static void Log (String s) { LoveVM.LoveLog(TAG, s); }
+	public void Log (String s) { LoveVM.LoveLog(TAG, s); }
 	
 	
 	// 0.0f - 1.0f
