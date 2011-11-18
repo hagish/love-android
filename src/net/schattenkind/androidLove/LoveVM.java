@@ -448,6 +448,7 @@ public class LoveVM {
 		return ((LoveAndroid)getActivity()).getView();
 	}
 	
+	public LoveConfig getConfig() { return config; }
 
 	public Context getContext () { return attachedToThisActivity; }
 	

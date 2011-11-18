@@ -9,6 +9,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.Window;
+import android.view.WindowManager;
 
 import java.io.IOException;
 
@@ -68,7 +70,7 @@ public class LoveAndroid extends ActivitiyWithExitMenu {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
 		String path = kGamePath;
 
 		if (Launcher.launchMeGamePath != null) {
@@ -84,6 +86,13 @@ public class LoveAndroid extends ActivitiyWithExitMenu {
 			System.exit(0);
 		}
 		vm = new LoveVM(this, storage);
+		
+		// if conf.lua() : t.screen.fullscreen = true
+		// big thanks to Taehl on Fri Nov 18, 2011 3:42 pm 
+		if (vm.getConfig().screen_fullscreen) {
+			this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		}
 
 		// Create a GLSurfaceView instance and set it
 		// as the ContentView for this Activity.
