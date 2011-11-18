@@ -14,6 +14,8 @@ import net.schattenkind.androidLove.LoveVM;
 
 // note : LuanGraphics extends LuanRenderer
 public abstract class LuanRenderer extends LuanBase {
+	protected	GL10		gl; // only valid after notifyFrameStart
+	
 	public boolean bResolutionOverrideActive = false;
 	public int mfResolutionOverrideX;
 	public int mfResolutionOverrideY;
@@ -26,7 +28,13 @@ public abstract class LuanRenderer extends LuanBase {
 	public float[]		mVB_Pos2_font;
 	public float[]		mVB_Tex2_font;	
 	
-	protected	GL10		gl; // only valid after notifyFrameStart
+	public static String	DrawMode2Str	(DrawMode a) { return (a == DrawMode.FILL)?"fill":"outline"; }
+	public static DrawMode	Str2DrawMode	(String a) { return (a.equals("fill"))?DrawMode.FILL:DrawMode.OUTLINE; }
+		
+	public enum DrawMode {
+		FILL,OUTLINE
+	};
+	
 	
 	// ***** ***** ***** ***** *****  constructor
 	
@@ -41,6 +49,32 @@ public abstract class LuanRenderer extends LuanBase {
 	
 	
 	public float LOVE_TODEG (float fRadians) { return 360f*fRadians/(float)Math.PI; }
+	
+	// ***** ***** ***** ***** *****  basic geometry
+	
+
+	/// TODO : move me to LuanRenderer
+	/// love.graphics.quad( mode, x1, y1, x2, y2, x3, y3, x4, y4 )
+	public void renderQuad			(DrawMode mode,float x1,float y1,float x2,float y2,float x3,float y3,float x4,float y4) { vm.NotImplemented("love.graphics."+"quad"); } // TODO: implement me
+	
+	/// love.graphics.triangle( mode, x1, y1, x2, y2, x3, y3 )
+	public void renderTriangle		(DrawMode mode,float x1,float y1,float x2,float y2,float x3,float y3) { vm.NotImplemented("love.graphics."+"triangle"); } // TODO: implement me
+	
+	/// love.graphics.circle( mode, x, y, radius, segments = 10 )
+	public void renderCircle		(DrawMode mode,float x,float y,float radius,int segments) { vm.NotImplemented("love.graphics."+"circle"); } // TODO: implement me
+	
+	/// love.graphics.point( x, y )
+	public void renderPoint			(DrawMode mode,float x,float y) { vm.NotImplemented("love.graphics."+"point"); } // TODO: implement me
+	
+	/// love.graphics.rectangle( mode, x, y, width, height ) 
+	public void renderRectangle		(DrawMode mode,float x,float y,float w,float h) { vm.NotImplemented("love.graphics."+"rectangle"); } // TODO: implement me
+	
+	/// love.graphics.line( x1, y1, x2, y2, ... )
+	public void renderLine			(float x1,float y1,float x2,float y2) { vm.NotImplemented("love.graphics."+"line"); } // TODO: implement me
+	public void renderPolyLine		(float[] arr) { vm.NotImplemented("love.graphics."+"line"); } // TODO: implement me
+	
+	/// love.graphics.polygon( mode, ... )
+	public void renderPolygon		(DrawMode mode,float[] arr) { vm.NotImplemented("love.graphics."+"polygon"); } // TODO: implement me
 	
 	// ***** ***** ***** ***** *****  DrawSprite function, rotate calc etc
 	
