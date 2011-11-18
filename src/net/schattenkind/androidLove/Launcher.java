@@ -19,6 +19,8 @@ public class Launcher extends ActivitiyWithExitMenu {
 	public static String launchMeGameName;
 	public static String launchMeGamePath;
 
+	public int miGamesFound = 0;
+	
 	private LinkedList<String> gameListName = new LinkedList<String>();
 	private LinkedList<String> gameListPath = new LinkedList<String>();
 
@@ -37,9 +39,11 @@ public class Launcher extends ActivitiyWithExitMenu {
 		gameListView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-
-				launchGame(gameListName.get(position),
-						gameListPath.get(position));
+				
+				// only launch if path is set, avoid info-entries
+				if (gameListPath.get(position).length() > 0) {
+					launchGame(gameListName.get(position),gameListPath.get(position));
+				}
 			}
 		});
 	}
@@ -54,10 +58,15 @@ public class Launcher extends ActivitiyWithExitMenu {
 	}
 
 	private void populateGameList() {
+		miGamesFound = 0;
+		String sPathDown = "";
+		String sPathSD = "";
+		
 		// scan sd card (/mnt/sdcard/love)
 		try {
 			File dir = new File(Environment.getExternalStorageDirectory() + "/"
 					+ loveRootOnSdCard);
+			sPathSD = dir.getPath();
 
 			File[] files = dir.listFiles();
 			for (File f : files) {
@@ -77,6 +86,7 @@ public class Launcher extends ActivitiyWithExitMenu {
 		try {
 			// ex Environment.DIRECTORY_DOWNLOADS
 			File dir = Environment.getDownloadCacheDirectory();
+			sPathDown = dir.getPath();
 			File[] files = dir.listFiles(new FilenameFilterEndsWith(".love")); // don't scan all zip files
 			for (File f : files) {
 				if (isFileLoveZip(f)) {
@@ -87,6 +97,16 @@ public class Launcher extends ActivitiyWithExitMenu {
 			
 		} catch (Exception e) {
 			// avoid crash folder doesn't exist
+		}
+		
+		// no games found, display hints : 
+		if (miGamesFound == 0) {
+			addGameToList("no games found","");
+			addGameToList("add some .love files","");
+			addGameToList("to your sdcard:","");
+			addGameToList(sPathSD,"");
+			addGameToList("or downloads folder:","");
+			addGameToList(sPathDown,"");
 		}
 	}
 
@@ -127,6 +147,7 @@ public class Launcher extends ActivitiyWithExitMenu {
 	private void addGameToList(final String name, final String path) {
 		gameListName.add(name);
 		gameListPath.add(path);
+		++miGamesFound;
 	}
 
 	private void launchGame(String name, String path) {

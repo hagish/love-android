@@ -25,7 +25,7 @@ public class LoveAndroid extends ActivitiyWithExitMenu {
 
 	@SuppressWarnings("unused")
 	private MouseHandler mouseHandler;
-
+	
 	private class UpdateHandler extends Handler {
 
 		@Override
@@ -159,7 +159,9 @@ public class LoveAndroid extends ActivitiyWithExitMenu {
 		vm.getLuanPhone().notifyUserLeaveHint();
 		super.onUserLeaveHint();
 	}
-		
+	
+
+	public android.view.View getView() { return mGLView; }	
 }
 
 class HelloOpenGLES10SurfaceView extends GLSurfaceView {

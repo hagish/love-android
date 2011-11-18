@@ -172,6 +172,54 @@ public class LuanPhone extends LuanBase {
 			@Override public Varargs invoke(Varargs args) { ((LoveAndroid)vm.getActivity()).setBlockMainKey_Search(args.checkboolean(1)); return LuaValue.NONE; }
 		});
 		
+		/// love.phone.setHapticFeedbackEnabled(bEnabled)
+		t.set("setHapticFeedbackEnabled", new VarArgFunction() {
+			@Override public Varargs invoke(Varargs args) { vm.getView().setHapticFeedbackEnabled(args.checkboolean(1)); return LuaValue.NONE; }
+		});
+		
+		/// love.phone.performHapticFeedback(feedbackConstant)
+		/// see also FEEDBACK_CONSTANT
+		t.set("performHapticFeedback", new VarArgFunction() {
+			@Override public Varargs invoke(Varargs args) { vm.getView().performHapticFeedback(args.checkint(1)); return LuaValue.NONE; }
+		});
+		
+		
+		/// love.phone.setRequestedOrientation(requestedOrientation)
+		/// see also SCREEN_ORIENTATION
+		t.set("setRequestedOrientation", new VarArgFunction() {
+			@Override public Varargs invoke(Varargs args) { vm.getActivity().setRequestedOrientation(args.checkint(1)); return LuaValue.NONE; }
+		});
+		
+		/// love.phone.SCREEN_ORIENTATION = {[name]=value,...}
+		/// see also http://developer.android.com/reference/android/content/pm/ActivityInfo.html
+		{
+			LuaTable c = new LuaTable();
+			t.set("SCREEN_ORIENTATION",c);
+			c.set("SCREEN_ORIENTATION_BEHIND",				android.content.pm.ActivityInfo.SCREEN_ORIENTATION_BEHIND		); ///< 	Constant corresponding to behind in the screenOrientation attribute.
+			//~ c.set("SCREEN_ORIENTATION_FULL_SENSOR",			android.content.pm.ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR	); ///< 	Constant corresponding to fullSensor in the screenOrientation attribute.
+			c.set("SCREEN_ORIENTATION_LANDSCAPE",			android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE	); ///< 	Constant corresponding to landscape in the screenOrientation attribute.
+			c.set("SCREEN_ORIENTATION_NOSENSOR",			android.content.pm.ActivityInfo.SCREEN_ORIENTATION_NOSENSOR		); ///< 	Constant corresponding to nosensor in the screenOrientation attribute.
+			c.set("SCREEN_ORIENTATION_PORTRAIT",			android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT		); ///< 	Constant corresponding to portrait in the screenOrientation attribute.
+			//~ c.set("SCREEN_ORIENTATION_REVERSE_LANDSCAPE",	android.content.pm.ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE	); ///< 	Constant corresponding to reverseLandscape in the screenOrientation attribute.
+			//~ c.set("SCREEN_ORIENTATION_REVERSE_PORTRAIT",	android.content.pm.ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT	); ///< 	Constant corresponding to reversePortrait in the screenOrientation attribute.
+			c.set("SCREEN_ORIENTATION_SENSOR",				android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR	); ///< 	Constant corresponding to sensor in the screenOrientation attribute.
+			//~ c.set("SCREEN_ORIENTATION_SENSOR_LANDSCAPE",	android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE	); ///< 	Constant corresponding to sensorLandscape in the screenOrientation attribute.
+			//~ c.set("SCREEN_ORIENTATION_SENSOR_PORTRAIT",		android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT	); ///< 	Constant corresponding to sensorPortrait in the screenOrientation attribute.
+			c.set("SCREEN_ORIENTATION_UNSPECIFIED",			android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED	); ///< 	Constant corresponding to unspecified in the screenOrientation attribute.
+			c.set("SCREEN_ORIENTATION_USER",				android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER	); ///< 	Constant corresponding to user in the screenOrientation attribute.
+		}
+		
+		/// love.phone.FEEDBACK_CONSTANT = {[name]=value,...}
+		/// see also http://developer.android.com/reference/android/view/HapticFeedbackConstants.html
+		{
+			LuaTable c = new LuaTable();
+			t.set("FEEDBACK_CONSTANT",c);
+			c.set("FLAG_IGNORE_GLOBAL_SETTING",	android.view.HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING 	); ///< Flag for View.performHapticFeedback(int, int): Ignore the global setting for whether to perform haptic feedback, do it always.
+			c.set("FLAG_IGNORE_VIEW_SETTING",	android.view.HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING 		); ///< Flag for View.performHapticFeedback(int, int): Ignore the setting in the view for whether to perform haptic feedback, do it always.
+			//~ c.set("KEYBOARD_TAP",				android.view.HapticFeedbackConstants.KEYBOARD_TAP 					); ///< The user has pressed a soft keyboard key.	// FIXME: cannot be resolved or is not a field
+			c.set("LONG_PRESS",					android.view.HapticFeedbackConstants.LONG_PRESS 					); ///< The user has performed a long press on an object that is resulting in an action being performed.
+			c.set("VIRTUAL_KEY",				android.view.HapticFeedbackConstants.VIRTUAL_KEY 					); ///< The user has pressed on a virtual on-screen key.
+		}
 		
 		/// love.phone.SENSOR_TYPE = {[name]=value,...}
 		/// see also http://developer.android.com/reference/android/hardware/Sensor.html

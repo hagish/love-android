@@ -7,6 +7,7 @@ import java.util.HashSet;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import net.schattenkind.androidLove.LoveAndroid;
 import net.schattenkind.androidLove.LoveStorage.FileType;
 import net.schattenkind.androidLove.luan.LuanAudio;
 import net.schattenkind.androidLove.luan.LuanEvent;
@@ -441,6 +442,10 @@ public class LoveVM {
 	
 	public LuanPhone getLuanPhone() {
 		return mLuanPhone;
+	}
+	
+	public android.view.View getView() {
+		return ((LoveAndroid)getActivity()).getView();
 	}
 	
 
