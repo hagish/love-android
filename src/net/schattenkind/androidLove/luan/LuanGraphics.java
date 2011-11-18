@@ -112,6 +112,7 @@ public class LuanGraphics extends LuanRenderer {
 			@Override
 			public Varargs invoke(Varargs args) {
 				LuanColor rgba = new LuanColor(args);
+				//~ Log("setColor"+rgba.r+","+rgba.g+","+rgba.b+","+rgba.a);
 				getGL().glColor4f(rgba.r, rgba.g, rgba.b, rgba.a);
 				// TODO : remember for recreate surface after mode switch
 				return LuaValue.NONE;
@@ -499,12 +500,14 @@ public class LuanGraphics extends LuanRenderer {
 		
 		public LuanColor (Varargs args,int i) {
 			if (args.istable(i)) {
+				//~ LoveVM.LoveLog("LuanColor","table "+i);
 				LuaTable t = args.checktable(i);
 				r = t.rawget(1).tofloat() / 255f;
 				g = t.rawget(2).tofloat() / 255f;
 				b = t.rawget(3).tofloat() / 255f;
 				a = (t.length() >= 4) ? (t.rawget(4).tofloat() / 255f) : 1f;
 			} else {
+				//~ LoveVM.LoveLog("LuanColor","floats "+i);
 				r = ((float)args.checkdouble(i+0)) / 255f;
 				g = ((float)args.checkdouble(i+1)) / 255f;
 				b = ((float)args.checkdouble(i+2)) / 255f;

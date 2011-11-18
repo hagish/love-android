@@ -33,11 +33,11 @@ public abstract class LuanRenderer extends LuanBase {
 	public float[]		mFB_BasicGeo;
 	public int			mi_BasicGeo_Vertices;
 	
-	public static String	DrawMode2Str	(DrawMode a) { return (a == DrawMode.FILL)?"fill":"outline"; }
-	public static DrawMode	Str2DrawMode	(String a) { return (a.equals("fill"))?DrawMode.FILL:DrawMode.OUTLINE; }
+	public static String	DrawMode2Str	(DrawMode a) { return (a == DrawMode.FILL)?"fill":"line"; }
+	public static DrawMode	Str2DrawMode	(String a) { return (a.equals("fill"))?DrawMode.FILL:DrawMode.LINE; }
 		
 	public enum DrawMode {
-		FILL,OUTLINE
+		FILL,LINE
 	};
 	
 	
@@ -94,7 +94,7 @@ public abstract class LuanRenderer extends LuanBase {
 	public void renderCircle		(DrawMode mode,float x,float y,float radius,int segments) {
 		BasicGeo_Prepare(segments);
 		for (int i=0;i<segments;++i) {
-			float ang = (float)Math.PI * 2f / ((float)segments);
+			float ang = (float)Math.PI * 2f * ((float) i) / ((float)segments);
 			float x1 = x + radius * (float)Math.sin(ang);
 			float y1 = y + radius * (float)Math.cos(ang);
 			BasicGeo_Vertex(x1,y1);
