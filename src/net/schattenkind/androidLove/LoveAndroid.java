@@ -1,11 +1,15 @@
 package net.schattenkind.androidLove;
 
+import net.schattenkind.androidLove.luan.LuanPhone;
+
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
+import android.view.Menu;
+
 import java.io.IOException;
 
 public class LoveAndroid extends ActivitiyWithExitMenu {
@@ -119,6 +123,43 @@ public class LoveAndroid extends ActivitiyWithExitMenu {
 		// this is a good place to re-allocate them.
 		mGLView.onResume();
 	}
+	
+	// ***** ***** ***** ***** ***** 4 main buttons
+	
+	public boolean bBlockMainKey_Back	= false; // return
+	public boolean bBlockMainKey_Menu	= false; // Context,options
+	public boolean bBlockMainKey_Search	= false;
+	//~ public boolean bBlockMainKey_Home	= false;  // home cannot be blocked or directly detected, only activity:onUserLeaveHint(), 
+	// home block prevented by os : http://groups.google.com/group/android-developers/browse_thread/thread/6ad5d53f5e8c8013
+	
+	public void setBlockMainKey_Back (boolean bBlocked) { bBlockMainKey_Back = bBlocked; }
+	public void setBlockMainKey_Menu (boolean bBlocked) { bBlockMainKey_Menu = bBlocked; }
+	public void setBlockMainKey_Search (boolean bBlocked) { bBlockMainKey_Search = bBlocked; }
+	
+	@Override public void onBackPressed () {
+		vm.getLuanPhone().notifyMainKey_Back();
+		if (bBlockMainKey_Back) return;
+		super.onBackPressed();
+	}
+	
+	@Override public boolean onPrepareOptionsMenu (Menu menu) {
+		vm.getLuanPhone().notifyMainKey_Menu();
+		if (bBlockMainKey_Menu) return false;
+		return super.onPrepareOptionsMenu(menu);
+	}
+	
+	@Override public boolean onSearchRequested () {
+		vm.getLuanPhone().notifyMainKey_Search();
+		if (bBlockMainKey_Search) return false;
+		return super.onSearchRequested();
+	}
+	
+	/// home ? or other form of termination, cannot be prevented
+	@Override public void onUserLeaveHint () {
+		vm.getLuanPhone().notifyUserLeaveHint();
+		super.onUserLeaveHint();
+	}
+		
 }
 
 class HelloOpenGLES10SurfaceView extends GLSurfaceView {

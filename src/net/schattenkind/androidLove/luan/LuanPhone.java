@@ -4,6 +4,7 @@
 package net.schattenkind.androidLove.luan;
 
 import net.schattenkind.androidLove.LoveVM;
+import net.schattenkind.androidLove.LoveAndroid;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -156,8 +157,20 @@ public class LuanPhone extends LuanBase {
 			}
 		});
 		
+		/// love.phone.setBlockMainKey_Back(bBlocked)
+		t.set("setBlockMainKey_Back", new VarArgFunction() {
+			@Override public Varargs invoke(Varargs args) { ((LoveAndroid)vm.getActivity()).setBlockMainKey_Back(args.checkboolean(1)); return LuaValue.NONE; }
+		});
 		
-
+		/// love.phone.setBlockMainKey_Menu(bBlocked)
+		t.set("setBlockMainKey_Menu", new VarArgFunction() {
+			@Override public Varargs invoke(Varargs args) { ((LoveAndroid)vm.getActivity()).setBlockMainKey_Menu(args.checkboolean(1)); return LuaValue.NONE; }
+		});
+		
+		/// love.phone.setBlockMainKey_Search(bBlocked)
+		t.set("setBlockMainKey_Search", new VarArgFunction() {
+			@Override public Varargs invoke(Varargs args) { ((LoveAndroid)vm.getActivity()).setBlockMainKey_Search(args.checkboolean(1)); return LuaValue.NONE; }
+		});
 		
 		
 		/// love.phone.SENSOR_TYPE = {[name]=value,...}
@@ -231,6 +244,20 @@ public class LuanPhone extends LuanBase {
 		}
 	}
 	
+	/// calls love.phone.main_key_event (sEventName) with sEventName being one of back,menu,search,home,leavehint
+	public void fireLuaMainKeyEvent (String sEventName) {
+		if (!vm.isInitDone()) return;
+		try {
+			vm.get_G().get("love").get("phone").get("main_key_event").call(LuaValue.valueOf(sEventName));
+		} catch (LuaError e) {
+			vm.handleLuaError(e);
+		}
+	}
+		
+	public void notifyMainKey_Back		() { fireLuaMainKeyEvent("back"); }
+	public void notifyMainKey_Menu		() { fireLuaMainKeyEvent("menu"); }
+	public void notifyMainKey_Search	() { fireLuaMainKeyEvent("search"); }
+	public void notifyUserLeaveHint		() { fireLuaMainKeyEvent("home"); fireLuaMainKeyEvent("leavehint"); } // assumed home key, migth be others too tho
 	
 	// ***** ***** ***** ***** *****  LuanSensor
 	

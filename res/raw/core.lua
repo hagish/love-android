@@ -45,6 +45,7 @@ function love.update() end
 -- custom events
 function love.phone.touch () end
 function love.phone.sensorevent() end
+function love.phone.main_key_event (sEventName) end
 
 
 function require(file)
