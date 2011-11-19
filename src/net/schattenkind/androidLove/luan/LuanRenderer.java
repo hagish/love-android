@@ -83,6 +83,7 @@ public abstract class LuanRenderer extends LuanBase {
 		assert(mi_BasicGeo_Vertices <= kMaxBasicGeoVertices);
 		LuanGraphics.LuanFillBuffer(mVB_BasicGeo,mFB_BasicGeo,mi_BasicGeo_Vertices*2);
 		setVertexBuffersToCustom(mVB_BasicGeo);
+		gl.glBindTexture(GL10.GL_TEXTURE_2D, 0);
 		gl.glDrawArrays(mode, 0, mi_BasicGeo_Vertices);
 	}
 	
