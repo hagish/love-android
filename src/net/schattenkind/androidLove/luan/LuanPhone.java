@@ -3,21 +3,20 @@
 
 package net.schattenkind.androidLove.luan;
 
-import net.schattenkind.androidLove.LoveVM;
-import net.schattenkind.androidLove.LoveAndroid;
+import java.util.List;
 
+import net.schattenkind.androidLove.LoveAndroid;
+import net.schattenkind.androidLove.LoveVM;
+
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
-import org.luaj.vm2.LuaError;
 
-import java.util.List;
-
-import android.hardware.SensorManager;
+import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.Sensor;
 import android.view.MotionEvent;
 
 public class LuanPhone extends LuanBase {

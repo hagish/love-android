@@ -1,16 +1,14 @@
 package net.schattenkind.androidLove.luan;
 
-import net.schattenkind.androidLove.R;
-import net.schattenkind.androidLove.LoveVM;
-
-import java.io.PrintWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 
 import javax.microedition.khronos.opengles.GL10;
+
+import net.schattenkind.androidLove.LoveVM;
+import net.schattenkind.androidLove.R;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;

@@ -3,13 +3,13 @@ package net.schattenkind.androidLove.luan;
 import net.schattenkind.androidLove.LoveVM;
 
 import org.luaj.vm2.LuaBoolean;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaNumber;
 import org.luaj.vm2.LuaString;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
-import org.luaj.vm2.LuaError;
 
 public class LuanMouse extends LuanBase {
 	private int mouseX;

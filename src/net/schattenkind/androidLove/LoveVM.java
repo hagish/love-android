@@ -7,7 +7,6 @@ import java.util.HashSet;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import net.schattenkind.androidLove.LoveAndroid;
 import net.schattenkind.androidLove.LoveStorage.FileType;
 import net.schattenkind.androidLove.luan.LuanAudio;
 import net.schattenkind.androidLove.luan.LuanEvent;
@@ -17,9 +16,9 @@ import net.schattenkind.androidLove.luan.LuanJoystick;
 import net.schattenkind.androidLove.luan.LuanKeyboard;
 import net.schattenkind.androidLove.luan.LuanMouse;
 import net.schattenkind.androidLove.luan.LuanPhone;
+import net.schattenkind.androidLove.luan.LuanPhysics;
 import net.schattenkind.androidLove.luan.LuanThread;
 import net.schattenkind.androidLove.luan.LuanTimer;
-import net.schattenkind.androidLove.luan.LuanPhysics;
 
 import org.luaj.vm2.LoadState;
 import org.luaj.vm2.LuaError;
@@ -29,14 +28,13 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
-import android.hardware.SensorManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
-import android.util.Log;		// TODO: disable for release
+import android.hardware.SensorManager;
+import android.util.Log;
 import android.widget.Toast;
-import android.content.Context;
 
 public class LoveVM {
 	// TODO: disable for release

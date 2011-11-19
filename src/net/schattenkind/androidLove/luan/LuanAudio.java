@@ -1,9 +1,9 @@
 package net.schattenkind.androidLove.luan;
 
+import java.io.IOException;
+
 import net.schattenkind.androidLove.LoveVM;
 import net.schattenkind.androidLove.Vector3;
-
-import java.io.IOException;
 
 import org.luaj.vm2.LuaNumber;
 import org.luaj.vm2.LuaTable;
@@ -11,10 +11,10 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
-import android.net.Uri;
-import android.media.SoundPool;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
+import android.net.Uri;
 
 public class LuanAudio extends LuanBase {
 	protected static final String TAG = "LoveAudio";

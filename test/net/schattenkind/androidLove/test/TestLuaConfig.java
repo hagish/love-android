@@ -1,9 +1,9 @@
 package net.schattenkind.androidLove.test;
 
-import org.luaj.vm2.LuaTable;
-
-import net.schattenkind.androidLove.LoveConfig;
 import junit.framework.TestCase;
+import net.schattenkind.androidLove.LoveConfig;
+
+import org.luaj.vm2.LuaTable;
 
 public class TestLuaConfig extends TestCase {
 	public void testGetFloatFromTableByPath() {

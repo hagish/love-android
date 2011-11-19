@@ -1,6 +1,6 @@
 package net.schattenkind.androidLove;
 
-import net.schattenkind.androidLove.luan.LuanPhone;
+import java.io.IOException;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
@@ -11,8 +11,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.Window;
 import android.view.WindowManager;
-
-import java.io.IOException;
 
 public class LoveAndroid extends ActivitiyWithExitMenu {
 	private static final String TAG = "LoveAndroid";
