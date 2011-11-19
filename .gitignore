@@ -6,5 +6,5 @@
 /downloads/luaj-2.0.2/
 adb
 eclipse
-/tools/push_dir.db
+/tools/*.db
 /downloads/commons-io-2.1/
