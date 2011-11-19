@@ -14,7 +14,10 @@
     <ListView
         android:id="@+id/gameList"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:background="@drawable/launcher_bg"
+        android:cacheColorHint="#83c0f0" >
+
     </ListView>
 
 </LinearLayout>
