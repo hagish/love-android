@@ -18,12 +18,12 @@ import org.luaj.vm2.lib.VarArgFunction;
 //~ import android.renderscript.Font; // TTF try : android.renderscript cannot be resolved =(
 
 
-public class LuanFont {
+public class LuanObjFont extends LuanObjBase {
 	protected static final String TAG = "LoveFont";
 	public static final int kMaxGlyphsPerString = 1024;
 	
 	private LuanGraphics	g;
-	public LuanImage		img;
+	public LuanObjImage		img;
 	public float w_space = 0f; // TODO: set from letter 'a' ? 
 	public float font_h = 0f; // TODO: set from letter 'a' ? probably just the height of the whole image
 	public float line_h = 1.5f; ///< Gets the line height. This will be the value previously set by Font:setLineHeight, or 1.0 by default. 
@@ -69,22 +69,22 @@ public class LuanFont {
 	// ***** ***** ***** ***** *****
 	
 	/// ttf font
-	public LuanFont (LuanGraphics g,String ttf_filename,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf"); }
+	public LuanObjFont (LuanGraphics g,String ttf_filename,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf"); }
 	
 	/// ttf font
-	public LuanFont (LuanGraphics g,int ttf_ResID,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf"); }
+	public LuanObjFont (LuanGraphics g,int ttf_ResID,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf"); }
 	
 	/// ttf font, default ttf_filename to verdana sans
-	public LuanFont (LuanGraphics g,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf with size"); } 
+	public LuanObjFont (LuanGraphics g,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf with size"); } 
 	
 	/// fall back to image font in resources
-	public LuanFont (LuanGraphics g) throws IOException { this(g,new LuanImage(g, R.raw.imgfont_w)," abcdefghijklmnopqrstuvwxyz0123456789.!'-:·"); this.g = g; bForceLowerCase = true; } 
+	public LuanObjFont (LuanGraphics g) throws IOException { this(g,new LuanObjImage(g, R.raw.imgfont_w)," abcdefghijklmnopqrstuvwxyz0123456789.!'-:·"); this.g = g; bForceLowerCase = true; } 
 	
 	/// imageFont
-	public LuanFont (LuanGraphics g,String filename,String glyphs) throws FileNotFoundException { this(g,new LuanImage(g,filename),glyphs); }
+	public LuanObjFont (LuanGraphics g,String filename,String glyphs) throws FileNotFoundException { this(g,new LuanObjImage(g,filename),glyphs); }
 	
 	/// imageFont
-	public LuanFont (LuanGraphics g,LuanImage img,String glyphs) {
+	public LuanObjFont (LuanGraphics g,LuanObjImage img,String glyphs) {
 		this.g = g;
 		this.img = img;
 		
@@ -352,7 +352,7 @@ public class LuanFont {
 		return x;
 	}
 	
-	public static LuanFont self (Varargs args) { return (LuanFont)args.checkuserdata(1,LuanFont.class); }
+	public static LuanObjFont self (Varargs args) { return (LuanObjFont)args.checkuserdata(1,LuanObjFont.class); }
 	
 	public static LuaTable CreateMetaTable (final LuanGraphics g) {
 		LuaTable mt = LuaValue.tableOf();

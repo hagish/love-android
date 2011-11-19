@@ -43,7 +43,7 @@ website : http://ghoulsblade.schattenkind.net/wiki/index.php/Love2d-android
 ** export ANDROID_HOME=/home/ghoul/cavern/eclipse-workspace/android-sdk-linux
 ** when launching eclipse, launch it from bash 
 
-if you want to copy everything to the sd card again, delete ./tools/push_dir.db  (a database file where it stores md5-sum)
+if you want to copy everything to the sd card again, delete ./tools/push_dir.DEVICE.db  (a database file where it stores md5-sum)
 
 NOTE : this guide looks a bit like what we did : http://linuxconfig.org/get-started-with-android-application-development-using-linux-and-android-sdk
 

@@ -7,7 +7,7 @@ import java.io.InputStream;
 import javax.microedition.khronos.opengles.GL10;
 
 import net.schattenkind.androidLove.LoveVM;
-import net.schattenkind.androidLove.luan.LuanRenderer.LuanDrawable;
+import net.schattenkind.androidLove.luan.LuanRenderer.LuanObjDrawable;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -20,7 +20,7 @@ import android.opengl.GLUtils;
 
 
 
-public class LuanImage extends LuanDrawable {
+public class LuanObjImage extends LuanObjDrawable {
 	protected static final String TAG = "LoveImage";
 	
 	private String			sDebugSource;
@@ -37,7 +37,7 @@ public class LuanImage extends LuanDrawable {
 	@Override public boolean IsImage () { return true; }
 	
 	public String getDebugSource () { return sDebugSource; }
-	public static LuanImage self (Varargs args) { return (LuanImage)args.checkuserdata(1,LuanImage.class); }
+	public static LuanObjImage self (Varargs args) { return (LuanObjImage)args.checkuserdata(1,LuanObjImage.class); }
 	
 	public static String	Filter2Str	(int	a) { return (a == GL10.GL_LINEAR)?"linear":"nearest"; }
 	public static int		Str2Filter	(String a) { return (a.equals("linear"))?GL10.GL_LINEAR:GL10.GL_NEAREST; }
@@ -141,14 +141,14 @@ public class LuanImage extends LuanDrawable {
 	}
 	
 	/// load image from resource id, e.g. R.raw.font
-	public LuanImage (LuanGraphics g,int iResID) throws IOException {
+	public LuanObjImage (LuanGraphics g,int iResID) throws IOException {
 		this(g,g.vm.getResourceInputStream(iResID));
 		sDebugSource = "resid="+iResID;
 		// TODO: store origin for reload
 	}
 	
 	/// load image from file
-	public LuanImage (LuanGraphics g,String filepath) throws FileNotFoundException {
+	public LuanObjImage (LuanGraphics g,String filepath) throws FileNotFoundException {
 		this(g,g.vm.getStorage().getFileStreamFromLovePath(filepath));
 		sDebugSource = "file="+filepath;
 		// TODO: store origin for reload
@@ -160,7 +160,7 @@ public class LuanImage extends LuanDrawable {
 	}
 	
 	/// don't allow public call, since we need to store the origin of the image stream somehow, so we can reload the file image after context-switch
-	private LuanImage (LuanGraphics g,InputStream input) {
+	private LuanObjImage (LuanGraphics g,InputStream input) {
 		this.g = g;
 		
 		// todo : remember filepath so textureid can be reconstructed if lost during context-switch ?

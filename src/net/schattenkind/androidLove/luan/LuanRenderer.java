@@ -21,8 +21,8 @@ public abstract class LuanRenderer extends LuanBase {
 	public int mfResolutionOverrideX;
 	public int mfResolutionOverrideY;
 	
-	public LuanFont mFont;
-	public LuanFont mDefaultFont;
+	public LuanObjFont mFont;
+	public LuanObjFont mDefaultFont;
 	
 	public FloatBuffer	mVB_Pos_font;
 	public FloatBuffer	mVB_Tex_font;
@@ -320,7 +320,7 @@ public abstract class LuanRenderer extends LuanBase {
 		//~ Log("notifyFrameEnd");
 	}
 	
-	public void DrawSprite	(int iTextureID,LuanQuad quad,float w,float h,float x,float y,float r,float sx,float sy,float ox,float oy) {
+	public void DrawSprite	(int iTextureID,LuanObjQuad quad,float w,float h,float x,float y,float r,float sx,float sy,float ox,float oy) {
 		DrawSprite	(iTextureID,quad.vb_Tex,w,h,x,y,r,sx,sy,ox,oy);
 	}
 		
@@ -409,7 +409,7 @@ public abstract class LuanRenderer extends LuanBase {
 		
 	// ***** ***** ***** ***** *****  LuanDrawable
 	
-	public static class LuanDrawable {
+	public static class LuanObjDrawable extends LuanObjBase {
 		public boolean IsImage () { return false; }
 		public void RenderSelf (float x,float y,float r,float sx,float sy,float ox,float oy) { }
 	}

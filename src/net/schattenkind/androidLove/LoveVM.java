@@ -511,4 +511,10 @@ public class LoveVM {
 	}
 
 	public InputStream getResourceInputStream (int id) { return storage.getResourceInputStream(id); }
+	
+	public void shutdown()
+	{
+		// TODO
+	}
+	
 }

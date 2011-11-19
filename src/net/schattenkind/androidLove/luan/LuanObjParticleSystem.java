@@ -1,20 +1,20 @@
 package net.schattenkind.androidLove.luan;
 
-import net.schattenkind.androidLove.luan.LuanRenderer.LuanDrawable;
+import net.schattenkind.androidLove.luan.LuanRenderer.LuanObjDrawable;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
-public class LuanParticleSystem extends LuanDrawable {
+public class LuanObjParticleSystem extends LuanObjDrawable {
 	protected static final String TAG = "LoveParticleSystem";
 	
 	private LuanGraphics	g;
 		
 	@Override public void RenderSelf (float x,float y,float r,float sx,float sy,float ox,float oy) { g.vm.NotImplemented("LoveParticleSystem:draw"); } // TODO
 		
-	public static LuanParticleSystem self (Varargs args) { return (LuanParticleSystem)args.checkuserdata(1,LuanParticleSystem.class); }
+	public static LuanObjParticleSystem self (Varargs args) { return (LuanObjParticleSystem)args.checkuserdata(1,LuanObjParticleSystem.class); }
 	
 	public static LuaTable CreateMetaTable (final LuanGraphics g) {
 		LuaTable mt = LuaValue.tableOf();
@@ -66,5 +66,5 @@ public class LuanParticleSystem extends LuanDrawable {
 		return mt;
 	}
 	
-	public LuanParticleSystem (LuanGraphics g,LuanImage img,int iBufferSize) { this.g = g; g.vm.NotImplemented("love.graphics.newParticleSystem"); }
+	public LuanObjParticleSystem (LuanGraphics g,LuanObjImage img,int iBufferSize) { this.g = g; g.vm.NotImplemented("love.graphics.newParticleSystem"); }
 }
