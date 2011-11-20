@@ -1,6 +1,9 @@
-package net.schattenkind.androidLove.luan;
+package net.schattenkind.androidLove.luan.obj;
 
 import java.nio.FloatBuffer;
+
+import net.schattenkind.androidLove.luan.LuanObjBase;
+import net.schattenkind.androidLove.luan.module.LuanGraphics;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -15,6 +18,7 @@ import org.luaj.vm2.lib.VarArgFunction;
 /// see also love.graphics.drawq(myimg, myquad, x, y)
 /// see also http://love2d.org/wiki/love.graphics.newQuad
 public class LuanObjQuad extends LuanObjBase {
+	@SuppressWarnings("unused")
 	private LuanGraphics	g;
 	public float	x;
 	public float	y;

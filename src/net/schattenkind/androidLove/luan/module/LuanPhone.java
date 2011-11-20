@@ -1,12 +1,15 @@
 // phone/android/iphone specific extensions
 // set love.phone, so android-aware games can detect it, might be used for additional util functions later
 
-package net.schattenkind.androidLove.luan;
+package net.schattenkind.androidLove.luan.module;
 
 import java.util.List;
 
 import net.schattenkind.androidLove.LoveAndroid;
 import net.schattenkind.androidLove.LoveVM;
+import net.schattenkind.androidLove.luan.LuanBase;
+import net.schattenkind.androidLove.luan.LuanObjBase;
+import net.schattenkind.androidLove.luan.obj.LuanObjImage;
 
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;

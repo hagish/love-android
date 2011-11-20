@@ -1,8 +1,10 @@
-package net.schattenkind.androidLove.luan;
+package net.schattenkind.androidLove.luan.module;
 
 import java.io.IOException;
 
 import net.schattenkind.androidLove.LoveVM;
+import net.schattenkind.androidLove.luan.LuanBase;
+import net.schattenkind.androidLove.luan.LuanObjBase;
 import net.schattenkind.androidLove.utils.Vector3;
 
 import org.luaj.vm2.LuaNumber;

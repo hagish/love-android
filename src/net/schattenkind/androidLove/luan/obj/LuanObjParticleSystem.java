@@ -1,6 +1,7 @@
-package net.schattenkind.androidLove.luan;
+package net.schattenkind.androidLove.luan.obj;
 
-import net.schattenkind.androidLove.luan.LuanRenderer.LuanObjDrawable;
+import net.schattenkind.androidLove.luan.module.LuanGraphics;
+import net.schattenkind.androidLove.luan.module.LuanRenderer.LuanObjDrawable;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;

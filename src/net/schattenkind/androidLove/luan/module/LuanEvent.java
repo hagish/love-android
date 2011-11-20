@@ -1,6 +1,7 @@
-package net.schattenkind.androidLove.luan;
+package net.schattenkind.androidLove.luan.module;
 
 import net.schattenkind.androidLove.LoveVM;
+import net.schattenkind.androidLove.luan.LuanBase;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;

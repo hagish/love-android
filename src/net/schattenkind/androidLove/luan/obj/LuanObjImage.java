@@ -1,4 +1,4 @@
-package net.schattenkind.androidLove.luan;
+package net.schattenkind.androidLove.luan.obj;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,7 +7,8 @@ import java.io.InputStream;
 import javax.microedition.khronos.opengles.GL10;
 
 import net.schattenkind.androidLove.LoveVM;
-import net.schattenkind.androidLove.luan.LuanRenderer.LuanObjDrawable;
+import net.schattenkind.androidLove.luan.module.LuanGraphics;
+import net.schattenkind.androidLove.luan.module.LuanRenderer.LuanObjDrawable;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;

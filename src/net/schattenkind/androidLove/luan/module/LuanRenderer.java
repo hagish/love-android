@@ -2,7 +2,7 @@
 // e.g. vertex buffer allocation, polygon/line rendering etc 
 // might be a good place to abstract for using OpenGL ES 1.1 if available
 
-package net.schattenkind.androidLove.luan;
+package net.schattenkind.androidLove.luan.module;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -11,6 +11,10 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.opengles.GL10;
 
 import net.schattenkind.androidLove.LoveVM;
+import net.schattenkind.androidLove.luan.LuanBase;
+import net.schattenkind.androidLove.luan.LuanObjBase;
+import net.schattenkind.androidLove.luan.obj.LuanObjFont;
+import net.schattenkind.androidLove.luan.obj.LuanObjQuad;
 
 // note : LuanGraphics extends LuanRenderer
 public abstract class LuanRenderer extends LuanBase {

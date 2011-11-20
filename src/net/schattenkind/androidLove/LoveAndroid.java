@@ -15,15 +15,12 @@ import android.view.WindowManager;
 public class LoveAndroid extends ActivitiyWithExitMenu {
 	private static final String TAG = "LoveAndroid";
 	private static final long updateDelayMillis = 1000 / 30;
+	private static final String kGamePath = "/mnt/sdcard/love/test/";
+	
 	private static LoveVM vm = null;
 
 	private GLSurfaceView mGLView;
 
-	// ~ private final static String kGamePath = "/mnt/sdcard/love/clouds/";
-	// ~ private final static String kGamePath = "/mnt/sdcard/love/iyfct/";
-	// ~ private final static String kGamePath =
-	// "/mnt/sdcard/love/love_for_zombies/";
-	private final static String kGamePath = "/mnt/sdcard/love/test/";
 
 	@SuppressWarnings("unused")
 	private MouseHandler mouseHandler;
@@ -49,19 +46,19 @@ public class LoveAndroid extends ActivitiyWithExitMenu {
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (vm == null) {
-			return false;
-		} else {
+		if (vm != null) {
 			return vm.feedKey(keyCode, true);
+		} else {
+			return false;
 		}
 	}
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if (vm == null) {
-			return false;
-		} else {
+		if (vm != null) {
 			return vm.feedKey(keyCode, false);
+		} else {
+			return false;
 		}
 	}
 
@@ -98,10 +95,6 @@ public class LoveAndroid extends ActivitiyWithExitMenu {
 					WindowManager.LayoutParams.FLAG_FULLSCREEN,
 					WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		}
-	}
-
-	private void shutdownVM() {
-
 	}
 
 	@Override

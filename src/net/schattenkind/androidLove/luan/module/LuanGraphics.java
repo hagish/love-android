@@ -1,8 +1,12 @@
-package net.schattenkind.androidLove.luan;
+package net.schattenkind.androidLove.luan.module;
 
 import javax.microedition.khronos.opengles.GL10;
 
 import net.schattenkind.androidLove.LoveVM;
+import net.schattenkind.androidLove.luan.obj.LuanObjFont;
+import net.schattenkind.androidLove.luan.obj.LuanObjImage;
+import net.schattenkind.androidLove.luan.obj.LuanObjParticleSystem;
+import net.schattenkind.androidLove.luan.obj.LuanObjQuad;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;

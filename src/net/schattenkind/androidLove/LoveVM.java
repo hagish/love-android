@@ -8,17 +8,17 @@ import java.util.HashSet;
 import javax.microedition.khronos.opengles.GL10;
 
 import net.schattenkind.androidLove.LoveStorage.FileType;
-import net.schattenkind.androidLove.luan.LuanAudio;
-import net.schattenkind.androidLove.luan.LuanEvent;
-import net.schattenkind.androidLove.luan.LuanFilesystem;
-import net.schattenkind.androidLove.luan.LuanGraphics;
-import net.schattenkind.androidLove.luan.LuanJoystick;
-import net.schattenkind.androidLove.luan.LuanKeyboard;
-import net.schattenkind.androidLove.luan.LuanMouse;
-import net.schattenkind.androidLove.luan.LuanPhone;
-import net.schattenkind.androidLove.luan.LuanPhysics;
-import net.schattenkind.androidLove.luan.LuanThread;
-import net.schattenkind.androidLove.luan.LuanTimer;
+import net.schattenkind.androidLove.luan.module.LuanAudio;
+import net.schattenkind.androidLove.luan.module.LuanEvent;
+import net.schattenkind.androidLove.luan.module.LuanFilesystem;
+import net.schattenkind.androidLove.luan.module.LuanGraphics;
+import net.schattenkind.androidLove.luan.module.LuanJoystick;
+import net.schattenkind.androidLove.luan.module.LuanKeyboard;
+import net.schattenkind.androidLove.luan.module.LuanMouse;
+import net.schattenkind.androidLove.luan.module.LuanPhone;
+import net.schattenkind.androidLove.luan.module.LuanPhysics;
+import net.schattenkind.androidLove.luan.module.LuanThread;
+import net.schattenkind.androidLove.luan.module.LuanTimer;
 
 import org.luaj.vm2.LoadState;
 import org.luaj.vm2.LuaError;
