@@ -3,24 +3,25 @@ package net.schattenkind.androidLove;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.LinkedList;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import net.schattenkind.androidLove.LoveAndroid;
 import net.schattenkind.androidLove.LoveStorage.FileType;
-import net.schattenkind.androidLove.luan.LuanAudio;
-import net.schattenkind.androidLove.luan.LuanEvent;
-import net.schattenkind.androidLove.luan.LuanFilesystem;
-import net.schattenkind.androidLove.luan.LuanGraphics;
-import net.schattenkind.androidLove.luan.LuanJoystick;
-import net.schattenkind.androidLove.luan.LuanKeyboard;
-import net.schattenkind.androidLove.luan.LuanMouse;
-import net.schattenkind.androidLove.luan.LuanPhone;
-import net.schattenkind.androidLove.luan.LuanThread;
-import net.schattenkind.androidLove.luan.LuanTimer;
-import net.schattenkind.androidLove.luan.LuanPhysics;
+import net.schattenkind.androidLove.luan.module.LuanAudio;
+import net.schattenkind.androidLove.luan.module.LuanEvent;
+import net.schattenkind.androidLove.luan.module.LuanFilesystem;
+import net.schattenkind.androidLove.luan.module.LuanGraphics;
+import net.schattenkind.androidLove.luan.module.LuanJoystick;
+import net.schattenkind.androidLove.luan.module.LuanKeyboard;
+import net.schattenkind.androidLove.luan.module.LuanMouse;
+import net.schattenkind.androidLove.luan.module.LuanPhone;
+import net.schattenkind.androidLove.luan.module.LuanPhysics;
+import net.schattenkind.androidLove.luan.module.LuanThread;
+import net.schattenkind.androidLove.luan.module.LuanTimer;
 
 import org.luaj.vm2.LoadState;
 import org.luaj.vm2.LuaError;
@@ -30,19 +31,18 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
-import android.hardware.SensorManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
-import android.util.Log;		// TODO: disable for release
+import android.hardware.SensorManager;
+import android.util.Log;
 import android.widget.Toast;
-import android.content.Context;
 
 public class LoveVM {
 	// TODO: disable for release
 	private static final boolean loggingEnabled = true;
-	
+
 	private static final String TAG = "LoveVM";
 	private Activity attachedToThisActivity;
 	private LuaValue _G;
@@ -70,7 +70,6 @@ public class LoveVM {
 
 	public boolean bInitCondition_ScreenSize = false;
 	public boolean bInitCondition_NotifyGL = false;
-	public boolean bInitCondition_onCreate = false;
 	public boolean bInitCondition_initAlreadyCalled = false;
 
 	private GL10 gl;
@@ -80,17 +79,20 @@ public class LoveVM {
 	
 	public Random mRandom = new Random();
 
+	private GL10 lastInitialisedGL = null;
+
 	private LoveStorage storage;
-	
-	private SensorManager mSensorMgr;
+
+	LinkedList<WeakReference<GfxReinitListener>> notifyOnGfxReinitList;
 
 	// ***** ***** ***** ***** ***** constructor
-	
-	public LoveVM(Activity attachedToThisActivity, LoveStorage storage) {
-		this.attachedToThisActivity = attachedToThisActivity;
+
+	public LoveVM(LoveStorage storage) {
+		this.attachedToThisActivity = null;
 		this.storage = storage;
 		this.config = new LoveConfig();
-		mSensorMgr = (SensorManager)getContext().getSystemService(Context.SENSOR_SERVICE);
+
+		notifyOnGfxReinitList = new LinkedList<WeakReference<GfxReinitListener>>();
 	}
 
 	// ***** ***** ***** ***** ***** utils 
@@ -98,34 +100,37 @@ public class LoveVM {
 	public float getRandomFloat			() { return mRandom.nextFloat(); } // [0;1[
 	public float getRandomFloatBetween	(float a,float b) { return a + mRandom.nextFloat() * (b-a); } // [a;b[
 	
-	// ***** ***** ***** ***** ***** log 
-	
+
+	// ***** ***** ***** ***** ***** log
+
 	public static void logException(Exception e) {
 		LoveLogE(TAG, e.getMessage(), e);
 	}
-	
-	public static void LoveLogE(String sTag,String sTxt,Exception e) {
-		Log.e(sTag,sTxt, e);
+
+	public static void LoveLogE(String sTag, String sTxt, Exception e) {
+		Log.e(sTag, sTxt, e);
 	}
-	
-	public static void LoveLogE(String sTag,String sTxt) {
-		Log.e(sTag,sTxt);
+
+	public static void LoveLogE(String sTag, String sTxt) {
+		Log.e(sTag, sTxt);
 	}
-	
-	public static void LoveLog(String sTag,String sTxt) {
-		if(loggingEnabled)Log.i(sTag, sTxt.toString());
+
+	public static void LoveLog(String sTag, String sTxt) {
+		if (loggingEnabled)
+			Log.i(sTag, sTxt.toString());
 	}
-	
-	public static void LoveLog(String s) { LoveLog(TAG,s); }
-	
+
+	public static void LoveLog(String s) {
+		LoveLog(TAG, s);
+	}
 
 	// ***** ***** ***** ***** ***** init
-	
-	/// check if all ainit conditions are satisified and if yes run init if it hasn't been run already
+
+	// / check if all ainit conditions are satisified and if yes run init if it
+	// hasn't been run already
 	public void checkAllInitOk() {
-		if (!bInitDone && gl != null && bInitCondition_onCreate
-				&& bInitCondition_ScreenSize && bInitCondition_NotifyGL
-				&& !bInitCondition_initAlreadyCalled) {
+		if (!bInitDone && gl != null && bInitCondition_ScreenSize
+				&& bInitCondition_NotifyGL && !bInitCondition_initAlreadyCalled) {
 			bInitCondition_initAlreadyCalled = true;
 			init();
 		}
@@ -135,6 +140,7 @@ public class LoveVM {
 	// called
 	public void init() {
 		assert (!bInitDone); // don't init twice
+
 		if (bInitInProgress)
 			return; // multithread problem??
 		bInitInProgress = true;
@@ -154,7 +160,7 @@ public class LoveVM {
 
 			LoveLog("exec conf.lua...");
 			loadConfig();
-			
+
 			LoveLog("exec bootstrap.lua...");
 			loadFileFromRes(R.raw.bootstrap, "bootstrap.lua");
 
@@ -166,11 +172,12 @@ public class LoveVM {
 
 		// call love.load() in main.lua
 		this.load();
+
 		bInitDone = true;
 		bInitInProgress = false;
 	}
-	
-	/// call user defined love.load() in main.lua
+
+	// / call user defined love.load() in main.lua
 	public void load() {
 		assert (bInitDone);
 		try {
@@ -180,10 +187,9 @@ public class LoveVM {
 			handleLuaError(e);
 		}
 	}
-	
+
 	// ***** ***** ***** ***** ***** notifications
-	
-	
+
 	// seems to be called LATE! after notifyGL, so made this an init condition
 	// to avoid screensize being unavailable during love.load
 	public void notifyScreenSize(float w, float h) {
@@ -192,6 +198,41 @@ public class LoveVM {
 		mfScreenH = h;
 		bInitCondition_ScreenSize = true;
 		checkAllInitOk();
+		checkGfxReinit();
+	}
+
+	public void listenForGfxReinit(GfxReinitListener listener) {
+		notifyOnGfxReinitList
+				.add(new WeakReference<GfxReinitListener>(listener));
+	}
+
+	private void reinitGfx() {
+		LinkedList<WeakReference<GfxReinitListener>> removeMe = new LinkedList<WeakReference<GfxReinitListener>>();
+
+		// notify all
+		for (WeakReference<GfxReinitListener> r : notifyOnGfxReinitList) {
+			if (r.get() == null) {
+				removeMe.add(r);
+			} else {
+				r.get().onGfxReinit(gl, mfScreenW, mfScreenH);
+			}
+		}
+
+		// remove null references
+		for (WeakReference<GfxReinitListener> r : removeMe) {
+			notifyOnGfxReinitList.remove(r);
+		}
+	}
+
+	private void checkGfxReinit() {
+		if (bInitDone == true) {
+			if (lastInitialisedGL != gl) {
+
+				reinitGfx();
+
+				lastInitialisedGL = gl;
+			}
+		}
 	}
 
 	// / called when gl context is created or updated
@@ -201,22 +242,22 @@ public class LoveVM {
 		this.gl = gl;
 		bInitCondition_NotifyGL = true;
 		checkAllInitOk();
+		checkGfxReinit();
 	}
 
 	// / called when activity.onCreate has finished setting up the window
 	public void notifyOnCreateDone() {
 		LoveLog("notifyOnCreateDone");
-		bInitCondition_onCreate = true;
 		checkAllInitOk();
 	}
-	
+
 	public void notifyUpdateTimerMainThread(float dt) {
 		if (!bCallUpdateDuringDraw)
 			update(dt);
 	}
-	
+
 	// ***** ***** ***** ***** ***** lua api
-	
+
 	private void setupCoreFunctions() {
 		_G.set("print", new VarArgFunction() {
 			@Override
@@ -259,13 +300,12 @@ public class LoveVM {
 		});
 	}
 
-
 	private void setupLoveFunctions() {
 		_G.set("love", LuaValue.tableOf());
 
 		mLuanGraphics = new LuanGraphics(this);
 		_G.get("love").set("graphics", mLuanGraphics.InitLib());
-		
+
 		mLuanPhysics = new LuanPhysics(this);
 		_G.get("love").set("physics", mLuanPhysics.InitLib());
 
@@ -298,9 +338,8 @@ public class LoveVM {
 		_G.get("love").set("phone", mLuanPhone.InitLib());
 	}
 
-	
 	// ***** ***** ***** ***** ***** errors, warnings, notifications
-	
+
 	public void handleError(Exception e) {
 		LoveLogE(TAG, "ERROR: " + e.getMessage());
 		toast("ERROR: " + e.getMessage());
@@ -315,16 +354,18 @@ public class LoveVM {
 
 	HashSet<String> mSetKnownNotImplemented = new HashSet<String>();
 
-	/// warn first time, then ignore
+	// / warn first time, then ignore
 	public void NotImplemented(String s) {
 		if (mSetKnownNotImplemented.contains(s))
 			return;
 		mSetKnownNotImplemented.add(s);
 		LoveLogE(TAG, "WARNING:NotImplemented: " + s);
 	}
-	
-	/// android style popup notification
+
+	// / android style popup notification
 	public void toast(final String string) {
+		assert (attachedToThisActivity != null);
+
 		attachedToThisActivity.runOnUiThread(new Runnable() {
 			public void run() {
 				Context context = attachedToThisActivity
@@ -336,9 +377,9 @@ public class LoveVM {
 			}
 		});
 	}
-	
+
 	// ***** ***** ***** ***** ***** draw
-	
+
 	public void draw(GL10 gl) {
 		if (!bInitDone || isBroken)
 			return;
@@ -363,9 +404,8 @@ public class LoveVM {
 		mLuanGraphics.notifyFrameEnd(gl);
 	}
 
-
 	// ***** ***** ***** ***** ***** update
-	
+
 	public void update(float dt) {
 		if (!bInitDone || isBroken)
 			return;
@@ -382,16 +422,14 @@ public class LoveVM {
 		}
 	}
 
-	
 	// ***** ***** ***** ***** ***** input
-	
+
 	public void feedPosition(int x, int y) {
 		if (!bInitDone)
 			return;
 		try {
 			mLuanMouse.feedPosition(x, y);
-		} catch(Exception e)
-		{
+		} catch (Exception e) {
 			LoveVM.logException(e);
 		}
 	}
@@ -399,11 +437,10 @@ public class LoveVM {
 	public void feedButtonState(boolean left, boolean middle, boolean right) {
 		if (!bInitDone)
 			return;
-		
+
 		try {
 			mLuanMouse.feedButtonState(left, middle, right);
-		} catch(Exception e)
-		{
+		} catch (Exception e) {
 			LoveVM.logException(e);
 		}
 	}
@@ -411,14 +448,13 @@ public class LoveVM {
 	public boolean feedKey(int keyCode, boolean isDown) {
 		try {
 			return mLuanKeyboard.feedKey(keyCode, isDown);
-		} catch(Exception e)
-		{
+		} catch (Exception e) {
 			LoveVM.logException(e);
 			return false;
 		}
-		
+
 	}
-	
+
 	public int convertMouseX(int mouseX, int mouseY) {
 		return mLuanGraphics.convertMouseX(mouseX, mouseY);
 	}
@@ -426,43 +462,55 @@ public class LoveVM {
 	public int convertMouseY(int mouseX, int mouseY) {
 		return mLuanGraphics.convertMouseY(mouseX, mouseY);
 	}
-	
 
 	// ***** ***** ***** ***** ***** api access to other modules
-	
-	/// check this before calling event-callbacks etc
-	public boolean isInitDone () { return bInitDone; }
-	
+
+	// / check this before calling event-callbacks etc
+	public boolean isInitDone() {
+		return bInitDone;
+	}
+
 	public Activity getActivity() {
+		assert (attachedToThisActivity != null);
 		return attachedToThisActivity;
 	}
-	
+
 	public LoveStorage getStorage() {
 		return storage;
 	}
+
 	public LuanGraphics getLuanGraphics() {
 		return mLuanGraphics;
 	}
-	
+
 	public LuanAudio getLuanAudio() {
 		return mLuanAudio;
 	}
-	
+
 	public LuanPhone getLuanPhone() {
 		return mLuanPhone;
 	}
-	
+
 	public android.view.View getView() {
-		return ((LoveAndroid)getActivity()).getView();
+		return ((LoveAndroid) getActivity()).getView();
+	}
+
+	public LoveConfig getConfig() {
+		return config;
+	}
+
+	public Context getContext() {
+		assert (attachedToThisActivity != null);
+		return attachedToThisActivity;
+	}
+
+	public SensorManager getSensorManager() {
+		return (SensorManager) getContext().getSystemService(
+				Context.SENSOR_SERVICE);
 	}
 	
 	public float getTime () { return mLuanTimer.getTime(); } ///< in seconds
-	public LoveConfig getConfig() { return config; }
 
-	public Context getContext () { return attachedToThisActivity; }
-	
-	public SensorManager getSensorManager () { return mSensorMgr; }
-	
 	// / access to latest valid gl object
 	public GL10 getGL() {
 		return gl;
@@ -471,29 +519,29 @@ public class LoveVM {
 	public LuaValue get_G() {
 		return _G;
 	}
-	
+
 	// ***** ***** ***** ***** ***** file access functions
-	
+
 	private void loadConfig() {
 		try {
 			String confFile = "conf.lua";
-			
+
 			loadConfigFromFile(config, storage, confFile);
-			if (storage.getFileType(confFile) == FileType.FILE)
-			{
+			if (storage.getFileType(confFile) == FileType.FILE) {
 				loadFileFromSdCard(confFile);
 			}
 		} catch (Exception e) {
 			LoveLogE(TAG, "error loading config file", e);
 		}
 	}
-	
+
 	public static void loadConfigFromFile(LoveConfig config,
 			LoveStorage storage, String filename) throws FileNotFoundException,
 			IOException, LuaError {
 
 		if (storage.getFileType(filename) == FileType.FILE) {
-			config.loadFromFileStream(storage.getFileStreamFromLovePath(filename));
+			config.loadFromFileStream(storage
+					.getFileStreamFromLovePath(filename));
 		}
 	}
 
@@ -509,17 +557,30 @@ public class LoveVM {
 
 	private void loadFileFromSdCard(String filename) {
 		try {
-			LoadState.load(storage.getFileStreamFromLovePath(filename), filename, _G).call();
+			LoadState.load(storage.getFileStreamFromLovePath(filename),
+					filename, _G).call();
 		} catch (FileNotFoundException e) {
 			LoveLogE(TAG, e.getMessage());
 		} catch (IOException e) {
 			LoveLogE(TAG, e.getMessage());
 		}
 	}
-	
+
 	public Resources getResources() {
+		assert (attachedToThisActivity != null);
 		return attachedToThisActivity.getResources();
 	}
 
-	public InputStream getResourceInputStream (int id) { return storage.getResourceInputStream(id); }
+	public InputStream getResourceInputStream(int id) {
+		return storage.getResourceInputStream(id);
+	}
+
+	public void shutdown() {
+		LoveLog("shutting down vm");
+	}
+
+	public void assignActivity(Activity activity) {
+		attachedToThisActivity = activity;
+		storage.assignActivity(activity);
+	}
 }

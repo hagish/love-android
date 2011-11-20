@@ -1,33 +1,28 @@
 package net.schattenkind.androidLove;
 
-import net.schattenkind.androidLove.luan.LuanPhone;
+import java.io.IOException;
 
-import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.Window;
-import android.view.WindowManager;
-
-import java.io.IOException;
 
 public class LoveAndroid extends ActivitiyWithExitMenu {
 	private static final String TAG = "LoveAndroid";
 	private static final long updateDelayMillis = 1000 / 30;
-	private LoveVM vm;
-	private GLSurfaceView mGLView;
+	private static final String kGamePath = "/mnt/sdcard/love/test/";
+	
+	private static LoveVM vm = null;
 
-	//~ private final static String		kGamePath = "/mnt/sdcard/love/clouds/";
-	//~ private final static String		kGamePath = "/mnt/sdcard/love/iyfct/";
-	//~ private final static String		kGamePath = "/mnt/sdcard/love/love_for_zombies/";
-	private final static String		kGamePath = "/mnt/sdcard/love/test/";
+	private GLSurfaceView mGLView;
+	private LoveAndroidRenderer renderer;
+
 
 	@SuppressWarnings("unused")
 	private MouseHandler mouseHandler;
-	
+
 	private class UpdateHandler extends Handler {
 
 		@Override
@@ -49,12 +44,20 @@ public class LoveAndroid extends ActivitiyWithExitMenu {
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		return vm.feedKey(keyCode, true);
+		if (vm != null) {
+			return vm.feedKey(keyCode, true);
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		return vm.feedKey(keyCode, false);
+		if (vm != null) {
+			return vm.feedKey(keyCode, false);
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -63,48 +66,57 @@ public class LoveAndroid extends ActivitiyWithExitMenu {
 	}
 
 	public void _update() {
-		vm.notifyUpdateTimerMainThread(updateDelayMillis / 1000.0f);
+		if (vm != null) {
+			vm.notifyUpdateTimerMainThread(updateDelayMillis / 1000.0f);
+		}
 		mUpdateHandler.sleep(updateDelayMillis);
+	}
+
+	private static LoveVM createVM(String gamePath) {
+		assert (vm == null);
+
+		LoveStorage storage = null;
+		try {
+			storage = new LoveStorage(gamePath);
+		} catch (IOException e) {
+			// failed to load .zip/.love or similar, exit
+			LoveVM.LoveLog(TAG, "failed to load storage:" + gamePath);
+			System.exit(0);
+		}
+		
+		return new LoveVM(storage);
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		String path = kGamePath;
 
 		if (Launcher.launchMeGamePath != null) {
 			path = Launcher.launchMeGamePath;
 		}
 
-		LoveStorage storage = null;
-		try {
-			storage = new LoveStorage(this, path);
-		} catch (IOException e) {
-			// failed to load .zip/.love or similar, exit
-			LoveVM.LoveLog(TAG,"failed to load storage:"+path);
-			System.exit(0);
+		if (vm == null) {
+			vm = createVM(path);
 		}
-		vm = new LoveVM(this, storage);
-		
-		// if conf.lua() : t.screen.fullscreen = true
-		// big thanks to Taehl on Fri Nov 18, 2011 3:42 pm 
-		if (vm.getConfig().screen_fullscreen) {
-			this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-			this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		}
+		vm.assignActivity(this);
 
 		// Create a GLSurfaceView instance and set it
 		// as the ContentView for this Activity.
-		mGLView = new HelloOpenGLES10SurfaceView(this, vm);
+		renderer = new LoveAndroidRenderer(vm);
+		mGLView = new GLSurfaceView(this);
+		mGLView.setRenderer(renderer);
 		
-		// TODO: setPreserveEGLContextOnPause undefined in android 2.1 for GLSurfaceView
-		//~ try {
-			//~ mGLView.setPreserveEGLContextOnPause(true);
-		//~ } catch (IOException e) {
-			//~ LoveVM.LoveLog(TAG,"mGLView.setPreserveEGLContextOnPause failed"); // just a warning, not fatal
-		//~ }
-		
+		// TODO: setPreserveEGLContextOnPause undefined in android 2.1 for
+		// GLSurfaceView
+		// ~ try {
+		// ~ mGLView.setPreserveEGLContextOnPause(true);
+		// ~ } catch (IOException e) {
+		// ~ LoveVM.LoveLog(TAG,"mGLView.setPreserveEGLContextOnPause failed");
+		// // just a warning, not fatal
+		// ~ }
+
 		setContentView(mGLView);
 
 		vm.notifyOnCreateDone();
@@ -132,53 +144,71 @@ public class LoveAndroid extends ActivitiyWithExitMenu {
 		// this is a good place to re-allocate them.
 		mGLView.onResume();
 	}
-	
+
 	// ***** ***** ***** ***** ***** 4 main buttons
-	
-	public boolean bBlockMainKey_Back	= false; // return
-	public boolean bBlockMainKey_Menu	= false; // Context,options
-	public boolean bBlockMainKey_Search	= false;
-	//~ public boolean bBlockMainKey_Home	= false;  // home cannot be blocked or directly detected, only activity:onUserLeaveHint(), 
-	// home block prevented by os : http://groups.google.com/group/android-developers/browse_thread/thread/6ad5d53f5e8c8013
-	
-	public void setBlockMainKey_Back (boolean bBlocked) { bBlockMainKey_Back = bBlocked; }
-	public void setBlockMainKey_Menu (boolean bBlocked) { bBlockMainKey_Menu = bBlocked; }
-	public void setBlockMainKey_Search (boolean bBlocked) { bBlockMainKey_Search = bBlocked; }
-	
-	@Override public void onBackPressed () {
+
+	public boolean bBlockMainKey_Back = false; // return
+	public boolean bBlockMainKey_Menu = false; // Context,options
+	public boolean bBlockMainKey_Search = false;
+
+	// ~ public boolean bBlockMainKey_Home = false; // home cannot be blocked or
+	// directly detected, only activity:onUserLeaveHint(),
+	// home block prevented by os :
+	// http://groups.google.com/group/android-developers/browse_thread/thread/6ad5d53f5e8c8013
+
+	public void setBlockMainKey_Back(boolean bBlocked) {
+		bBlockMainKey_Back = bBlocked;
+	}
+
+	public void setBlockMainKey_Menu(boolean bBlocked) {
+		bBlockMainKey_Menu = bBlocked;
+	}
+
+	public void setBlockMainKey_Search(boolean bBlocked) {
+		bBlockMainKey_Search = bBlocked;
+	}
+
+	@Override
+	public void onBackPressed() {
 		vm.getLuanPhone().notifyMainKey_Back();
-		if (bBlockMainKey_Back) return;
+		if (bBlockMainKey_Back)
+			return;
 		super.onBackPressed();
 	}
-	
-	@Override public boolean onPrepareOptionsMenu (Menu menu) {
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
 		vm.getLuanPhone().notifyMainKey_Menu();
-		if (bBlockMainKey_Menu) return false;
+		if (bBlockMainKey_Menu)
+			return false;
 		return super.onPrepareOptionsMenu(menu);
 	}
-	
-	@Override public boolean onSearchRequested () {
+
+	@Override
+	public boolean onSearchRequested() {
 		vm.getLuanPhone().notifyMainKey_Search();
-		if (bBlockMainKey_Search) return false;
+		if (bBlockMainKey_Search)
+			return false;
 		return super.onSearchRequested();
 	}
-	
-	/// home ? or other form of termination, cannot be prevented
-	@Override public void onUserLeaveHint () {
+
+	// / home ? or other form of termination, cannot be prevented
+	@Override
+	public void onUserLeaveHint() {
 		vm.getLuanPhone().notifyUserLeaveHint();
 		super.onUserLeaveHint();
 	}
+
+	public android.view.View getView() {
+		return mGLView;
+	}
 	
-
-	public android.view.View getView() { return mGLView; }	
-}
-
-class HelloOpenGLES10SurfaceView extends GLSurfaceView {
-
-	public HelloOpenGLES10SurfaceView(Context context, LoveVM vm) {
-		super(context);
-
-		// Set the Renderer for drawing on the GLSurfaceView
-		setRenderer(new LoveAndroidRenderer(vm));
+	public static void shutdownRunningVM()
+	{
+		if (vm != null)
+		{
+			vm.shutdown();
+			vm = null;
+		}
 	}
 }

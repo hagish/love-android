@@ -1,6 +1,8 @@
-package net.schattenkind.androidLove.luan;
+package net.schattenkind.androidLove.luan.module;
 
 import net.schattenkind.androidLove.LoveVM;
+import net.schattenkind.androidLove.luan.LuanBase;
+import net.schattenkind.androidLove.luan.LuanObjBase;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -30,38 +32,38 @@ public class LuanPhysics extends LuanBase {
 		LuaTable t = LuaValue.tableOf();
 		LuaValue _G = vm.get_G();
 		
-		_G.set(sMetaName_World			,LuanWorld			.CreateMetaTable(this));
-		_G.set(sMetaName_Body			,LuanBody			.CreateMetaTable(this));
+		_G.set(sMetaName_World			,LuanObjWorld			.CreateMetaTable(this));
+		_G.set(sMetaName_Body			,LuanObjBody			.CreateMetaTable(this));
 		
-		_G.set(sMetaName_Shape			,LuanShape			.CreateMetaTable(this));
-		_G.set(sMetaName_CircleShape	,LuanCircleShape	.CreateMetaTable(this));
-		_G.set(sMetaName_PolygonShape	,LuanPolygonShape	.CreateMetaTable(this));
+		_G.set(sMetaName_Shape			,LuanObjShape			.CreateMetaTable(this));
+		_G.set(sMetaName_CircleShape	,LuanObjCircleShape	.CreateMetaTable(this));
+		_G.set(sMetaName_PolygonShape	,LuanObjPolygonShape	.CreateMetaTable(this));
 		
-		_G.set(sMetaName_Contact		,LuanContact		.CreateMetaTable(this));
-		_G.set(sMetaName_Joint			,LuanJoint			.CreateMetaTable(this));
+		_G.set(sMetaName_Contact		,LuanObjContact		.CreateMetaTable(this));
+		_G.set(sMetaName_Joint			,LuanObjJoint			.CreateMetaTable(this));
 	
-		t.set("newWorld",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanWorld(LuanPhysics.this),vm.get_G().get(sMetaName_World));	} }); 		
-		t.set("newBody",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanBody(LuanPhysics.this),vm.get_G().get(sMetaName_Body));	} });
+		t.set("newWorld",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanObjWorld(LuanPhysics.this),vm.get_G().get(sMetaName_World));	} }); 		
+		t.set("newBody",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanObjBody(LuanPhysics.this),vm.get_G().get(sMetaName_Body));	} });
 		
-		t.set("newRectangleShape",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanPolygonShape(LuanPhysics.this),vm.get_G().get(sMetaName_PolygonShape));	} });	
-		t.set("newCircleShape",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanCircleShape(LuanPhysics.this),vm.get_G().get(sMetaName_CircleShape));	} }); 		
-		t.set("newPolygonShape",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanPolygonShape(LuanPhysics.this),vm.get_G().get(sMetaName_PolygonShape));	} });	
+		t.set("newRectangleShape",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanObjPolygonShape(LuanPhysics.this),vm.get_G().get(sMetaName_PolygonShape));	} });	
+		t.set("newCircleShape",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanObjCircleShape(LuanPhysics.this),vm.get_G().get(sMetaName_CircleShape));	} }); 		
+		t.set("newPolygonShape",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanObjPolygonShape(LuanPhysics.this),vm.get_G().get(sMetaName_PolygonShape));	} });	
 		
-		t.set("newDistanceJoint",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanJoint(LuanPhysics.this),vm.get_G().get(sMetaName_Joint));	} });		 	
-		t.set("newGearJoint",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanJoint(LuanPhysics.this),vm.get_G().get(sMetaName_Joint));	} });	 		
-		t.set("newMouseJoint",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanJoint(LuanPhysics.this),vm.get_G().get(sMetaName_Joint));	} });			 	
-		t.set("newPrismaticJoint",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanJoint(LuanPhysics.this),vm.get_G().get(sMetaName_Joint));	} });		 	
-		t.set("newPulleyJoint",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanJoint(LuanPhysics.this),vm.get_G().get(sMetaName_Joint));	} });	 	 	
-		t.set("newRevoluteJoint",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanJoint(LuanPhysics.this),vm.get_G().get(sMetaName_Joint));	} });		 	
+		t.set("newDistanceJoint",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanObjJoint(LuanPhysics.this),vm.get_G().get(sMetaName_Joint));	} });		 	
+		t.set("newGearJoint",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanObjJoint(LuanPhysics.this),vm.get_G().get(sMetaName_Joint));	} });	 		
+		t.set("newMouseJoint",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanObjJoint(LuanPhysics.this),vm.get_G().get(sMetaName_Joint));	} });			 	
+		t.set("newPrismaticJoint",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanObjJoint(LuanPhysics.this),vm.get_G().get(sMetaName_Joint));	} });		 	
+		t.set("newPulleyJoint",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanObjJoint(LuanPhysics.this),vm.get_G().get(sMetaName_Joint));	} });	 	 	
+		t.set("newRevoluteJoint",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.userdataOf(new LuanObjJoint(LuanPhysics.this),vm.get_G().get(sMetaName_Joint));	} });		 	
 		
 		return t;
 	}
 	
 	
 	// ***** ***** ***** ***** ***** LuanWorld
-	public static class LuanWorld {
+	public static class LuanObjWorld extends LuanObjBase {
 		public LuanPhysics phys;
-		public LuanWorld (LuanPhysics phys) { this.phys = phys; phys.vm.NotImplemented("LuanWorld:constructor"); }
+		public LuanObjWorld (LuanPhysics phys) { super(phys.vm); this.phys = phys; phys.vm.NotImplemented("LuanWorld:constructor"); }
 		public static LuaTable CreateMetaTable (final LuanPhysics phys) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
@@ -88,9 +90,9 @@ public class LuanPhysics extends LuanBase {
 	// ***** ***** ***** ***** ***** LuanBody
 	
 	/// Bodies are objects with velocity and position. 
-	public static class LuanBody {
+	public static class LuanObjBody extends LuanObjBase {
 		public LuanPhysics phys;
-		public LuanBody (LuanPhysics phys) { this.phys = phys; phys.vm.NotImplemented("LuanBody:constructor"); }
+		public LuanObjBody (LuanPhysics phys) { super(phys.vm); this.phys = phys; phys.vm.NotImplemented("LuanBody:constructor"); }
 		public static LuaTable CreateMetaTable (final LuanPhysics phys) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
@@ -147,9 +149,9 @@ public class LuanPhysics extends LuanBase {
 		}
 	}
 	// ***** ***** ***** ***** ***** LuanShape
-	public static class LuanShape {
+	public static class LuanObjShape extends LuanObjBase {
 		public LuanPhysics phys;
-		public LuanShape (LuanPhysics phys) { this.phys = phys; phys.vm.NotImplemented("LuanShape:constructor"); }
+		public LuanObjShape (LuanPhysics phys) { super(phys.vm); this.phys = phys; phys.vm.NotImplemented("LuanShape:constructor"); }
 		
 		
 		public static void AddMethodsToTable (final LuanPhysics phys,LuaTable t) {
@@ -189,15 +191,15 @@ public class LuanPhysics extends LuanBase {
 		}
 	}
 	// ***** ***** ***** ***** ***** LuanCircleShape
-	public static class LuanCircleShape {
+	public static class LuanObjCircleShape extends LuanObjBase {
 		public LuanPhysics phys;
-		public LuanCircleShape (LuanPhysics phys) { this.phys = phys; phys.vm.NotImplemented("LuanCircleShape:constructor"); }
+		public LuanObjCircleShape (LuanPhysics phys) { super(phys.vm); this.phys = phys; phys.vm.NotImplemented("LuanCircleShape:constructor"); }
 		public static LuaTable CreateMetaTable (final LuanPhysics phys) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
 			mt.set("__index",t);
 			
-			LuanShape.AddMethodsToTable(phys,t);
+			LuanObjShape.AddMethodsToTable(phys,t);
 			
 			t.set("getLocalCenter"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("CircleShape:"+"getLocalCenter"		);	return LuaValue.NONE; } });	
 			t.set("getRadius"			,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("CircleShape:"+"getRadius"		);	return LuaValue.NONE; } });	
@@ -207,15 +209,15 @@ public class LuanPhysics extends LuanBase {
 		}
 	}
 	// ***** ***** ***** ***** ***** LuanPolygonShape
-	public static class LuanPolygonShape {
+	public static class LuanObjPolygonShape extends LuanObjBase {
 		public LuanPhysics phys;
-		public LuanPolygonShape (LuanPhysics phys) { this.phys = phys; phys.vm.NotImplemented("LuanPolygonShape:constructor"); }
+		public LuanObjPolygonShape (LuanPhysics phys) { super(phys.vm); this.phys = phys; phys.vm.NotImplemented("LuanPolygonShape:constructor"); }
 		public static LuaTable CreateMetaTable (final LuanPhysics phys) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
 			mt.set("__index",t);
 			
-			LuanShape.AddMethodsToTable(phys,t);
+			LuanObjShape.AddMethodsToTable(phys,t);
 			
 			t.set("getPoints"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { phys.vm.NotImplemented("PolygonShape:"+"getPoints"		);	return LuaValue.NONE; } });	
 			
@@ -224,9 +226,9 @@ public class LuanPhysics extends LuanBase {
 	}
 	
 	// ***** ***** ***** ***** ***** LuanContact
-	public static class LuanContact {
+	public static class LuanObjContact extends LuanObjBase {
 		public LuanPhysics phys;
-		public LuanContact (LuanPhysics phys) { this.phys = phys; phys.vm.NotImplemented("LuanContact:constructor"); }
+		public LuanObjContact (LuanPhysics phys) { super(phys.vm); this.phys = phys; phys.vm.NotImplemented("LuanContact:constructor"); }
 		public static LuaTable CreateMetaTable (final LuanPhysics phys) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
@@ -246,9 +248,9 @@ public class LuanPhysics extends LuanBase {
 	}
 	
 	// ***** ***** ***** ***** ***** LuanJoint
-	public static class LuanJoint {
+	public static class LuanObjJoint extends LuanObjBase {
 		public LuanPhysics phys;
-		public LuanJoint (LuanPhysics phys) { this.phys = phys; phys.vm.NotImplemented("LuanJoint:constructor"); }
+		public LuanObjJoint (LuanPhysics phys) { super(phys.vm); this.phys = phys; phys.vm.NotImplemented("LuanJoint:constructor"); }
 		public static LuaTable CreateMetaTable (final LuanPhysics phys) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();

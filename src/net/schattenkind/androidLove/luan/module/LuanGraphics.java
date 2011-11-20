@@ -1,12 +1,12 @@
-package net.schattenkind.androidLove.luan;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
+package net.schattenkind.androidLove.luan.module;
 
 import javax.microedition.khronos.opengles.GL10;
 
 import net.schattenkind.androidLove.LoveVM;
+import net.schattenkind.androidLove.luan.obj.LuanObjFont;
+import net.schattenkind.androidLove.luan.obj.LuanObjImage;
+import net.schattenkind.androidLove.luan.obj.LuanObjParticleSystem;
+import net.schattenkind.androidLove.luan.obj.LuanObjQuad;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -34,7 +34,7 @@ public class LuanGraphics extends LuanRenderer {
 	public LuaTable InitLib () {
 		InitRenderer();
 		try {
-			mDefaultFont = new LuanFont(this);
+			mDefaultFont = new LuanObjFont(this);
 			mFont = mDefaultFont;
 		} catch (Exception e) {
 			Log("warning, failed to load default font in LuanGraphics:InitLib");
@@ -43,10 +43,10 @@ public class LuanGraphics extends LuanRenderer {
 		LuaTable t = LuaValue.tableOf();
 		LuaValue _G = vm.get_G();
 		
-		_G.set(sMetaName_LuanImage,LuanImage.CreateMetaTable(this));
-		_G.set(sMetaName_LuanQuad,LuanQuad.CreateMetaTable(this));
-		_G.set(sMetaName_LuanFont,LuanFont.CreateMetaTable(this));
-		_G.set(sMetaName_LuanParticleSystem,LuanParticleSystem.CreateMetaTable(this));
+		_G.set(sMetaName_LuanImage,LuanObjImage.CreateMetaTable(this));
+		_G.set(sMetaName_LuanQuad,LuanObjQuad.CreateMetaTable(this));
+		_G.set(sMetaName_LuanFont,LuanObjFont.CreateMetaTable(this));
+		_G.set(sMetaName_LuanParticleSystem,LuanObjParticleSystem.CreateMetaTable(this));
 
 		// ***** ***** ***** ***** ***** rest
 		
@@ -101,8 +101,7 @@ public class LuanGraphics extends LuanRenderer {
 			@Override
 			public Varargs invoke(Varargs args) {
 				LuanColor rgba = new LuanColor(args);
-				getGL().glClearColor(rgba.r, rgba.g, rgba.b, rgba.a);
-				// TODO : remember for recreate surface after mode switch
+				setBackgroundColor(rgba);
 				return LuaValue.NONE;
 			}
 		});
@@ -112,9 +111,7 @@ public class LuanGraphics extends LuanRenderer {
 			@Override
 			public Varargs invoke(Varargs args) {
 				LuanColor rgba = new LuanColor(args);
-				//~ Log("setColor"+rgba.r+","+rgba.g+","+rgba.b+","+rgba.a);
-				getGL().glColor4f(rgba.r, rgba.g, rgba.b, rgba.a);
-				// TODO : remember for recreate surface after mode switch
+				setForegroundColor(rgba);
 				return LuaValue.NONE;
 			}
 		});
@@ -240,7 +237,7 @@ public class LuanGraphics extends LuanRenderer {
 				float limit = (float)args.checkdouble(4);
 				String align = (IsArgSet(args,5)) ? args.checkjstring(5) : "left";
 				//~ Log("printf:"+align+":"+s);
-				if (mFont != null) mFont.printf(s,x,y,limit,LuanFont.Text2Align(align));
+				if (mFont != null) mFont.printf(s,x,y,limit,LuanObjFont.Text2Align(align));
 				return LuaValue.NONE;
 			}
 		});
@@ -255,7 +252,7 @@ public class LuanGraphics extends LuanRenderer {
 					String filename = args.checkjstring(1);
 					int iSize = IsArgSet(args,2) ? args.checkint(2) : 12;
 					try {
-						return LuaValue.userdataOf(new LuanFont(LuanGraphics.this,filename,iSize),vm.get_G().get(sMetaName_LuanFont));
+						return LuaValue.userdataOf(new LuanObjFont(LuanGraphics.this,filename,iSize),vm.get_G().get(sMetaName_LuanFont));
 					} catch (Exception e) {
 						vm.handleError(e);
 					}
@@ -263,7 +260,7 @@ public class LuanGraphics extends LuanRenderer {
 				} else {
 					int iSize = (IsArgSet(args,1)) ? args.checkint(1) : 12;
 					try {
-						return LuaValue.userdataOf(new LuanFont(LuanGraphics.this,iSize),vm.get_G().get(sMetaName_LuanFont));
+						return LuaValue.userdataOf(new LuanObjFont(LuanGraphics.this,iSize),vm.get_G().get(sMetaName_LuanFont));
 					} catch (Exception e) {
 						vm.handleError(e);
 					}
@@ -280,15 +277,15 @@ public class LuanGraphics extends LuanRenderer {
 					String filename = args.checkjstring(1);
 					String glyphs = args.checkjstring(2);
 					try {
-						return LuaValue.userdataOf(new LuanFont(LuanGraphics.this,filename,glyphs),vm.get_G().get(sMetaName_LuanFont));
+						return LuaValue.userdataOf(new LuanObjFont(LuanGraphics.this,filename,glyphs),vm.get_G().get(sMetaName_LuanFont));
 					} catch (Exception e) {
 						vm.handleError(e);
 					}
 					return LuaValue.NONE;
 				} else {
-					LuanImage img = (LuanImage)args.checkuserdata(1,LuanImage.class);
+					LuanObjImage img = (LuanObjImage)args.checkuserdata(1,LuanObjImage.class);
 					String glyphs = args.checkjstring(2);
-					return LuaValue.userdataOf(new LuanFont(LuanGraphics.this,img,glyphs),vm.get_G().get(sMetaName_LuanFont));
+					return LuaValue.userdataOf(new LuanObjFont(LuanGraphics.this,img,glyphs),vm.get_G().get(sMetaName_LuanFont));
 				}
 			}
 		});
@@ -297,7 +294,7 @@ public class LuanGraphics extends LuanRenderer {
 		/// love.graphics.setFont( font )
 		t.set("setFont", new VarArgFunction() {
 			@Override public Varargs invoke(Varargs args) {
-				mFont = IsArgSet(args,1) ? (LuanFont)args.checkuserdata(1,LuanFont.class) : mDefaultFont;
+				mFont = IsArgSet(args,1) ? (LuanObjFont)args.checkuserdata(1,LuanObjFont.class) : mDefaultFont;
 				return LuaValue.NONE;
 			}
 		});
@@ -311,7 +308,7 @@ public class LuanGraphics extends LuanRenderer {
 			public Varargs invoke(Varargs args) {
 				String s = args.checkjstring(1);
 				try {
-					return LuaValue.userdataOf(new LuanImage(LuanGraphics.this,s),vm.get_G().get(sMetaName_LuanImage));
+					return LuaValue.userdataOf(new LuanObjImage(LuanGraphics.this,s),vm.get_G().get(sMetaName_LuanImage));
 				} catch (Exception e) {
 					vm.handleError(e);
 				}
@@ -330,7 +327,7 @@ public class LuanGraphics extends LuanRenderer {
 				float sw = (float)args.checkdouble(5);
 				float sh = (float)args.checkdouble(6);
 				try {
-					return LuaValue.userdataOf(new LuanQuad(LuanGraphics.this,x,y,w,h,sw,sh),vm.get_G().get(sMetaName_LuanQuad));
+					return LuaValue.userdataOf(new LuanObjQuad(LuanGraphics.this,x,y,w,h,sw,sh),vm.get_G().get(sMetaName_LuanQuad));
 				} catch (Exception e) {
 					vm.handleError(e);
 				}
@@ -343,10 +340,10 @@ public class LuanGraphics extends LuanRenderer {
 		t.set("newParticleSystem",	new VarArgFunction() { 
 			@Override
 			public Varargs invoke(Varargs args) {
-				LuanImage img = (LuanImage)args.checkuserdata(1,LuanImage.class);
+				LuanObjImage img = (LuanObjImage)args.checkuserdata(1,LuanObjImage.class);
 				int iBufferSize = args.checkint(2);
 				try {
-					return LuaValue.userdataOf(new LuanParticleSystem(LuanGraphics.this,img,iBufferSize),vm.get_G().get(sMetaName_LuanParticleSystem));
+					return LuaValue.userdataOf(new LuanObjParticleSystem(LuanGraphics.this,img,iBufferSize),vm.get_G().get(sMetaName_LuanParticleSystem));
 				} catch (Exception e) {
 					vm.handleError(e);
 				}
@@ -358,7 +355,7 @@ public class LuanGraphics extends LuanRenderer {
 		t.set("draw", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
-				LuanDrawable drawable = (LuanDrawable)args.checkuserdata(1,LuanDrawable.class);
+				LuanObjDrawable drawable = (LuanObjDrawable)args.checkuserdata(1,LuanObjDrawable.class);
 				float x = (float)args.checkdouble(2);
 				float y = (float)args.checkdouble(3);
 				float r  = (IsArgSet(args,4)) ? ((float)args.checkdouble(4)) : 0.0f;
@@ -367,7 +364,7 @@ public class LuanGraphics extends LuanRenderer {
 				float ox = (IsArgSet(args,7)) ? ((float)args.checkdouble(7)) : 0.0f;
 				float oy = (IsArgSet(args,8)) ? ((float)args.checkdouble(8)) : 0.0f;
 				if (drawable.IsImage()) {
-					LuanImage img = (LuanImage)drawable;
+					LuanObjImage img = (LuanObjImage)drawable;
 					DrawSprite(img.GetTextureID(),img.mWidth,img.mHeight,x,y,r,sx,sy,ox,oy);
 				} else {
 					drawable.RenderSelf(x,y,r,sx,sy,ox,oy);
@@ -380,8 +377,8 @@ public class LuanGraphics extends LuanRenderer {
 		/// love.graphics.drawq( image, quad, x, y, r, sx, sy, ox, oy )
 		t.set("drawq", new VarArgFunction() { 
 			@Override public Varargs invoke(Varargs args) {
-				LuanImage img = (LuanImage)args.checkuserdata(1,LuanImage.class);
-				LuanQuad quad = (LuanQuad)args.checkuserdata(2,LuanQuad.class);
+				LuanObjImage img = (LuanObjImage)args.checkuserdata(1,LuanObjImage.class);
+				LuanObjQuad quad = (LuanObjQuad)args.checkuserdata(2,LuanObjQuad.class);
 				float x = (float)args.checkdouble(3);
 				float y = (float)args.checkdouble(4);
 				float r  = (IsArgSet(args,5)) ? ((float)args.checkdouble(5)) : 0.0f;
@@ -474,47 +471,17 @@ public class LuanGraphics extends LuanRenderer {
 		/// Calling reset makes the current drawing color white, the current background color black, the window title empty and removes any scissor settings. It sets the BlendMode to alpha and ColorMode to modulate. 
 		/// It also sets both the point and line drawing modes to smooth and their sizes to 1.0 . Finally, it removes any stipple settings. 
 		t.set("reset",				new VarArgFunction() { @Override public Varargs invoke(Varargs args) { 
-			gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-			gl.glColor4f(1f, 1f, 1f, 1f);
+			setBackgroundColor(new LuanColor(0.0f, 0.0f, 0.0f, 1.0f));
+			setForegroundColor(new LuanColor(1f, 1f, 1f, 1f));
 			resetTransformMatrix(getGL());
 			vm.NotImplemented("love.graphics.reset (lots of settings)");
 			// TODO: not yet implemented
 			return LuaValue.NONE; 
-			} });
+		} });
 		
 		
 		
 		return t;
 	}
-	
-	
-	// ***** ***** ***** ***** *****  LuanColor
-	
-	public static class LuanColor {
-		public float r;
-		public float g;
-		public float b;
-		public float a;
-		
-		public LuanColor (Varargs args) { this(args,1); }
-		
-		public LuanColor (Varargs args,int i) {
-			if (args.istable(i)) {
-				//~ LoveVM.LoveLog("LuanColor","table "+i);
-				LuaTable t = args.checktable(i);
-				r = t.rawget(1).tofloat() / 255f;
-				g = t.rawget(2).tofloat() / 255f;
-				b = t.rawget(3).tofloat() / 255f;
-				a = (t.length() >= 4) ? (t.rawget(4).tofloat() / 255f) : 1f;
-			} else {
-				//~ LoveVM.LoveLog("LuanColor","floats "+i);
-				r = ((float)args.checkdouble(i+0)) / 255f;
-				g = ((float)args.checkdouble(i+1)) / 255f;
-				b = ((float)args.checkdouble(i+2)) / 255f;
-				a = (IsArgSet(args,i+3)) ? (((float)args.checkdouble(i+3)) / 255f) : 1f;
-			}
-		}
-	}
-	
 }
 

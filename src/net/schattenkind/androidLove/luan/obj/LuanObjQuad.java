@@ -1,6 +1,9 @@
-package net.schattenkind.androidLove.luan;
+package net.schattenkind.androidLove.luan.obj;
 
 import java.nio.FloatBuffer;
+
+import net.schattenkind.androidLove.luan.LuanObjBase;
+import net.schattenkind.androidLove.luan.module.LuanGraphics;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -14,7 +17,8 @@ import org.luaj.vm2.lib.VarArgFunction;
 /// see also love.graphics.newQuad 	Creates a new Quad.
 /// see also love.graphics.drawq(myimg, myquad, x, y)
 /// see also http://love2d.org/wiki/love.graphics.newQuad
-public class LuanQuad {
+public class LuanObjQuad extends LuanObjBase {
+	@SuppressWarnings("unused")
 	private LuanGraphics	g;
 	public float	x;
 	public float	y;
@@ -26,12 +30,13 @@ public class LuanQuad {
 	public boolean	bFlippedY = false;
 	public FloatBuffer	vb_Tex;
 	
-	public static LuanQuad self (Varargs args) { return (LuanQuad)args.checkuserdata(1,LuanQuad.class); }
+	public static LuanObjQuad self (Varargs args) { return (LuanObjQuad)args.checkuserdata(1,LuanObjQuad.class); }
 	
 	/// called from love.graphics.newQuad ( x, y, width, height, sw, sh )
 	/// see also http://love2d.org/wiki/love.graphics.newQuad
 	/// e.g. top left 32x32 pixels of a 64x64 image : top_left = love.graphics.newQuad(0, 0, 32, 32, 64, 64)
-	public LuanQuad (LuanGraphics g,float x,float y,float w,float h,float sw,float sh) {
+	public LuanObjQuad (LuanGraphics g,float x,float y,float w,float h,float sw,float sh) {
+		super(g.vm);
 		this.g = g;
 		this.sw = sw;
 		this.sh = sh;
@@ -89,7 +94,7 @@ public class LuanQuad {
 		/// @w The width of the viewport. 
 		/// @h The height of the viewport. 
 		t.set("getViewport", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { 
-			LuanQuad me = self(args);
+			LuanObjQuad me = self(args);
 			return LuaValue.varargsOf( LuaValue.valueOf(me.x), LuaValue.valueOf(me.y), LuaValue.varargsOf( LuaValue.valueOf(me.w), LuaValue.valueOf(me.h) )); 
 		} });
 		

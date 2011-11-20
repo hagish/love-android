@@ -1,7 +1,11 @@
-package net.schattenkind.androidLove.luan;
+package net.schattenkind.androidLove.luan.obj;
 
 import net.schattenkind.androidLove.LoveVM;
-import net.schattenkind.androidLove.luan.LuanRenderer.LuanDrawable;
+import net.schattenkind.androidLove.luan.LuanBase;
+import net.schattenkind.androidLove.luan.module.LuanGraphics;
+import net.schattenkind.androidLove.luan.module.LuanRenderer.LuanObjDrawable;
+
+import javax.microedition.khronos.opengles.GL10;
 
 import java.nio.FloatBuffer;
 
@@ -10,14 +14,14 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
-import javax.microedition.khronos.opengles.GL10;
 
-public class LuanParticleSystem extends LuanDrawable {
+public class LuanObjParticleSystem extends LuanObjDrawable {
 	protected static final String TAG = "LoveParticleSystem";	
 	protected static final int iVerticesPerParticle = 6; // triangle list needed
 	private LoveVM			vm;
+	
 	private LuanGraphics	g;
-	private LuanImage		img;
+	private LuanObjImage	img;
 	private int				iMaxParticles;
 	
 	private FloatBuffer	mVB_Pos;
@@ -42,7 +46,8 @@ public class LuanParticleSystem extends LuanDrawable {
 	
 	// ***** ***** ***** ***** ***** constructor 
 	
-	public LuanParticleSystem (LuanGraphics g,LuanImage img,int iMaxParticles) {
+	public LuanObjParticleSystem (LuanGraphics g,LuanObjImage img,int iMaxParticles) {
+		super(g.vm); 
 		this.g = g; 
 		this.vm = g.vm; 
 		this.img = img; 
@@ -249,7 +254,7 @@ public class LuanParticleSystem extends LuanDrawable {
 	
 	// ***** ***** ***** ***** ***** lua api 
 	
-	public static LuanParticleSystem self (Varargs args) { return (LuanParticleSystem)args.checkuserdata(1,LuanParticleSystem.class); }
+	public static LuanObjParticleSystem self (Varargs args) { return (LuanObjParticleSystem)args.checkuserdata(1,LuanObjParticleSystem.class); }
 	
 	public static LuaTable CreateMetaTable (final LuanGraphics g) {
 		LuaTable mt = LuaValue.tableOf();
@@ -322,4 +327,10 @@ public class LuanParticleSystem extends LuanDrawable {
 		return mt;
 	}
 	
+	// ***** ***** ***** ***** ***** gfx-reinit
+	
+	@Override
+	public void onGfxReinit(GL10 gl, float w, float h) {
+		// TODO XXX
+	}
 }

@@ -27,14 +27,16 @@ public class LoveStorage {
 
 	// ***** ***** ***** ***** ***** constructor
 
-	public LoveStorage(Activity activity, int iLoveZipResID) throws IOException {
-		this.activity = activity;
+	public LoveStorage(int iLoveZipResID) throws IOException {
+		activity = null;
+		
 		loveAppRootOnSdCard = sRootPathForZipAndResource;
 		mLoveZip = new LoveZip(this, getResourceInputStream(iLoveZipResID));
 	}
 
-	public LoveStorage(Activity activity, String path) throws IOException {
-		this.activity = activity;
+	public LoveStorage(String path) throws IOException {
+		activity = null;
+		
 		File f = new File(path);
 		if (Launcher.isFileLoveZip(f)) {
 			loveAppRootOnSdCard = sRootPathForZipAndResource;
@@ -47,6 +49,7 @@ public class LoveStorage {
 	// ***** ***** ***** ***** ***** resources
 
 	public InputStream getResourceInputStream(int id) {
+		assert(activity != null);
 		return activity.getResources().openRawResource(id);
 	}
 
@@ -147,4 +150,9 @@ public class LoveStorage {
 
 	// TODO: LoveVM.loadFileFromRes
 	// TODO: LoveVM.loadFileFromSdCard
+	
+	public void assignActivity(Activity activity)
+	{
+		this.activity = activity;
+	}
 }

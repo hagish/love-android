@@ -1,6 +1,4 @@
-package net.schattenkind.androidLove.luan;
-
-import net.schattenkind.androidLove.LoveVM;
+package net.schattenkind.androidLove.luan.obj;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -8,7 +6,9 @@ import java.io.InputStream;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import net.schattenkind.androidLove.luan.LuanRenderer.LuanDrawable;
+import net.schattenkind.androidLove.LoveVM;
+import net.schattenkind.androidLove.luan.module.LuanGraphics;
+import net.schattenkind.androidLove.luan.module.LuanRenderer.LuanObjDrawable;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -21,7 +21,7 @@ import android.opengl.GLUtils;
 
 
 
-public class LuanImage extends LuanDrawable {
+public class LuanObjImage extends LuanObjDrawable {
 	protected static final String TAG = "LoveImage";
 	
 	private String			sDebugSource;
@@ -41,7 +41,7 @@ public class LuanImage extends LuanDrawable {
 	@Override public boolean IsImage () { return true; }
 	
 	public String getDebugSource () { return sDebugSource; }
-	public static LuanImage self (Varargs args) { return (LuanImage)args.checkuserdata(1,LuanImage.class); }
+	public static LuanObjImage self (Varargs args) { return (LuanObjImage)args.checkuserdata(1,LuanObjImage.class); }
 	
 	public static String	Filter2Str	(int	a) { return (a == GL10.GL_LINEAR)?"linear":"nearest"; }
 	public static int		Str2Filter	(String a) { return (a.equals("linear"))?GL10.GL_LINEAR:GL10.GL_NEAREST; }
@@ -118,8 +118,12 @@ public class LuanImage extends LuanDrawable {
 	}
 	
 	public int GetTextureID () { 
-		// TODO: reload if contextswitch detected
 		return miTextureID;
+	}
+	
+	private void reloadBitmap()
+	{
+		LoadFromBitmap(mBitmap);
 	}
 	
 	public void LoadFromBitmap (Bitmap bm) {
@@ -145,17 +149,15 @@ public class LuanImage extends LuanDrawable {
 	}
 	
 	/// load image from resource id, e.g. R.raw.font
-	public LuanImage (LuanGraphics g,int iResID) throws IOException {
+	public LuanObjImage (LuanGraphics g,int iResID) throws IOException {
 		this(g,g.vm.getResourceInputStream(iResID));
 		sDebugSource = "resid="+iResID;
-		// TODO: store origin for reload
 	}
 	
 	/// load image from file
-	public LuanImage (LuanGraphics g,String filepath) throws FileNotFoundException {
+	public LuanObjImage (LuanGraphics g,String filepath) throws FileNotFoundException {
 		this(g,g.vm.getStorage().getFileStreamFromLovePath(filepath));
 		sDebugSource = "file="+filepath;
-		// TODO: store origin for reload
 		// TODO : throw lua error if file not found ?
 		//g.getActivity().openFileInput(filepath);
 		//~ Drawable d = Drawable.createFromStream(input,filepath);
@@ -164,7 +166,8 @@ public class LuanImage extends LuanDrawable {
 	}
 	
 	/// don't allow public call, since we need to store the origin of the image stream somehow, so we can reload the file image after context-switch
-	private LuanImage (LuanGraphics g,InputStream input) {
+	private LuanObjImage (LuanGraphics g,InputStream input) {
+		super(g.vm);
 		this.g = g;
 		
 		// todo : remember filepath so textureid can be reconstructed if lost during context-switch ?
@@ -193,5 +196,10 @@ public class LuanImage extends LuanDrawable {
 		//~ bm.recycle(); // MEMORY LEAK.. needed for font glyph stuff tho. or store path and re-load on demand
 		
 		LoveVM.LoveLog(TAG,"constructor done.");
+	}
+	
+	@Override
+	public void onGfxReinit(GL10 gl, float w, float h) {
+		reloadBitmap();
 	}
 }

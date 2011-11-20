@@ -1,9 +1,11 @@
-package net.schattenkind.androidLove.luan;
-
-import net.schattenkind.androidLove.LoveVM;
-import net.schattenkind.androidLove.Vector3;
+package net.schattenkind.androidLove.luan.module;
 
 import java.io.IOException;
+
+import net.schattenkind.androidLove.LoveVM;
+import net.schattenkind.androidLove.luan.LuanBase;
+import net.schattenkind.androidLove.luan.LuanObjBase;
+import net.schattenkind.androidLove.utils.Vector3;
 
 import org.luaj.vm2.LuaNumber;
 import org.luaj.vm2.LuaTable;
@@ -11,10 +13,10 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 
-import android.net.Uri;
-import android.media.SoundPool;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
+import android.net.Uri;
 
 public class LuanAudio extends LuanBase {
 	protected static final String TAG = "LoveAudio";
@@ -55,9 +57,9 @@ public class LuanAudio extends LuanBase {
 		
 		LuaValue _G = vm.get_G();
 		
-		_G.set(sMetaName_LuanSource,LuanSource.CreateMetaTable(this));
-		_G.set(sMetaName_LuanDecoder,LuanDecoder.CreateMetaTable(this));
-		_G.set(sMetaName_LuanSoundData,LuanSoundData.CreateMetaTable(this));
+		_G.set(sMetaName_LuanSource,LuanObjSource.CreateMetaTable(this));
+		_G.set(sMetaName_LuanDecoder,LuanObjDecoder.CreateMetaTable(this));
+		_G.set(sMetaName_LuanSoundData,LuanObjSoundData.CreateMetaTable(this));
 		
 
 		// numSources = love.audio.getNumSources( )
@@ -126,16 +128,16 @@ public class LuanAudio extends LuanBase {
 					Log("love.audio.newSource(string,..)");
 					String sFileName = args.checkjstring(1);
 					String sType = IsArgSet(args,2) ? args.checkjstring(2) : "static";
-					return LuaValue.userdataOf(new LuanSource(LuanAudio.this,sFileName,sType),vm.get_G().get(sMetaName_LuanSource));
+					return LuaValue.userdataOf(new LuanObjSource(LuanAudio.this,sFileName,sType),vm.get_G().get(sMetaName_LuanSource));
 				}
 				if (IsArgSet(args,2) && args.isstring(2)) {
 					Log("love.audio.newSource(???,string,..)");
-					LuanDecoder decoder = (LuanDecoder)args.checkuserdata(1,LuanDecoder.class);
+					LuanObjDecoder decoder = (LuanObjDecoder)args.checkuserdata(1,LuanObjDecoder.class);
 					String sType = args.checkjstring(2);
-					return LuaValue.userdataOf(new LuanSource(LuanAudio.this,decoder,sType),vm.get_G().get(sMetaName_LuanSource));
+					return LuaValue.userdataOf(new LuanObjSource(LuanAudio.this,decoder,sType),vm.get_G().get(sMetaName_LuanSource));
 				}
-				LuanSoundData soundata = (LuanSoundData)args.checkuserdata(1,LuanSoundData.class);
-				return LuaValue.userdataOf(new LuanSource(LuanAudio.this,soundata),vm.get_G().get(sMetaName_LuanSource));
+				LuanObjSoundData soundata = (LuanObjSoundData)args.checkuserdata(1,LuanObjSoundData.class);
+				return LuaValue.userdataOf(new LuanObjSource(LuanAudio.this,soundata),vm.get_G().get(sMetaName_LuanSource));
 			}
 		});
 
@@ -154,7 +156,7 @@ public class LuanAudio extends LuanBase {
 		t.set("play", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
-				LuanSource src = (LuanSource)args.checkuserdata(1,LuanSource.class);
+				LuanObjSource src = (LuanObjSource)args.checkuserdata(1,LuanObjSource.class);
 				src.play();
 				return LuaValue.NONE;
 			}
@@ -255,7 +257,11 @@ public class LuanAudio extends LuanBase {
 	
 	// ***** ***** ***** ***** *****  LuanSoundData
 	
-	public static class LuanSoundData {
+	public static class LuanObjSoundData extends LuanObjBase {
+		public LuanObjSoundData(LoveVM vm) {
+			super(vm);
+		}
+
 		public static LuaTable CreateMetaTable (final LuanAudio audio) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
@@ -266,7 +272,11 @@ public class LuanAudio extends LuanBase {
 		
 	// ***** ***** ***** ***** *****  LuanDecoder
 		
-	public static class LuanDecoder {
+	public static class LuanObjDecoder extends LuanObjBase {
+		public LuanObjDecoder(LoveVM vm) {
+			super(vm);
+		}
+
 		public static LuaTable CreateMetaTable (final LuanAudio audio) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
@@ -277,7 +287,7 @@ public class LuanAudio extends LuanBase {
 		
 	// ***** ***** ***** ***** *****  LuanSource
 	
-	public static class LuanSource {
+	public static class LuanObjSource extends LuanObjBase {
 		protected static final String TAG = "LoveSource";
 		
 		private LuanAudio	audio;
@@ -287,7 +297,8 @@ public class LuanAudio extends LuanBase {
 		public MediaPlayer mp;
 		
 		/// load from resource without sdcard access
-		public LuanSource (LuanAudio audio,int iResID,String type) { 
+		public LuanObjSource (LuanAudio audio,int iResID,String type) { 
+			super(audio.vm);
 			this.audio = audio;
 			this.filename = "res:"+iResID; // debug output only?
 			int iPriority = 0; // determines which sound gets halted if there's not enough channels
@@ -307,7 +318,8 @@ public class LuanAudio extends LuanBase {
 		}
 		
 		/// load from file
-		public LuanSource (LuanAudio audio,String filename,String type) { 
+		public LuanObjSource (LuanAudio audio,String filename,String type) { 
+			super(audio.vm);
 			this.audio = audio;
 			this.filename = filename;
 			int iPriority = 0; // determines which sound gets halted if there's not enough channels
@@ -342,10 +354,10 @@ public class LuanAudio extends LuanBase {
 		}
 		
 		/// load from LuanDecoder
-		public LuanSource (LuanAudio audio,LuanDecoder decoder,String type) { this.audio = audio; audio.vm.NotImplemented("AudioSource: construct from Decoder"); } // TODO
+		public LuanObjSource (LuanAudio audio,LuanObjDecoder decoder,String type) { super(audio.vm); this.audio = audio; audio.vm.NotImplemented("AudioSource: construct from Decoder"); } // TODO
 		
 		/// load from LuanSoundData
-		public LuanSource (LuanAudio audio,LuanSoundData data) { this.audio = audio; audio.vm.NotImplemented("AudioSource: construct from SoundData"); } // TODO
+		public LuanObjSource (LuanAudio audio,LuanObjSoundData data) { super(audio.vm); this.audio = audio; audio.vm.NotImplemented("AudioSource: construct from SoundData"); } // TODO
 			
 	
 		/// start
@@ -366,7 +378,7 @@ public class LuanAudio extends LuanBase {
 			}
 		}
 		
-		public static LuanSource self (Varargs args) { return (LuanSource)args.checkuserdata(1,LuanSource.class); }
+		public static LuanObjSource self (Varargs args) { return (LuanObjSource)args.checkuserdata(1,LuanObjSource.class); }
 		
 		public static LuaTable CreateMetaTable (final LuanAudio audio) {
 			LuaTable mt = LuaValue.tableOf();

@@ -1,23 +1,25 @@
 // phone/android/iphone specific extensions
 // set love.phone, so android-aware games can detect it, might be used for additional util functions later
 
-package net.schattenkind.androidLove.luan;
+package net.schattenkind.androidLove.luan.module;
 
-import net.schattenkind.androidLove.LoveVM;
+import java.util.List;
+
 import net.schattenkind.androidLove.LoveAndroid;
+import net.schattenkind.androidLove.LoveVM;
+import net.schattenkind.androidLove.luan.LuanBase;
+import net.schattenkind.androidLove.luan.LuanObjBase;
+import net.schattenkind.androidLove.luan.obj.LuanObjImage;
 
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
-import org.luaj.vm2.LuaError;
 
-import java.util.List;
-
-import android.hardware.SensorManager;
+import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.Sensor;
 import android.view.MotionEvent;
 
 public class LuanPhone extends LuanBase {
@@ -46,7 +48,7 @@ public class LuanPhone extends LuanBase {
 		LuaTable t = LuaValue.tableOf();
 		
 		LuaValue _G = vm.get_G();
-		_G.set(sMetaName_LuanSensor,LuanSensor.CreateMetaTable(this));
+		_G.set(sMetaName_LuanSensor,LuanObjSensor.CreateMetaTable(this));
 		
 		// TODO: add phone/android/iphone specific api additions here, e.g. multi-touch event stuff, accelerometer, gravity sensor, maybe intent/running apps/network/start browser etc ?
 		
@@ -56,7 +58,7 @@ public class LuanPhone extends LuanBase {
 			@Override public Varargs invoke(Varargs args) {
 				int iResID = args.checkint(1);
 				try {
-					return LuaValue.userdataOf(new LuanImage(vm.getLuanGraphics(),iResID),vm.get_G().get(LuanGraphics.sMetaName_LuanImage));
+					return LuaValue.userdataOf(new LuanObjImage(vm.getLuanGraphics(),iResID),vm.get_G().get(LuanGraphics.sMetaName_LuanImage));
 				} catch (Exception e) {
 					vm.handleError(e);
 				}
@@ -72,7 +74,7 @@ public class LuanPhone extends LuanBase {
 				int iResID = args.checkint(1);
 				try {
 					String sType = IsArgSet(args,2) ? args.checkjstring(2) : "static";
-					return LuaValue.userdataOf(new LuanAudio.LuanSource(vm.getLuanAudio(),iResID,sType),vm.get_G().get(LuanAudio.sMetaName_LuanSource));
+					return LuaValue.userdataOf(new LuanAudio.LuanObjSource(vm.getLuanAudio(),iResID,sType),vm.get_G().get(LuanAudio.sMetaName_LuanSource));
 				} catch (Exception e) {
 					vm.handleError(e);
 				}
@@ -123,7 +125,7 @@ public class LuanPhone extends LuanBase {
 			@Override public Varargs invoke(Varargs args) {
 				List<Sensor> myList = vm.getSensorManager().getSensorList(args.checkint(1));
 				LuaTable t = new LuaTable(myList.size(),0);
-				for (int i=0;i<myList.size();++i) t.set(i+1,LuaValue.userdataOf(new LuanSensor(LuanPhone.this,myList.get(i)),vm.get_G().get(sMetaName_LuanSensor))); 
+				for (int i=0;i<myList.size();++i) t.set(i+1,LuaValue.userdataOf(new LuanObjSensor(LuanPhone.this,myList.get(i)),vm.get_G().get(sMetaName_LuanSensor))); 
 				return t;
 			}
 		});
@@ -134,7 +136,7 @@ public class LuanPhone extends LuanBase {
 		t.set("getDefaultSensor", new VarArgFunction() {
 			@Override public Varargs invoke(Varargs args) {
 				Sensor s = vm.getSensorManager().getDefaultSensor(args.checkint(1));
-				return LuaValue.userdataOf(new LuanSensor(LuanPhone.this,s),vm.get_G().get(sMetaName_LuanSensor));
+				return LuaValue.userdataOf(new LuanObjSensor(LuanPhone.this,s),vm.get_G().get(sMetaName_LuanSensor));
 			}
 		});
 		
@@ -151,7 +153,7 @@ public class LuanPhone extends LuanBase {
 		/// Registers a SensorEventListener for the given sensor.
 		t.set("registerSensorListener", new VarArgFunction() {
 			@Override public Varargs invoke(Varargs args) { 
-				LuanSensor s = (LuanSensor)args.checkuserdata(1,LuanSensor.class);
+				LuanObjSensor s = (LuanObjSensor)args.checkuserdata(1,LuanObjSensor.class);
 				int rate = args.checkint(2);
 				return LuaValue.valueOf(vm.getSensorManager().registerListener(s,s.getSensor(),rate));
 			}
@@ -310,7 +312,7 @@ public class LuanPhone extends LuanBase {
 	// ***** ***** ***** ***** *****  LuanSensor
 	
 	//~ constructed via love.phone.getSensorList(iSensorType)  or getDefaultSensor(iSensorType)
-	public static class LuanSensor implements SensorEventListener {
+	public static class LuanObjSensor extends LuanObjBase implements SensorEventListener {
 		protected static final String TAG = "LoveSensor";
 		
 		private LuanPhone	phone;
@@ -319,7 +321,8 @@ public class LuanPhone extends LuanBase {
 		
 		// ***** ***** ***** ***** ***** constructor
 		
-		public LuanSensor (LuanPhone phone,Sensor mSensor) { 
+		public LuanObjSensor (LuanPhone phone,Sensor mSensor) { 
+			super(phone.vm);
 			this.phone = phone;
 			this.mSensor = mSensor;
 			this.miLoveSensorID = phone.generateNewLoveSensorID();
@@ -353,7 +356,7 @@ public class LuanPhone extends LuanBase {
 		
 		// ***** ***** ***** ***** ***** methods
 		
-		public static LuanSensor self (Varargs args) { return (LuanSensor)args.checkuserdata(1,LuanSensor.class); }
+		public static LuanObjSensor self (Varargs args) { return (LuanObjSensor)args.checkuserdata(1,LuanObjSensor.class); }
 		
 		public static LuaTable CreateMetaTable (final LuanPhone phone) {
 			LuaTable mt = LuaValue.tableOf();

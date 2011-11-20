@@ -3,12 +3,11 @@ package net.schattenkind.androidLove.test;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.schattenkind.androidLove.LuaUtils;
+import junit.framework.TestCase;
+import net.schattenkind.androidLove.utils.LuaUtils;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
-
-import junit.framework.TestCase;
 
 public class TestLuaUtils extends TestCase {
 

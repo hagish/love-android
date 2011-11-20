@@ -1,6 +1,8 @@
-package net.schattenkind.androidLove.luan;
+package net.schattenkind.androidLove.luan.module;
 
 import net.schattenkind.androidLove.LoveVM;
+import net.schattenkind.androidLove.luan.LuanBase;
+import net.schattenkind.androidLove.luan.LuanObjBase;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -22,7 +24,7 @@ public class LuanThread extends LuanBase {
 		LuaTable t = LuaValue.tableOf();
 		LuaValue _G = vm.get_G();
 		
-		_G.set(sMetaName_LuanThread,LuanThreadObj.CreateMetaTable(this));
+		_G.set(sMetaName_LuanThread,LuanObjThreadObj.CreateMetaTable(this));
 
 		/// thread = love.thread.newThread( name, filename )
 		/// thread = love.thread.newThread( name, file )  -- File file : The file to use as source. 
@@ -34,7 +36,7 @@ public class LuanThread extends LuanBase {
 				String name = args.checkjstring(1);
 				// TODO: param2 ? can be different things
 				try {
-					return LuaValue.userdataOf(new LuanThreadObj(LuanThread.this,name),vm.get_G().get(sMetaName_LuanThread));
+					return LuaValue.userdataOf(new LuanObjThreadObj(LuanThread.this,name),vm.get_G().get(sMetaName_LuanThread));
 				} catch (Exception e) {
 					vm.handleError(e);
 				}
@@ -57,11 +59,11 @@ public class LuanThread extends LuanBase {
 	
 	// ***** ***** ***** ***** *****  LuanDecoder
 		
-	public static class LuanThreadObj {
+	public static class LuanObjThreadObj extends LuanObjBase {
 		public String name;
 		public LuanThread th;
 		
-		public LuanThreadObj (LuanThread th,String name) { this.th = th; this.name = name; }
+		public LuanObjThreadObj (LuanThread th,String name) { super(th.vm); this.th = th; this.name = name; }
 		
 		public static LuaTable CreateMetaTable (final LuanThread th) {
 			LuaTable mt = LuaValue.tableOf();

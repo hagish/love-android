@@ -15,9 +15,11 @@ then
 	ADB=$ANDROID_HOME/platform-tools/adb 
 fi
 
+DEVICE=`$ADB devices|grep -v "List of devices"|awk '{print $1}'|head -n1`
+
 if [ -z "$DB" ]
 then 
-	DB="$SRC/../tools/push_dir.db"
+	DB="$SRC/../tools/push_dir.$DEVICE.db"
 fi
 
 if [ -f "$ADB" ]
