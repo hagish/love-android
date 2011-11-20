@@ -3,7 +3,7 @@ package net.schattenkind.androidLove.test;
 import java.io.UnsupportedEncodingException;
 
 import junit.framework.TestCase;
-import net.schattenkind.androidLove.LuaUtils;
+import net.schattenkind.androidLove.utils.LuaUtils;
 
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;

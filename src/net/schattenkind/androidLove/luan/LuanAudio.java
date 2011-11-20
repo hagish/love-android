@@ -3,7 +3,7 @@ package net.schattenkind.androidLove.luan;
 import java.io.IOException;
 
 import net.schattenkind.androidLove.LoveVM;
-import net.schattenkind.androidLove.Vector3;
+import net.schattenkind.androidLove.utils.Vector3;
 
 import org.luaj.vm2.LuaNumber;
 import org.luaj.vm2.LuaTable;

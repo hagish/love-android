@@ -1,4 +1,4 @@
-package net.schattenkind.androidLove;
+package net.schattenkind.androidLove.utils;
 
 public class FileUtils {
 	/**

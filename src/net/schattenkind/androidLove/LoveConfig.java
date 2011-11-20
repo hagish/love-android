@@ -3,6 +3,8 @@ package net.schattenkind.androidLove;
 import java.io.IOException;
 import java.io.InputStream;
 
+import net.schattenkind.androidLove.utils.LuaUtils;
+
 import org.luaj.vm2.LoadState;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;

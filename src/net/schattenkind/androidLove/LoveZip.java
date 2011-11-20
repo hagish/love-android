@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import net.schattenkind.androidLove.utils.FileUtils;
+
 public class LoveZip {
 	protected static final int BUFFER_SIZE_EXTRACT_TO_TMP = 1024*8;
 	protected static final int BUFFER_SIZE_READ_FROM_FILE = 1024*8;

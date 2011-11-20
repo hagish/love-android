@@ -6,7 +6,7 @@ import java.util.List;
 
 import net.schattenkind.androidLove.LoveStorage;
 import net.schattenkind.androidLove.LoveVM;
-import net.schattenkind.androidLove.LuaUtils;
+import net.schattenkind.androidLove.utils.LuaUtils;
 
 import org.luaj.vm2.LoadState;
 import org.luaj.vm2.LuaBoolean;

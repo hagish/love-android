@@ -1,4 +1,4 @@
-package net.schattenkind.androidLove;
+package net.schattenkind.androidLove.utils;
 
 public class Vector3 {
 	public float x;

@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import junit.framework.TestCase;
-import net.schattenkind.androidLove.LuaUtils;
+import net.schattenkind.androidLove.utils.LuaUtils;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
