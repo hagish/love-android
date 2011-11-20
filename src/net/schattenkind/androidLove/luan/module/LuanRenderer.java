@@ -41,8 +41,8 @@ public abstract class LuanRenderer extends LuanBase implements GfxReinitListener
 	public float[]		mFB_BasicGeo;
 	public int			mi_BasicGeo_Vertices;
 	
-	private LuanColor backgroundColor;
-	private LuanColor foregroundColor;
+	private LuanColor backgroundColor = LuanColor.BLACK;
+	private LuanColor foregroundColor = LuanColor.WHITE;
 	
 	public static String	DrawMode2Str	(DrawMode a) { return (a == DrawMode.FILL)?"fill":"line"; }
 	public static DrawMode	Str2DrawMode	(String a) { return (a.equals("fill"))?DrawMode.FILL:DrawMode.LINE; }
@@ -453,6 +453,9 @@ public abstract class LuanRenderer extends LuanBase implements GfxReinitListener
 	// ***** ***** ***** ***** *****  LuanColor
 	
 	public static class LuanColor {
+		public static final LuanColor WHITE = new LuanColor(1.0f, 1.0f, 1.0f, 1.0f);
+		public static final LuanColor BLACK = new LuanColor(0.0f, 0.0f, 0.0f, 1.0f);
+		
 		public float r;
 		public float g;
 		public float b;
