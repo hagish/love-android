@@ -20,7 +20,7 @@ public class Launcher extends ActivitiyWithExitMenu {
 	public static String launchMeGamePath;
 
 	public int miGamesFound = 0;
-	
+
 	private LinkedList<String> gameListName = new LinkedList<String>();
 	private LinkedList<String> gameListPath = new LinkedList<String>();
 
@@ -39,29 +39,40 @@ public class Launcher extends ActivitiyWithExitMenu {
 		gameListView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				
+
 				// only launch if path is set, avoid info-entries
 				if (gameListPath.get(position).length() > 0) {
-					launchGame(gameListName.get(position),gameListPath.get(position));
+					launchGame(gameListName.get(position),
+							gameListPath.get(position));
 				}
 			}
 		});
 	}
 
-	public static boolean isFileLoveZip (File f) { return f.isFile() && (f.getName().endsWith(".love") || f.getName().endsWith(".zip")); }
-	
-	/// name filter for dir.listFiles, e.g. list only .love files
+	public static boolean isFileLoveZip(File f) {
+		return f.isFile()
+				&& (f.getName().endsWith(".love") || f.getName().endsWith(
+						".zip"));
+	}
+
+	// / name filter for dir.listFiles, e.g. list only .love files
 	public class FilenameFilterEndsWith implements FilenameFilter {
 		String sEndsWith;
-		public FilenameFilterEndsWith (String sEndsWith) { this.sEndsWith = sEndsWith; }
-		public boolean accept(File dir, String name) { return name.endsWith(sEndsWith); }
+
+		public FilenameFilterEndsWith(String sEndsWith) {
+			this.sEndsWith = sEndsWith;
+		}
+
+		public boolean accept(File dir, String name) {
+			return name.endsWith(sEndsWith);
+		}
 	}
 
 	private void populateGameList() {
 		miGamesFound = 0;
 		String sPathDown = "";
 		String sPathSD = "";
-		
+
 		// scan sd card (/mnt/sdcard/love)
 		try {
 			File dir = new File(Environment.getExternalStorageDirectory() + "/"
@@ -77,52 +88,56 @@ public class Launcher extends ActivitiyWithExitMenu {
 					tryToPopulateGameFromZipOrLoveFile(f);
 				}
 			}
-			
+
 		} catch (Exception e) {
 			// avoid crash if folder doesn't exist
 		}
-			
+
 		// scan downloads folder for .love files
 		try {
 			// ex Environment.DIRECTORY_DOWNLOADS
 			File dir = Environment.getDownloadCacheDirectory();
 			sPathDown = dir.getPath();
-			File[] files = dir.listFiles(new FilenameFilterEndsWith(".love")); // don't scan all zip files
+			File[] files = dir.listFiles(new FilenameFilterEndsWith(".love")); // don't
+																				// scan
+																				// all
+																				// zip
+																				// files
 			for (File f : files) {
 				if (isFileLoveZip(f)) {
 					tryToPopulateGameFromZipOrLoveFile(f);
 				}
 			}
-			
-			
+
 		} catch (Exception e) {
 			// avoid crash folder doesn't exist
 		}
-		
-		// no games found, display hints : 
+
+		// no games found, display hints :
 		if (miGamesFound == 0) {
-			addGameToList("no games found","");
-			addGameToList("add some .love files","");
-			addGameToList("to your sdcard:","");
-			addGameToList(sPathSD,"");
-			addGameToList("or downloads folder:","");
-			addGameToList(sPathDown,"");
+			addGameToList("no games found", "");
+			addGameToList("add some .love files", "");
+			addGameToList("to your sdcard:", "");
+			addGameToList(sPathSD, "");
+			addGameToList("or downloads folder:", "");
+			addGameToList(sPathDown, "");
 		}
 	}
 
 	private void tryToPopulateGameFromZipOrLoveFile(File f) {
-		LoveVM.LoveLog(TAG,"love archive:"+f.getPath());
-		
+		LoveVM.LoveLog(TAG, "love archive:" + f.getPath());
+
 		// check if main.lua exists
 		if (LoveZip.zipPeekHasMainLua(f)) {
 			addGameToList(f.getPath(), f.getPath());
 		} else {
-			LoveVM.LoveLog(TAG,"love archive: no main.lua found in:"+f.getPath());
+			LoveVM.LoveLog(TAG,
+					"love archive: no main.lua found in:" + f.getPath());
 		}
 	}
-		
+
 	private void tryToPopulateGameFromDirectory(File dir) {
-		LoveVM.LoveLog(TAG,"love folder:"+dir.getPath());
+		LoveVM.LoveLog(TAG, "love folder:" + dir.getPath());
 
 		File main = new File(dir.getPath() + "/main.lua");
 		if (main.isFile()) {
@@ -136,8 +151,11 @@ public class Launcher extends ActivitiyWithExitMenu {
 		try {
 			LoveConfig config = new LoveConfig();
 			config.title = path;
-			LoveVM.loadConfigFromFile(config, new LoveStorage(this, path),
-					"conf.lua");
+
+			LoveStorage storage = new LoveStorage(path);
+			storage.assignActivity(this);
+			LoveVM.loadConfigFromFile(config, storage, "conf.lua");
+
 			return config.title;
 		} catch (Exception e) {
 			return path;
@@ -153,6 +171,8 @@ public class Launcher extends ActivitiyWithExitMenu {
 	private void launchGame(String name, String path) {
 		launchMeGameName = name;
 		launchMeGamePath = path;
+		
+		LoveAndroid.shutdownRunningVM();
 
 		Intent intent = new Intent(this, LoveAndroid.class);
 		startActivity(intent);

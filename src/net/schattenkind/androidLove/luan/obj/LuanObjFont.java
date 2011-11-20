@@ -87,6 +87,7 @@ public class LuanObjFont extends LuanObjBase {
 	
 	/// imageFont
 	public LuanObjFont (LuanGraphics g,LuanObjImage img,String glyphs) {
+		super(g.vm);
 		this.g = g;
 		this.img = img;
 		

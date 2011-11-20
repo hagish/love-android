@@ -258,6 +258,10 @@ public class LuanAudio extends LuanBase {
 	// ***** ***** ***** ***** *****  LuanSoundData
 	
 	public static class LuanObjSoundData extends LuanObjBase {
+		public LuanObjSoundData(LoveVM vm) {
+			super(vm);
+		}
+
 		public static LuaTable CreateMetaTable (final LuanAudio audio) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
@@ -269,6 +273,10 @@ public class LuanAudio extends LuanBase {
 	// ***** ***** ***** ***** *****  LuanDecoder
 		
 	public static class LuanObjDecoder extends LuanObjBase {
+		public LuanObjDecoder(LoveVM vm) {
+			super(vm);
+		}
+
 		public static LuaTable CreateMetaTable (final LuanAudio audio) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
@@ -290,6 +298,7 @@ public class LuanAudio extends LuanBase {
 		
 		/// load from resource without sdcard access
 		public LuanObjSource (LuanAudio audio,int iResID,String type) { 
+			super(audio.vm);
 			this.audio = audio;
 			this.filename = "res:"+iResID; // debug output only?
 			int iPriority = 0; // determines which sound gets halted if there's not enough channels
@@ -310,6 +319,7 @@ public class LuanAudio extends LuanBase {
 		
 		/// load from file
 		public LuanObjSource (LuanAudio audio,String filename,String type) { 
+			super(audio.vm);
 			this.audio = audio;
 			this.filename = filename;
 			int iPriority = 0; // determines which sound gets halted if there's not enough channels
@@ -344,10 +354,10 @@ public class LuanAudio extends LuanBase {
 		}
 		
 		/// load from LuanDecoder
-		public LuanObjSource (LuanAudio audio,LuanObjDecoder decoder,String type) { this.audio = audio; audio.vm.NotImplemented("AudioSource: construct from Decoder"); } // TODO
+		public LuanObjSource (LuanAudio audio,LuanObjDecoder decoder,String type) { super(audio.vm); this.audio = audio; audio.vm.NotImplemented("AudioSource: construct from Decoder"); } // TODO
 		
 		/// load from LuanSoundData
-		public LuanObjSource (LuanAudio audio,LuanObjSoundData data) { this.audio = audio; audio.vm.NotImplemented("AudioSource: construct from SoundData"); } // TODO
+		public LuanObjSource (LuanAudio audio,LuanObjSoundData data) { super(audio.vm); this.audio = audio; audio.vm.NotImplemented("AudioSource: construct from SoundData"); } // TODO
 			
 	
 		/// start

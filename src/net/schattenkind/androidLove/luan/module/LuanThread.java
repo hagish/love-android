@@ -63,7 +63,7 @@ public class LuanThread extends LuanBase {
 		public String name;
 		public LuanThread th;
 		
-		public LuanObjThreadObj (LuanThread th,String name) { this.th = th; this.name = name; }
+		public LuanObjThreadObj (LuanThread th,String name) { super(th.vm); this.th = th; this.name = name; }
 		
 		public static LuaTable CreateMetaTable (final LuanThread th) {
 			LuaTable mt = LuaValue.tableOf();

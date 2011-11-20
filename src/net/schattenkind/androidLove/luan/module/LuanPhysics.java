@@ -63,7 +63,7 @@ public class LuanPhysics extends LuanBase {
 	// ***** ***** ***** ***** ***** LuanWorld
 	public static class LuanObjWorld extends LuanObjBase {
 		public LuanPhysics phys;
-		public LuanObjWorld (LuanPhysics phys) { this.phys = phys; phys.vm.NotImplemented("LuanWorld:constructor"); }
+		public LuanObjWorld (LuanPhysics phys) { super(phys.vm); this.phys = phys; phys.vm.NotImplemented("LuanWorld:constructor"); }
 		public static LuaTable CreateMetaTable (final LuanPhysics phys) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
@@ -92,7 +92,7 @@ public class LuanPhysics extends LuanBase {
 	/// Bodies are objects with velocity and position. 
 	public static class LuanObjBody extends LuanObjBase {
 		public LuanPhysics phys;
-		public LuanObjBody (LuanPhysics phys) { this.phys = phys; phys.vm.NotImplemented("LuanBody:constructor"); }
+		public LuanObjBody (LuanPhysics phys) { super(phys.vm); this.phys = phys; phys.vm.NotImplemented("LuanBody:constructor"); }
 		public static LuaTable CreateMetaTable (final LuanPhysics phys) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
@@ -151,7 +151,7 @@ public class LuanPhysics extends LuanBase {
 	// ***** ***** ***** ***** ***** LuanShape
 	public static class LuanObjShape extends LuanObjBase {
 		public LuanPhysics phys;
-		public LuanObjShape (LuanPhysics phys) { this.phys = phys; phys.vm.NotImplemented("LuanShape:constructor"); }
+		public LuanObjShape (LuanPhysics phys) { super(phys.vm); this.phys = phys; phys.vm.NotImplemented("LuanShape:constructor"); }
 		
 		
 		public static void AddMethodsToTable (final LuanPhysics phys,LuaTable t) {
@@ -193,7 +193,7 @@ public class LuanPhysics extends LuanBase {
 	// ***** ***** ***** ***** ***** LuanCircleShape
 	public static class LuanObjCircleShape extends LuanObjBase {
 		public LuanPhysics phys;
-		public LuanObjCircleShape (LuanPhysics phys) { this.phys = phys; phys.vm.NotImplemented("LuanCircleShape:constructor"); }
+		public LuanObjCircleShape (LuanPhysics phys) { super(phys.vm); this.phys = phys; phys.vm.NotImplemented("LuanCircleShape:constructor"); }
 		public static LuaTable CreateMetaTable (final LuanPhysics phys) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
@@ -211,7 +211,7 @@ public class LuanPhysics extends LuanBase {
 	// ***** ***** ***** ***** ***** LuanPolygonShape
 	public static class LuanObjPolygonShape extends LuanObjBase {
 		public LuanPhysics phys;
-		public LuanObjPolygonShape (LuanPhysics phys) { this.phys = phys; phys.vm.NotImplemented("LuanPolygonShape:constructor"); }
+		public LuanObjPolygonShape (LuanPhysics phys) { super(phys.vm); this.phys = phys; phys.vm.NotImplemented("LuanPolygonShape:constructor"); }
 		public static LuaTable CreateMetaTable (final LuanPhysics phys) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
@@ -228,7 +228,7 @@ public class LuanPhysics extends LuanBase {
 	// ***** ***** ***** ***** ***** LuanContact
 	public static class LuanObjContact extends LuanObjBase {
 		public LuanPhysics phys;
-		public LuanObjContact (LuanPhysics phys) { this.phys = phys; phys.vm.NotImplemented("LuanContact:constructor"); }
+		public LuanObjContact (LuanPhysics phys) { super(phys.vm); this.phys = phys; phys.vm.NotImplemented("LuanContact:constructor"); }
 		public static LuaTable CreateMetaTable (final LuanPhysics phys) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();
@@ -250,7 +250,7 @@ public class LuanPhysics extends LuanBase {
 	// ***** ***** ***** ***** ***** LuanJoint
 	public static class LuanObjJoint extends LuanObjBase {
 		public LuanPhysics phys;
-		public LuanObjJoint (LuanPhysics phys) { this.phys = phys; phys.vm.NotImplemented("LuanJoint:constructor"); }
+		public LuanObjJoint (LuanPhysics phys) { super(phys.vm); this.phys = phys; phys.vm.NotImplemented("LuanJoint:constructor"); }
 		public static LuaTable CreateMetaTable (final LuanPhysics phys) {
 			LuaTable mt = LuaValue.tableOf();
 			LuaTable t = LuaValue.tableOf();

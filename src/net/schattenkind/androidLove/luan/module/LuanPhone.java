@@ -322,6 +322,7 @@ public class LuanPhone extends LuanBase {
 		// ***** ***** ***** ***** ***** constructor
 		
 		public LuanObjSensor (LuanPhone phone,Sensor mSensor) { 
+			super(phone.vm);
 			this.phone = phone;
 			this.mSensor = mSensor;
 			this.miLoveSensorID = phone.generateNewLoveSensorID();

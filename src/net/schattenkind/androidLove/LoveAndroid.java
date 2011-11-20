@@ -2,15 +2,12 @@ package net.schattenkind.androidLove;
 
 import java.io.IOException;
 
-import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.Window;
-import android.view.WindowManager;
 
 public class LoveAndroid extends ActivitiyWithExitMenu {
 	private static final String TAG = "LoveAndroid";
@@ -20,6 +17,7 @@ public class LoveAndroid extends ActivitiyWithExitMenu {
 	private static LoveVM vm = null;
 
 	private GLSurfaceView mGLView;
+	private LoveAndroidRenderer renderer;
 
 
 	@SuppressWarnings("unused")
@@ -74,27 +72,19 @@ public class LoveAndroid extends ActivitiyWithExitMenu {
 		mUpdateHandler.sleep(updateDelayMillis);
 	}
 
-	private void startVM(String gamePath) {
+	private static LoveVM createVM(String gamePath) {
 		assert (vm == null);
 
 		LoveStorage storage = null;
 		try {
-			storage = new LoveStorage(this, gamePath);
+			storage = new LoveStorage(gamePath);
 		} catch (IOException e) {
 			// failed to load .zip/.love or similar, exit
 			LoveVM.LoveLog(TAG, "failed to load storage:" + gamePath);
 			System.exit(0);
 		}
-		vm = new LoveVM(this, storage);
-
-		// if conf.lua() : t.screen.fullscreen = true
-		// big thanks to Taehl on Fri Nov 18, 2011 3:42 pm
-		if (vm.getConfig().screen_fullscreen) {
-			this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-			this.getWindow().setFlags(
-					WindowManager.LayoutParams.FLAG_FULLSCREEN,
-					WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		}
+		
+		return new LoveVM(storage);
 	}
 
 	@Override
@@ -108,13 +98,16 @@ public class LoveAndroid extends ActivitiyWithExitMenu {
 		}
 
 		if (vm == null) {
-			startVM(path);
+			vm = createVM(path);
 		}
+		vm.assignActivity(this);
 
 		// Create a GLSurfaceView instance and set it
 		// as the ContentView for this Activity.
-		mGLView = new HelloOpenGLES10SurfaceView(this, vm);
-
+		renderer = new LoveAndroidRenderer(vm);
+		mGLView = new GLSurfaceView(this);
+		mGLView.setRenderer(renderer);
+		
 		// TODO: setPreserveEGLContextOnPause undefined in android 2.1 for
 		// GLSurfaceView
 		// ~ try {
@@ -209,14 +202,13 @@ public class LoveAndroid extends ActivitiyWithExitMenu {
 	public android.view.View getView() {
 		return mGLView;
 	}
-}
-
-class HelloOpenGLES10SurfaceView extends GLSurfaceView {
-
-	public HelloOpenGLES10SurfaceView(Context context, LoveVM vm) {
-		super(context);
-
-		// Set the Renderer for drawing on the GLSurfaceView
-		setRenderer(new LoveAndroidRenderer(vm));
+	
+	public static void shutdownRunningVM()
+	{
+		if (vm != null)
+		{
+			vm.shutdown();
+			vm = null;
+		}
 	}
 }

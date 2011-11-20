@@ -10,14 +10,18 @@ import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import net.schattenkind.androidLove.GfxReinitListener;
 import net.schattenkind.androidLove.LoveVM;
 import net.schattenkind.androidLove.luan.LuanBase;
 import net.schattenkind.androidLove.luan.LuanObjBase;
 import net.schattenkind.androidLove.luan.obj.LuanObjFont;
 import net.schattenkind.androidLove.luan.obj.LuanObjQuad;
 
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.Varargs;
+
 // note : LuanGraphics extends LuanRenderer
-public abstract class LuanRenderer extends LuanBase {
+public abstract class LuanRenderer extends LuanBase implements GfxReinitListener {
 	protected	GL10		gl; // only valid after notifyFrameStart
 	public static final int kMaxBasicGeoVertices = 128;
 	
@@ -37,6 +41,9 @@ public abstract class LuanRenderer extends LuanBase {
 	public float[]		mFB_BasicGeo;
 	public int			mi_BasicGeo_Vertices;
 	
+	private LuanColor backgroundColor;
+	private LuanColor foregroundColor;
+	
 	public static String	DrawMode2Str	(DrawMode a) { return (a == DrawMode.FILL)?"fill":"line"; }
 	public static DrawMode	Str2DrawMode	(String a) { return (a.equals("fill"))?DrawMode.FILL:DrawMode.LINE; }
 		
@@ -55,6 +62,7 @@ public abstract class LuanRenderer extends LuanBase {
 		InitSpriteBuffer();
 		mVB_BasicGeo = LuanGraphics.LuanCreateBuffer(kMaxBasicGeoVertices*2);
 		mFB_BasicGeo = new float[kMaxBasicGeoVertices*2];
+		vm.listenForGfxReinit(this);
 	}
 	
 	// ***** ***** ***** ***** *****  utils
@@ -262,6 +270,7 @@ public abstract class LuanRenderer extends LuanBase {
 	}
 	
 	public boolean bVertexBuffersSprite = false;
+
 	public void setVertexBuffersToSprite () {
 		if (bVertexBuffersSprite) return;
 		bVertexBuffersSprite = true;
@@ -415,7 +424,65 @@ public abstract class LuanRenderer extends LuanBase {
 	// ***** ***** ***** ***** *****  LuanDrawable
 	
 	public static class LuanObjDrawable extends LuanObjBase {
+		public LuanObjDrawable(LoveVM vm) {
+			super(vm);
+		}
 		public boolean IsImage () { return false; }
 		public void RenderSelf (float x,float y,float r,float sx,float sy,float ox,float oy) { }
+	}
+	
+
+	@Override
+	public void onGfxReinit(GL10 gl, float w, float h) {
+		setBackgroundColor(backgroundColor);
+		setForegroundColor(foregroundColor);
+	}
+	
+	public void setBackgroundColor(LuanColor color)
+	{
+		getGL().glClearColor(color.r, color.g, color.b, color.a);
+		backgroundColor = color;
+	}
+	
+	public void setForegroundColor(LuanColor color)
+	{
+		getGL().glColor4f(color.r, color.g, color.b, color.a);
+		foregroundColor = color;
+	}
+	
+	// ***** ***** ***** ***** *****  LuanColor
+	
+	public static class LuanColor {
+		public float r;
+		public float g;
+		public float b;
+		public float a;
+		
+		public LuanColor (float r, float g, float b, float a)
+		{
+			this.r = r;
+			this.g = g;
+			this.b = b;
+			this.a = a;
+		}
+		
+		public LuanColor (Varargs args) { this(args,1); }
+		
+		public LuanColor (Varargs args,int i) {
+			if (args.istable(i)) {
+				//~ LoveVM.LoveLog("LuanColor","table "+i);
+				LuaTable t = args.checktable(i);
+				r = t.rawget(1).tofloat() / 255f;
+				g = t.rawget(2).tofloat() / 255f;
+				b = t.rawget(3).tofloat() / 255f;
+				a = (t.length() >= 4) ? (t.rawget(4).tofloat() / 255f) : 1f;
+			} else {
+				//~ LoveVM.LoveLog("LuanColor","floats "+i);
+				r = ((float)args.checkdouble(i+0)) / 255f;
+				g = ((float)args.checkdouble(i+1)) / 255f;
+				b = ((float)args.checkdouble(i+2)) / 255f;
+				a = (IsArgSet(args,i+3)) ? (((float)args.checkdouble(i+3)) / 255f) : 1f;
+			}
+		}
 	}
 }

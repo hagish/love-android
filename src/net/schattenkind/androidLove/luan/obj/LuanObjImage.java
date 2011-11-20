@@ -115,8 +115,12 @@ public class LuanObjImage extends LuanObjDrawable {
 	}
 	
 	public int GetTextureID () { 
-		// TODO: reload if contextswitch detected
 		return miTextureID;
+	}
+	
+	private void reloadBitmap()
+	{
+		LoadFromBitmap(mBitmap);
 	}
 	
 	public void LoadFromBitmap (Bitmap bm) {
@@ -145,14 +149,12 @@ public class LuanObjImage extends LuanObjDrawable {
 	public LuanObjImage (LuanGraphics g,int iResID) throws IOException {
 		this(g,g.vm.getResourceInputStream(iResID));
 		sDebugSource = "resid="+iResID;
-		// TODO: store origin for reload
 	}
 	
 	/// load image from file
 	public LuanObjImage (LuanGraphics g,String filepath) throws FileNotFoundException {
 		this(g,g.vm.getStorage().getFileStreamFromLovePath(filepath));
 		sDebugSource = "file="+filepath;
-		// TODO: store origin for reload
 		// TODO : throw lua error if file not found ?
 		//g.getActivity().openFileInput(filepath);
 		//~ Drawable d = Drawable.createFromStream(input,filepath);
@@ -162,6 +164,7 @@ public class LuanObjImage extends LuanObjDrawable {
 	
 	/// don't allow public call, since we need to store the origin of the image stream somehow, so we can reload the file image after context-switch
 	private LuanObjImage (LuanGraphics g,InputStream input) {
+		super(g.vm);
 		this.g = g;
 		
 		// todo : remember filepath so textureid can be reconstructed if lost during context-switch ?
@@ -190,5 +193,10 @@ public class LuanObjImage extends LuanObjDrawable {
 		//~ bm.recycle(); // MEMORY LEAK.. needed for font glyph stuff tho. or store path and re-load on demand
 		
 		LoveVM.LoveLog(TAG,"constructor done.");
+	}
+	
+	@Override
+	public void onGfxReinit(GL10 gl, float w, float h) {
+		reloadBitmap();
 	}
 }

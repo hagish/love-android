@@ -1,5 +1,7 @@
 package net.schattenkind.androidLove.luan.obj;
 
+import javax.microedition.khronos.opengles.GL10;
+
 import net.schattenkind.androidLove.luan.module.LuanGraphics;
 import net.schattenkind.androidLove.luan.module.LuanRenderer.LuanObjDrawable;
 
@@ -67,5 +69,10 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 		return mt;
 	}
 	
-	public LuanObjParticleSystem (LuanGraphics g,LuanObjImage img,int iBufferSize) { this.g = g; g.vm.NotImplemented("love.graphics.newParticleSystem"); }
+	public LuanObjParticleSystem (LuanGraphics g,LuanObjImage img,int iBufferSize) { super(g.vm); this.g = g; g.vm.NotImplemented("love.graphics.newParticleSystem"); }
+	
+	@Override
+	public void onGfxReinit(GL10 gl, float w, float h) {
+		// TODO XXX
+	}
 }

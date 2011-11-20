@@ -36,6 +36,7 @@ public class LuanObjQuad extends LuanObjBase {
 	/// see also http://love2d.org/wiki/love.graphics.newQuad
 	/// e.g. top left 32x32 pixels of a 64x64 image : top_left = love.graphics.newQuad(0, 0, 32, 32, 64, 64)
 	public LuanObjQuad (LuanGraphics g,float x,float y,float w,float h,float sw,float sh) {
+		super(g.vm);
 		this.g = g;
 		this.sw = sw;
 		this.sh = sh;
