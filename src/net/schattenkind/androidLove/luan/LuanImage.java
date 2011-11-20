@@ -34,7 +34,10 @@ public class LuanImage extends LuanDrawable {
 	public int				mWrapH = GL10.GL_REPEAT;
 	public int				mWrapV = GL10.GL_REPEAT;
 	public Bitmap			mBitmap;
-		
+	
+	public float getWidth	() { return mWidth; }
+	public float getHeight	() { return mHeight; }
+	
 	@Override public boolean IsImage () { return true; }
 	
 	public String getDebugSource () { return sDebugSource; }
@@ -81,7 +84,7 @@ public class LuanImage extends LuanDrawable {
 		t.set("getWidth", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).mWidth); } });
 		
 		/// h = Image:getHeight( )
-		t.set("getHeight", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).mWidth); } });
+		t.set("getHeight", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).mHeight); } });
 		
 		/// type = Object:type()  , e.g. "Image" or audio:"Source"
 		t.set("type", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf("Image"); } });

@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.Random;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -76,6 +77,8 @@ public class LoveVM {
 	private boolean bInitDone = false;
 	private boolean isBroken = false;
 	private boolean bInitInProgress = false;
+	
+	public Random mRandom = new Random();
 
 	private LoveStorage storage;
 	
@@ -90,6 +93,11 @@ public class LoveVM {
 		mSensorMgr = (SensorManager)getContext().getSystemService(Context.SENSOR_SERVICE);
 	}
 
+	// ***** ***** ***** ***** ***** utils 
+
+	public float getRandomFloat			() { return mRandom.nextFloat(); } // [0;1[
+	public float getRandomFloatBetween	(float a,float b) { return a + mRandom.nextFloat() * (b-a); } // [a;b[
+	
 	// ***** ***** ***** ***** ***** log 
 	
 	public static void logException(Exception e) {
@@ -448,6 +456,7 @@ public class LoveVM {
 		return ((LoveAndroid)getActivity()).getView();
 	}
 	
+	public float getTime () { return mLuanTimer.getTime(); } ///< in seconds
 	public LoveConfig getConfig() { return config; }
 
 	public Context getContext () { return attachedToThisActivity; }
