@@ -27,8 +27,10 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 	
 	private FloatBuffer	mVB_Pos;
 	private FloatBuffer	mVB_Tex;
+	private FloatBuffer	mVB_Col;
 	private float[]		mFB_Pos;
 	private float[]		mFB_Tex;
+	private float[]		mFB_Col;
 	
 	private Particle[] mParticles;
 	private long	miParticlesAlive = 0;
@@ -89,8 +91,10 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 		int iMaxVertices = iMaxParticles * iVerticesPerParticle;
 		mVB_Pos = LuanGraphics.LuanCreateBuffer(iMaxVertices*2);
 		mVB_Tex = LuanGraphics.LuanCreateBuffer(iMaxVertices*2);
+		mVB_Col = LuanGraphics.LuanCreateBuffer(iMaxVertices*4);
 		mFB_Pos = new float[iMaxVertices*2];
 		mFB_Tex = new float[iMaxVertices*2];
+		mFB_Col = new float[iMaxVertices*4];
 		
 		// init texcoord buffer, since they won't change
 		float u0 = 0f;
@@ -176,7 +180,7 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 					float nx = p.x - x_emit;
 					float ny = p.y - y_emit;
 					float nd = (float)Math.sqrt(nx*nx + ny*ny);
-					if (nd > 0) { nx /= nd; ny /= nd; } else { nx = 1; ny = 0; }
+					if (nd > 0) { nx /= nd; ny /= nd; } else { nx = 0; ny = 0; } // TODO: maybe random instead of 0,0 ? no 1,0 or fixed however, looks bad
 					p.vx += dt * nx * p.fRadialAcceleration;
 					p.vy += dt * ny * p.fRadialAcceleration;
 				}
@@ -228,13 +232,14 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 	/// returns number of active vertices to be drawn
 	public int updateGeometry() {
 		//~ Log("updateGeometry");
-		int fnum = 0;
-		for (int i=0;i<iMaxParticles;++i) fnum += mParticles[i].updateGeometry(fnum,mFB_Pos);
-		if (fnum == 0) return 0;
+		int vnum = 0;
+		for (int i=0;i<iMaxParticles;++i) vnum += mParticles[i].updateGeometry(vnum,mFB_Pos,mFB_Col);
+		if (vnum == 0) return 0;
 		//~ Log("updateGeometry:LuanFillBuffer");
-		LuanGraphics.LuanFillBuffer(mVB_Pos,mFB_Pos,fnum);
+		LuanGraphics.LuanFillBuffer(mVB_Pos,mFB_Pos,vnum*2);
+		LuanGraphics.LuanFillBuffer(mVB_Col,mFB_Col,vnum*4);
 		//~ Log("updateGeometry:done");
-		return fnum/2;
+		return vnum;
 	}
 	
 	// ***** ***** ***** ***** ***** Particle 
@@ -261,29 +266,31 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 		
 		public Particle () {}
 		
-		public int updateGeometry (int base,float[] mFB_Pos) {
+		public int updateGeometry (int vnum,float[] mFB_Pos,float[] mFB_Col) {
 			if (!bAlive) return 0;
 			float x0 = x-scale*fParticleBaseRX;
 			float y0 = y-scale*fParticleBaseRY;
 			float x1 = x+scale*fParticleBaseRX;
 			float y1 = y+scale*fParticleBaseRY;
+			int base = vnum*2;
 			// TODO : use p.ang to display rotated sprite, fOX,fOY for rotation offset
-			mFB_Pos[base+ 0] = x0;
-			mFB_Pos[base+ 1] = y0;
-			mFB_Pos[base+ 2] = x1;
-			mFB_Pos[base+ 3] = y0;
-			mFB_Pos[base+ 4] = x0;
-			mFB_Pos[base+ 5] = y1;
-			// TODO: apply rgba vertexcolor
+			mFB_Pos[base+ 0] = x0;	mFB_Pos[base+ 1] = y0;
+			mFB_Pos[base+ 2] = x1;	mFB_Pos[base+ 3] = y0;
+			mFB_Pos[base+ 4] = x0;	mFB_Pos[base+ 5] = y1;
 			
-			mFB_Pos[base+ 6] = x1;
-			mFB_Pos[base+ 7] = y1;
-			mFB_Pos[base+ 8] = x0;
-			mFB_Pos[base+ 9] = y1;
-			mFB_Pos[base+10] = x1;
-			mFB_Pos[base+11] = y0;
-			// TODO: apply rgba vertexcolor
-			return 12;
+			mFB_Pos[base+ 6] = x1;	mFB_Pos[base+ 7] = y1;
+			mFB_Pos[base+ 8] = x0;	mFB_Pos[base+ 9] = y1;
+			mFB_Pos[base+10] = x1;	mFB_Pos[base+11] = y0;
+			
+			// apply rgba vertexcolor
+			int base2 = vnum*4;
+			for (int i=0;i<6;++i) {
+				mFB_Col[base2 + i*4 + 0] = r;
+				mFB_Col[base2 + i*4 + 1] = g;
+				mFB_Col[base2 + i*4 + 2] = b;
+				mFB_Col[base2 + i*4 + 3] = a;
+			}
+			return 6; // 6 new vertices
 		}
 	}
 	
@@ -304,7 +311,7 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 			
 		// render vertexbuffer
 		//~ Log("RenderSelf:setVertexBuffersToCustom");
-		g.setVertexBuffersToCustom(mVB_Pos,mVB_Tex);
+		g.setVertexBuffersToCustom(mVB_Pos,mVB_Tex,mVB_Col);
 		//~ Log("RenderSelf:GetTextureID");
 		gl.glBindTexture(GL10.GL_TEXTURE_2D, img.GetTextureID());
 		//~ Log("RenderSelf:glDrawArrays");

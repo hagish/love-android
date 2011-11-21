@@ -68,9 +68,6 @@ public class LuanGraphics extends LuanRenderer {
 		
 		// ***** ***** ***** ***** ***** rendering options
 		
-		t.set("setBlendMode",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"setBlendMode"		); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("setColorMode",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"setColorMode"		); return LuaValue.NONE; } }); // TODO: not yet implemented
-		
 		t.set("getBackgroundColor",	new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"getBackgroundColor"	); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("getBlendMode",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"getBlendMode"		); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("getColor",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"getColor"			); return LuaValue.NONE; } }); // TODO: not yet implemented
@@ -95,6 +92,9 @@ public class LuanGraphics extends LuanRenderer {
 		t.set("getPointStyle",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"getPointStyle"		); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("getScissor",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"getScissor"			); return LuaValue.NONE; } }); // TODO: not yet implemented
 		
+		
+		t.set("setBlendMode",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { setBlendMode(Str2BlendMode(args.checkjstring(1))); return LuaValue.NONE; } });
+		t.set("setColorMode",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { setColorMode(Str2ColorMode(args.checkjstring(1))); return LuaValue.NONE; } });
 		
 		/// love.graphics.setBackgroundColor( red, green, blue )  // 0-255
 		t.set("setBackgroundColor", new VarArgFunction() {

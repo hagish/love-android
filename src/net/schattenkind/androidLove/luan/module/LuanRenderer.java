@@ -44,12 +44,69 @@ public abstract class LuanRenderer extends LuanBase implements GfxReinitListener
 	private LuanColor backgroundColor = LuanColor.BLACK;
 	private LuanColor foregroundColor = LuanColor.WHITE;
 	
-	public static String	DrawMode2Str	(DrawMode a) { return (a == DrawMode.FILL)?"fill":"line"; }
-	public static DrawMode	Str2DrawMode	(String a) { return (a.equals("fill"))?DrawMode.FILL:DrawMode.LINE; }
-		
 	public enum DrawMode {
 		FILL,LINE
 	};
+	public enum ColorMode {
+		COLOR_MODULATE,COLOR_REPLACE
+	};
+	public enum BlendMode {
+		BLEND_MULTIPLICATIVE,
+		BLEND_SUBTRACTIVE,
+		BLEND_ALPHA,
+		BLEND_ADDITIVE
+	};
+	
+	// ***** ***** ***** ***** *****  modes
+	
+	public static String	DrawMode2Str	(DrawMode a) { return (a == DrawMode.FILL)?"fill":"line"; }
+	public static DrawMode	Str2DrawMode	(String a) { return (a.equals("fill"))?DrawMode.FILL:DrawMode.LINE; }
+	
+	/// Different ways you do alpha blending. 
+	/// additive	    Additive blend mode. 
+	/// alpha			Alpha blend mode ('normal'). 
+	/// subtractive		Subtractive blend mode. (0.7.0+ only) 
+	/// multiplicative	Multiply blend mode. (0.7.0+ only) 
+	public static BlendMode		Str2BlendMode	(String a) {
+		if (a.equals("multiplicative")) return BlendMode.BLEND_MULTIPLICATIVE;
+		if (a.equals("subtractive")) return BlendMode.BLEND_SUBTRACTIVE;
+		if (a.equals("alpha")) return BlendMode.BLEND_ALPHA;
+		return BlendMode.BLEND_ADDITIVE; // additive
+	} 
+	
+	/// modulate,replace
+	/// modulate	Images (etc) will be affected by the current color. 
+	/// replace		Replace color mode. Images (etc) will not be affected by current color. 
+	public static ColorMode	Str2ColorMode	(String a) { return (a.equals("modulate"))?ColorMode.COLOR_MODULATE:ColorMode.COLOR_REPLACE; }
+	
+	
+	public void setBlendMode( BlendMode mode ) {
+		gl.glAlphaFunc(GL10.GL_GEQUAL, 0);
+		
+		/*
+		if (mode == BlendMode.BLEND_SUBTRACTIVE)
+			gl.glBlendEquation(GL10.GL_FUNC_REVERSE_SUBTRACT);
+		else
+			gl.glBlendEquation(GL10.GL_FUNC_ADD);
+		// error, undefined in android 2.1 / GL10 : glBlendEquation,GL_FUNC_REVERSE_SUBTRACT,GL_FUNC_ADD 
+		// note : http://www.opengl.org/sdk/docs/man/xhtml/glBlendEquation.xml
+		// idea : glAlphaFunc glBlendFunc ? no colorfunc =(
+		*/
+
+		if (mode == BlendMode.BLEND_ALPHA)
+			gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		else if (mode == BlendMode.BLEND_MULTIPLICATIVE)
+			gl.glBlendFunc(GL10.GL_DST_COLOR, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		else // mode == BlendMode.BLEND_ADDITIVE || mode == BlendMode.BLEND_SUBTRACTIVE
+			gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE);
+	}
+
+	public void setColorMode ( ColorMode mode ) {
+		if(mode == ColorMode.COLOR_MODULATE)
+			gl.glTexEnvf(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE, GL10.GL_MODULATE);
+		else // mode = ColorMode.COLOR_REPLACE
+			gl.glTexEnvf(GL10.GL_TEXTURE_ENV, GL10.GL_TEXTURE_ENV_MODE, GL10.GL_REPLACE);
+	}
 	
 	
 	// ***** ***** ***** ***** *****  constructor
@@ -276,6 +333,7 @@ public abstract class LuanRenderer extends LuanBase implements GfxReinitListener
 		bVertexBuffersSprite = true;
 		// Point to our vertex buffer
 		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
 		gl.glVertexPointer(2, GL10.GL_FLOAT, 0, spriteVB_Pos);
 		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, spriteVB_Tex);
 	}
@@ -284,6 +342,7 @@ public abstract class LuanRenderer extends LuanBase implements GfxReinitListener
 	public void setVertexBuffersToCustom (FloatBuffer pos) {
 		bVertexBuffersSprite = false;
 		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
 		gl.glVertexPointer(2, GL10.GL_FLOAT, 0, pos);
 		//~ gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, tex);
 	}
@@ -292,8 +351,19 @@ public abstract class LuanRenderer extends LuanBase implements GfxReinitListener
 	public void setVertexBuffersToCustom (FloatBuffer pos,FloatBuffer tex) {
 		bVertexBuffersSprite = false;
 		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
 		gl.glVertexPointer(2, GL10.GL_FLOAT, 0, pos);
 		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, tex);
+	}
+	
+	/// texcoords and vertexcolor enabled
+	public void setVertexBuffersToCustom (FloatBuffer pos,FloatBuffer tex,FloatBuffer col) {
+		bVertexBuffersSprite = false;
+		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
+		gl.glVertexPointer(2, GL10.GL_FLOAT, 0, pos);
+		gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, tex);
+		gl.glColorPointer(4, GL10.GL_FLOAT, 0, col);
 	}
 	
 	public void notifyFrameStart		(GL10 gl) {
@@ -314,6 +384,7 @@ public abstract class LuanRenderer extends LuanBase implements GfxReinitListener
 		
 		gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
 		gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
 		
 		//~ gl.glColor4f(1f, 1f, 1f, 1f); // todo : love global color ?
 			 
@@ -330,6 +401,7 @@ public abstract class LuanRenderer extends LuanBase implements GfxReinitListener
 		//Disable the client state before leaving
 		gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
 		gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+		gl.glDisableClientState(GL10.GL_COLOR_ARRAY);
 		gl.glDisable(GL10.GL_BLEND 	);
 		//~ Log("notifyFrameEnd");
 	}
