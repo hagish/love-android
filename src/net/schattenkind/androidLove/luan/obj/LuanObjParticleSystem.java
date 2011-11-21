@@ -32,17 +32,26 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 	private Particle[] mParticles;
 	private long	miParticlesAlive = 0;
 	private long	miParticlesEmitted_Num = 0;
-	private float	miParticlesEmitted_StartT = 0f;
+	
+	private boolean bEmitterActive = true;
+	private float	fEmitterRunT = 0f; ///< how long this emitter has been running, stopped if beyond fLifeTime
 	
 	private float	x_emit = 0f;
 	private float	y_emit = 0f;
 	private float	fEmissionRate = 1f; ///< The amount of particles per second. 
+	private float	fLifeTime = -1f; ///< Sets how long the particle system should emit particles (if -1 then it emits particles forever).
 	private float	fSize_Start = 1f;
 	private float	fSize_End = 1f;
 	private float	fSize_Var = 1f;
 	private float	fPLife_Min = 1f;
 	private float	fPLife_Max = 1f;
-	private float	fParticleBaseSize = 16f;
+	private float	fParticleBaseRX = 16f;
+	private float	fParticleBaseRY = 16f;
+	
+	private float fDirection = 0f; ///< Sets the direction the particles will be emitted in. 
+	private float fSpread = (float)Math.PI; ///< Sets the amount of spread for the system.
+	private float fSpeed_Min = 0f; ///< Sets the speed of the particles. 
+	private float fSpeed_Max = 0f; ///< Sets the speed of the particles. 
 	
 	// ***** ***** ***** ***** ***** constructor 
 	
@@ -53,10 +62,10 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 		this.img = img; 
 		this.iMaxParticles = iMaxParticles;
 		
-		fParticleBaseSize = img.getWidth() / 2f;
+		fParticleBaseRX = img.getWidth() / 2f;
+		fParticleBaseRY = img.getHeight() / 2f;
 		mParticles = new Particle[iMaxParticles];
 		for (int i=0;i<iMaxParticles;++i) mParticles[i] = new Particle();
-		resetEmissionCounter();
 		
 		// init buffers
 		int iMaxVertices = iMaxParticles * iVerticesPerParticle;
@@ -95,22 +104,24 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 	
 	// ***** ***** ***** ***** ***** updating
 	
-	public void resetEmissionCounter () {
-		miParticlesEmitted_Num = 0;
-		miParticlesEmitted_StartT = vm.getTime();
-	}
-	
 	/// Updates the particle system; moving, creating and killing particles. 
 	public void update (float dt) {
 		//~ Log("update");
 		float t = vm.getTime();
+		long cnew = 0;
 		
-		// calc emission num 
-		//~ Log("RenderSelf:calc emission num ");
-		long cnew = ((long)((t - miParticlesEmitted_StartT) * fEmissionRate)) - miParticlesEmitted_Num;
-		if (cnew < 0) cnew = 0;
-		miParticlesEmitted_Num += cnew;
-		
+		// emitter active
+		if (bEmitterActive) {
+			fEmitterRunT += dt;
+			if (fLifeTime > 0f && fEmitterRunT > fLifeTime) bEmitterActive = false;
+				
+			// calc emission num 
+			//~ Log("RenderSelf:calc emission num ");
+			cnew = ((long)(fEmitterRunT * fEmissionRate)) - miParticlesEmitted_Num;
+			if (cnew < 0) cnew = 0;
+			miParticlesEmitted_Num += cnew;
+		}
+			
 		// update particle pos etc
 		//~ Log("RenderSelf:update particle pos etc ");
 		for (int i=0;i<iMaxParticles;++i) {
@@ -123,7 +134,9 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 				} else {
 					// anim paramaters here
 					float f = (t - p.t_death) / p.t_life + 1f; // optimized from (t - (p.t_death - p.t_life)) / p.t_life
-					p.r = fParticleBaseSize * (f * fSize_End + (1f-f) * p.r_start); // interpolate
+					p.r = (f * fSize_End + (1f-f) * p.r_start); // interpolate
+					p.x += dt * p.vx;
+					p.y += dt * p.vy;
 				}
 			}
 		}
@@ -138,11 +151,22 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 			p.x = x_emit;
 			p.y = y_emit;
 			p.r_start = fSize_Start + fSize_Var * vm.getRandomFloatBetween(0,fSize_End-fSize_Start);
-			p.r = p.r_start * fParticleBaseSize;
+			p.r = p.r_start;
 			p.t_life = vm.getRandomFloatBetween(fPLife_Min,fPLife_Max); // duration, in seconds
 			p.t_death = t + p.t_life; // pre calc point of death
+			float a = fDirection + vm.getRandomFloatBetween(-fSpread,fSpread);
+			float s = vm.getRandomFloatBetween(fSpeed_Min,fSpeed_Max);
+			p.vx = s * (float)Math.sin(a);
+			p.vy = s * (float)Math.cos(a);
 		}
 		//~ Log("RenderSelf:done");
+	}
+	
+	public void killAllParticles () {
+		for (int i=0;i<iMaxParticles;++i) {
+			Particle p = mParticles[i];
+			p.bAlive = false;
+		}
 	}
 	
 	public Particle createNewParticle () {
@@ -172,6 +196,8 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 		float t_life; ///< duration, in seconds
 		float x;
 		float y;
+		float vx;
+		float vy;
 		float r;
 		float r_start;
 		boolean bAlive = false;
@@ -180,10 +206,10 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 		
 		public int updateGeometry (int base,float[] mFB_Pos) {
 			if (!bAlive) return 0;
-			float x0 = x-r;
-			float y0 = y-r;
-			float x1 = x+r;
-			float y1 = y+r;
+			float x0 = x-r*fParticleBaseRX;
+			float y0 = y-r*fParticleBaseRY;
+			float x1 = x+r*fParticleBaseRX;
+			float y1 = y+r*fParticleBaseRY;
 			mFB_Pos[base+ 0] = x0;
 			mFB_Pos[base+ 1] = y0;
 			mFB_Pos[base+ 2] = x1;
@@ -232,11 +258,10 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 	
 	// ***** ***** ***** ***** ***** internal
 	
-	// TODO: implemnt me
-	public void pause () {} ///< Pauses the particle emitter. 
-	public void reset () {} ///< Resets the particle emitter, removing any existing particles and resetting the lifetime counter. 
-	public void start () {} ///< Starts the particle emitter. 
-	public void stop () {} ///< Stops the particle emitter, resetting the lifetime counter
+	public void pause () { bEmitterActive = false; } ///< Pauses the particle emitter. 	
+	public void reset () { killAllParticles(); fEmitterRunT = 0f; miParticlesEmitted_Num = 0; } ///< Resets the particle emitter, removing any existing particles and resetting the lifetime counter. 
+	public void start () { bEmitterActive = true; } ///< Starts the particle emitter. 
+	public void stop () { bEmitterActive = false; fEmitterRunT = 0f; miParticlesEmitted_Num = 0; } ///< Stops the particle emitter, resetting the lifetime counter
 		
 	public void setPosition (float x,float y) { this.x_emit = x; this.y_emit = y; } ///< Sets the position of the emitter. 
 
@@ -245,11 +270,10 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 	
 	public void setParticleLife (float fMin,float fMax) { fPLife_Min = fMin; fPLife_Max = fMax;} ///< Sets the life of the particles. 
 		
-	public void setLifetime (float fSeconds) {} ///< Sets how long the particle system should emit particles (if -1 then it emits particles forever). 
+	public void setLifetime (float fSeconds) { fLifeTime = fSeconds; } ///< Sets how long the particle system should emit particles (if -1 then it emits particles forever). 
 	
 	public void setEmissionRate (float fEmissionRate) {
 		this.fEmissionRate = fEmissionRate;
-		resetEmissionCounter();
 	}
 	
 	// ***** ***** ***** ***** ***** lua api 
@@ -272,20 +296,26 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 		
 		t.set("setBufferSize"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setBufferSize"			); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("setColor"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setColor"					); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("setDirection"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setDirection"				); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("setGravity"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setGravity"				); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("setOffset"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setOffset"				); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("setRadialAcceleration"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setRadialAcceleration"	); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("setRotation"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setRotation"				); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("setSizeVariation"			,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setSizeVariation"			); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("setSpeed"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setSpeed"					); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("setSpin"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setSpin"					); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("setSpinVariation"			,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setSpinVariation"			); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("setSpread"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setSpread"				); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("setSprite"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setSprite"				); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("setTangentialAcceleration"	,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setTangentialAcceleration"); return LuaValue.NONE; } }); // TODO: not yet implemented
 				
-		t.set("setEmissionRate"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { self(args).setEmissionRate((float)args.checkdouble(2)); return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("setDirection"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { self(args).fDirection = (float)args.checkdouble(2); return LuaValue.NONE; } });
+		t.set("setSpread"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { self(args).fSpread = (float)args.checkdouble(2); return LuaValue.NONE; } });
+		
+		t.set("setSpeed"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) {
+			self(args).fSpeed_Min = (float)args.checkdouble(2);
+			self(args).fSpeed_Max = LuanBase.IsArgSet(args,3) ? (float)args.checkdouble(3) : self(args).fSpeed_Min;
+			return LuaValue.NONE; 
+		} });
+		
+		t.set("setEmissionRate"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { self(args).setEmissionRate((float)args.checkdouble(2)); return LuaValue.NONE; } });
 		
 		t.set("setParticleLife"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { 
 			float fMin = (float)args.checkdouble(2);
