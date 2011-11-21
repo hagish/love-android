@@ -4,6 +4,7 @@ import net.schattenkind.androidLove.LoveVM;
 import net.schattenkind.androidLove.luan.LuanBase;
 import net.schattenkind.androidLove.luan.module.LuanGraphics;
 import net.schattenkind.androidLove.luan.module.LuanRenderer.LuanObjDrawable;
+import net.schattenkind.androidLove.luan.module.LuanRenderer.LuanColor;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -38,6 +39,8 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 	
 	private float	x_emit = 0f;
 	private float	y_emit = 0f;
+	private float	fOX = 0f; ///< 	Set the offset position which the particle sprite is rotated around. TODO:NotImplemented
+	private float	fOY = 0f; ///< 	Set the offset position which the particle sprite is rotated around. TODO:NotImplemented
 	private float	fEmissionRate = 1f; ///< The amount of particles per second. 
 	private float	fLifeTime = -1f; ///< Sets how long the particle system should emit particles (if -1 then it emits particles forever).
 	private float	fSize_Start = 1f;
@@ -48,10 +51,25 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 	private float	fParticleBaseRX = 16f;
 	private float	fParticleBaseRY = 16f;
 	
+	private LuanColor col_start = LuanColor.WHITE; ///< Sets the color of the image (color modulation needs to be activated for it to have any effect).  TODO:NotImplemented, needs vertexcolor
+	private LuanColor col_end = LuanColor.WHITE;
+	
 	private float fDirection = 0f; ///< Sets the direction the particles will be emitted in. 
 	private float fSpread = (float)Math.PI; ///< Sets the amount of spread for the system.
 	private float fSpeed_Min = 0f; ///< Sets the speed of the particles. 
 	private float fSpeed_Max = 0f; ///< Sets the speed of the particles. 
+	
+	private float fGravityX = 0f; ///< gravity
+	private float fGravityY = 0f; ///< gravity
+	private float fTangentialAccelerationMin = 0f; ///< Sets the tangential acceleration (acceleration perpendicular to the particle's direction). 
+	private float fTangentialAccelerationMax = 0f; ///< 
+	private float fRadialAccelerationMin = 0f; ///< Set the radial acceleration (away from the emitter). 
+	private float fRadialAccelerationMax = 0f; ///< 
+	private float fRotationMin = 0f; ///< Sets the rotation of the image upon particle creation (in radians). 
+	private float fRotationMax = 0f; ///< 
+	private float fSpinStart = 0f; ///< Sets the spin of the sprite. 
+	private float fSpinEnd = 0f; ///< 
+	private float fSpinVar = 0f; ///< 
 	
 	// ***** ***** ***** ***** ***** constructor 
 	
@@ -134,9 +152,33 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 				} else {
 					// anim paramaters here
 					float f = (t - p.t_death) / p.t_life + 1f; // optimized from (t - (p.t_death - p.t_life)) / p.t_life
-					p.r = (f * fSize_End + (1f-f) * p.r_start); // interpolate
+					float fi = 1f - f;
+					p.scale = f * fSize_End + fi * p.r_start; // interpolate
+					p.spin = f * fSpinEnd + fi * p.spin_start; // interpolate
+					p.ang += dt * p.spin;
+					
 					p.x += dt * p.vx;
 					p.y += dt * p.vy;
+					p.vx += dt * fGravityX;
+					p.vy += dt * fGravityY;
+					p.r = f * col_start.r + fi * col_end.r; // interpolate
+					p.g = f * col_start.g + fi * col_end.g; // interpolate
+					p.b = f * col_start.b + fi * col_end.b; // interpolate
+					p.a = f * col_start.a + fi * col_end.a; // interpolate
+					 
+					// fTangentialAcceleration : depends on p.ang
+					float mysin = (float)Math.sin(p.ang);
+					float mycos = (float)Math.cos(p.ang);
+					p.vx += dt * mycos * p.fTangentialAcceleration;
+					p.vy += dt * mysin * p.fTangentialAcceleration;
+					
+					// fRadialAcceleration : away from emitter
+					float nx = p.x - x_emit;
+					float ny = p.y - y_emit;
+					float nd = (float)Math.sqrt(nx*nx + ny*ny);
+					if (nd > 0) { nx /= nd; ny /= nd; } else { nx = 1; ny = 0; }
+					p.vx += dt * nx * p.fRadialAcceleration;
+					p.vy += dt * ny * p.fRadialAcceleration;
 				}
 			}
 		}
@@ -151,13 +193,19 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 			p.x = x_emit;
 			p.y = y_emit;
 			p.r_start = fSize_Start + fSize_Var * vm.getRandomFloatBetween(0,fSize_End-fSize_Start);
-			p.r = p.r_start;
+			p.scale = p.r_start;
 			p.t_life = vm.getRandomFloatBetween(fPLife_Min,fPLife_Max); // duration, in seconds
 			p.t_death = t + p.t_life; // pre calc point of death
 			float a = fDirection + vm.getRandomFloatBetween(-fSpread,fSpread);
 			float s = vm.getRandomFloatBetween(fSpeed_Min,fSpeed_Max);
 			p.vx = s * (float)Math.sin(a);
 			p.vy = s * (float)Math.cos(a);
+			
+			p.spin_start = fSpinStart + fSpinVar * vm.getRandomFloatBetween(0,fSpinEnd-fSpinStart);
+			p.spin = p.spin_start;
+			p.ang = vm.getRandomFloatBetween(fRotationMin,fRotationMax); // TODO: depends on emit dir ? random(0,2pi)?
+			p.fTangentialAcceleration = vm.getRandomFloatBetween(fTangentialAccelerationMin,fTangentialAccelerationMax);
+			p.fRadialAcceleration = vm.getRandomFloatBetween(fRadialAccelerationMin,fRadialAccelerationMax);
 		}
 		//~ Log("RenderSelf:done");
 	}
@@ -198,24 +246,35 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 		float y;
 		float vx;
 		float vy;
-		float r;
+		float r; ///< col
+		float g; ///< col
+		float b; ///< col
+		float a; ///< col
+		float scale;
+		float ang; ///< rotation
+		float spin_start;
+		float spin;
 		float r_start;
+		float fTangentialAcceleration;
+		float fRadialAcceleration;
 		boolean bAlive = false;
 		
 		public Particle () {}
 		
 		public int updateGeometry (int base,float[] mFB_Pos) {
 			if (!bAlive) return 0;
-			float x0 = x-r*fParticleBaseRX;
-			float y0 = y-r*fParticleBaseRY;
-			float x1 = x+r*fParticleBaseRX;
-			float y1 = y+r*fParticleBaseRY;
+			float x0 = x-scale*fParticleBaseRX;
+			float y0 = y-scale*fParticleBaseRY;
+			float x1 = x+scale*fParticleBaseRX;
+			float y1 = y+scale*fParticleBaseRY;
+			// TODO : use p.ang to display rotated sprite, fOX,fOY for rotation offset
 			mFB_Pos[base+ 0] = x0;
 			mFB_Pos[base+ 1] = y0;
 			mFB_Pos[base+ 2] = x1;
 			mFB_Pos[base+ 3] = y0;
 			mFB_Pos[base+ 4] = x0;
 			mFB_Pos[base+ 5] = y1;
+			// TODO: apply rgba vertexcolor
 			
 			mFB_Pos[base+ 6] = x1;
 			mFB_Pos[base+ 7] = y1;
@@ -223,6 +282,7 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 			mFB_Pos[base+ 9] = y1;
 			mFB_Pos[base+10] = x1;
 			mFB_Pos[base+11] = y0;
+			// TODO: apply rgba vertexcolor
 			return 12;
 		}
 	}
@@ -285,26 +345,66 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 		LuaTable t = LuaValue.tableOf();
 		mt.set("__index",t);
 		
-		t.set("count"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).miParticlesAlive); } }); // TODO: not yet implemented
-		t.set("getDirection"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"getDirection"				); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("getOffsetX"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"getOffsetX"				); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("getOffsetY"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"getOffsetY"				); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("getSpread"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"getSpread"				); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("isActive"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"isActive"					); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("isEmpty"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"isEmpty"					); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("isFull"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"isFull"					); return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("setSpinVariation"			,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setSpinVariation"			); return LuaValue.NONE; } }); // TODO: not yet implemented
+		t.set("setSizeVariation"			,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setSizeVariation"			); return LuaValue.NONE; } }); // TODO: not yet implemented
 		
 		t.set("setBufferSize"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setBufferSize"			); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("setColor"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setColor"					); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("setGravity"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setGravity"				); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("setOffset"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setOffset"				); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("setRadialAcceleration"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setRadialAcceleration"	); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("setRotation"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setRotation"				); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("setSizeVariation"			,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setSizeVariation"			); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("setSpin"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setSpin"					); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("setSpinVariation"			,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setSpinVariation"			); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("setSprite"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setSprite"				); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("setTangentialAcceleration"	,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { g.vm.NotImplemented("ParticleSystem:"+"setTangentialAcceleration"); return LuaValue.NONE; } }); // TODO: not yet implemented
+		
+		
+		
+		t.set("count"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).miParticlesAlive); } }); // TODO: not yet implemented
+		t.set("getDirection"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).fDirection); } });
+		t.set("getOffsetX"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).fOX); } });
+		t.set("getOffsetY"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).fOY); } });
+		t.set("getSpread"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).fSpread); } });
+		t.set("isActive"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).bEmitterActive); } });
+		t.set("isEmpty"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).miParticlesAlive == 0); } });
+		t.set("isFull"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { return LuaValue.valueOf(self(args).miParticlesAlive >= self(args).iMaxParticles); } });
+		
+		t.set("setOffset"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) {
+			self(args).fOX = (float)args.checkdouble(2);
+			self(args).fOY = (float)args.checkdouble(3);
+			return LuaValue.NONE; 
+		} });
+		
+		t.set("setColor"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) {
+			self(args).col_start	= new LuanColor(args,2);
+			self(args).col_end		= new LuanColor(args,6);
+			return LuaValue.NONE; 
+		} });
+		
+		t.set("setGravity"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { 
+			self(args).fGravityX = (float)args.checkdouble(2);
+			self(args).fGravityY = LuanBase.IsArgSet(args,3) ? (float)args.checkdouble(3) : self(args).fGravityX;
+			return LuaValue.NONE; 
+		} });
+		
+		t.set("setRotation"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) {
+			self(args).fRotationMin = (float)args.checkdouble(2);
+			self(args).fRotationMax = LuanBase.IsArgSet(args,3) ? (float)args.checkdouble(3) : self(args).fRotationMin;
+			return LuaValue.NONE; 
+		} });
+		
+		t.set("setSpin"						,new VarArgFunction() { @Override public Varargs invoke(Varargs args) {
+			self(args).fSpinStart = (float)args.checkdouble(2);
+			self(args).fSpinEnd = LuanBase.IsArgSet(args,3) ? (float)args.checkdouble(3) : self(args).fSpinStart;
+			self(args).fSpinVar = LuanBase.IsArgSet(args,4) ? (float)args.checkdouble(4) : 1f;
+			return LuaValue.NONE; 
+		} });
+		
+		t.set("setRadialAcceleration"		,new VarArgFunction() { @Override public Varargs invoke(Varargs args) {
+			self(args).fRadialAccelerationMin = (float)args.checkdouble(2);
+			self(args).fRadialAccelerationMax = LuanBase.IsArgSet(args,3) ? (float)args.checkdouble(3) : self(args).fRadialAccelerationMin;
+			return LuaValue.NONE; 
+		} });
+		
+		
+		t.set("setTangentialAcceleration"	,new VarArgFunction() { @Override public Varargs invoke(Varargs args) {
+			self(args).fTangentialAccelerationMin = (float)args.checkdouble(2);
+			self(args).fTangentialAccelerationMax = LuanBase.IsArgSet(args,3) ? (float)args.checkdouble(3) : self(args).fTangentialAccelerationMin;
+			return LuaValue.NONE; 
+		} });
 				
 		t.set("setDirection"				,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { self(args).fDirection = (float)args.checkdouble(2); return LuaValue.NONE; } });
 		t.set("setSpread"					,new VarArgFunction() { @Override public Varargs invoke(Varargs args) { self(args).fSpread = (float)args.checkdouble(2); return LuaValue.NONE; } });
