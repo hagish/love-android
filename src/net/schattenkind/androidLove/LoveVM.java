@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.LinkedList;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -75,6 +76,8 @@ public class LoveVM {
 	private boolean bInitDone = false;
 	private boolean isBroken = false;
 	private boolean bInitInProgress = false;
+	
+	public Random mRandom = new Random();
 
 	private GL10 lastInitialisedGL = null;
 
@@ -91,6 +94,12 @@ public class LoveVM {
 
 		notifyOnGfxReinitList = new LinkedList<WeakReference<GfxReinitListener>>();
 	}
+
+	// ***** ***** ***** ***** ***** utils 
+
+	public float getRandomFloat			() { return mRandom.nextFloat(); } // [0;1[
+	public float getRandomFloatBetween	(float a,float b) { return a + mRandom.nextFloat() * (b-a); } // [a;b[
+	
 
 	// ***** ***** ***** ***** ***** log
 
@@ -499,6 +508,8 @@ public class LoveVM {
 		return (SensorManager) getContext().getSystemService(
 				Context.SENSOR_SERVICE);
 	}
+	
+	public float getTime () { return mLuanTimer.getTime(); } ///< in seconds
 
 	// / access to latest valid gl object
 	public GL10 getGL() {

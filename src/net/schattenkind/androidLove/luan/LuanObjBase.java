@@ -9,16 +9,16 @@ public class LuanObjBase implements GfxReinitListener {
 	public static int count = 0;
 
 	public LuanObjBase(LoveVM vm) {
-		vm.listenForGfxReinit(this);
+		vm.listenForGfxReinit(this); // TODO: not every object should be registered as listener for performance reasons, e.g. quad?
 		
 		++count;
-		System.out.println("objects+: " + count);
+		System.out.println("objects+: " + count); // TODO: remove for performance
 	}
 
 	protected void finalize() throws Throwable {
 		super.finalize();
 		--count;
-		System.out.println("objects-: " + count);
+		System.out.println("objects-: " + count); // TODO: remove for performance
 	}
 
 	@Override

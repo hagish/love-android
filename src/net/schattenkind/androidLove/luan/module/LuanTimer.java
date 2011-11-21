@@ -100,7 +100,7 @@ public class LuanTimer extends LuanBase {
 
 	public long getLoveClockMillis() { return SystemClock.uptimeMillis() - timerStartInMs; }
 	
-	private float getTime() {
+	public float getTime() {
 		return (float) getLoveClockMillis() / 1000.0f;
 	}
 
