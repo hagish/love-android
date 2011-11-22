@@ -5,6 +5,8 @@ import net.schattenkind.androidLove.luan.LuanBase;
 import net.schattenkind.androidLove.luan.module.LuanGraphics;
 import net.schattenkind.androidLove.luan.module.LuanRenderer.LuanObjDrawable;
 import net.schattenkind.androidLove.luan.module.LuanRenderer.LuanColor;
+import net.schattenkind.androidLove.utils.Matrix3;
+import net.schattenkind.androidLove.utils.Vector3;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -268,12 +270,65 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 		
 		public int updateGeometry (int vnum,float[] mFB_Pos,float[] mFB_Col) {
 			if (!bAlive) return 0;
+
 			float x0 = x-scale*fParticleBaseRX;
 			float y0 = y-scale*fParticleBaseRY;
 			float x1 = x+scale*fParticleBaseRX;
 			float y1 = y+scale*fParticleBaseRY;
-			int base = vnum*2;
+			
 			// TODO : use p.ang to display rotated sprite, fOX,fOY for rotation offset
+			// TODO use native matrix methods?
+			if (ang != 0.0f)
+			{
+				Matrix3 rot = Matrix3.rotation2D(ang);
+				
+				if (fOX != 0.0f || fOY != 0.0f)
+				{
+					Matrix3 m = Matrix3.identity();
+					
+					// with rotation offset
+					Matrix3 t1 = Matrix3.translation2D(-scale*(fParticleBaseRX+fOX), -scale*(fParticleBaseRY+fOY));
+					Matrix3 t2 = Matrix3.translation2D(scale*(fParticleBaseRX+fOX), scale*(fParticleBaseRY+fOY));
+					
+					// t2 * rot * t1 * v
+					rot.mul(t1, m);
+					// uses t1 as temporary variable
+					t2.mul(m, t1);
+					
+					Vector3 v = new Vector3();
+					
+					System.out.println(t1);
+					
+					Vector3 v0 = Vector3.from2D(x0, y0);
+					t1.mul(v0, v);
+					x0 = v.x;
+					y0 = v.y;
+
+					Vector3 v1 = Vector3.from2D(x1, y1);
+					t1.mul(v1, v);
+					x1 = v.x;
+					y1 = v.y;
+				}
+				else
+				{
+					Vector3 v = new Vector3();
+					
+					System.out.println(rot);
+
+					Vector3 v0 = Vector3.from2D(x0, y0);
+					rot.mul(v0, v);
+					x0 = v.x;
+					y0 = v.y;
+
+					Vector3 v1 = Vector3.from2D(x1, y1);
+					rot.mul(v1, v);
+					x1 = v.x;
+					y1 = v.y;					
+				}
+			}
+
+			int base = vnum*2;
+			
 			mFB_Pos[base+ 0] = x0;	mFB_Pos[base+ 1] = y0;
 			mFB_Pos[base+ 2] = x1;	mFB_Pos[base+ 3] = y0;
 			mFB_Pos[base+ 4] = x0;	mFB_Pos[base+ 5] = y1;
@@ -468,6 +523,5 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 	
 	@Override
 	public void onGfxReinit(GL10 gl, float w, float h) {
-		// TODO XXX
 	}
 }

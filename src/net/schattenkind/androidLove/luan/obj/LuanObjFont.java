@@ -53,7 +53,7 @@ public class LuanObjFont extends LuanObjBase {
 	};
 	public HashMap<Character, GlyphInfo> mGlyphInfos = new HashMap<Character, GlyphInfo>();
 	
-	public GlyphInfo getGlyphInfo (char c) { return (GlyphInfo)mGlyphInfos.get(c); }
+	public GlyphInfo getGlyphInfo (char c) { return mGlyphInfos.get(c); }
 	
 	
 	public static AlignMode	Text2Align (String s) {
@@ -151,9 +151,11 @@ public class LuanObjFont extends LuanObjBase {
 	public float getGlyphMoveX (char c) { 
 		if (c == ' ') return w_space;
 		if (c == '\t') return 4f*w_space;
+		
 		GlyphInfo gi = getGlyphInfo(c); 
 		if (gi != null) return gi.movex;
-		return 0f; // TODO! GlyphInfo ? 
+		
+		return 0f;
 	}
 	
 	
