@@ -27,7 +27,26 @@ if (1==2) then
 end
 
 
-
+function love._update(dt)
+	-- see http://love2d.org/wiki/love.run
+	-- Process events.
+	-- enable if love.event works
+    if false and love.event then
+        for e,a,b,c in love.event.poll() do
+            if e == "q" then
+                if not love.quit or not love.quit() then
+                    if love.audio then
+                        love.audio.stop()
+                    end
+                    return
+                end
+            end
+            love.handlers[e](a,b,c)
+        end
+    end
+    
+    if love.update then love.update(dt) end
+end
 
 function love.draw() end
 function love.focus() end

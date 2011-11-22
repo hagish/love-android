@@ -146,7 +146,7 @@ public class LuanMouse extends LuanBase {
 		});
 
 		// love.mouse.setPosition( x, y )
-		t.set("setGrab", new VarArgFunction() {
+		t.set("setPosition", new VarArgFunction() {
 			@Override
 			public Varargs invoke(Varargs args) {
 				mouseX = args.arg(1).toint();

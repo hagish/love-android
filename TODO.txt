@@ -1,0 +1,75 @@
+completly missing functions and variables
+-----------------------------------------
+
+If a function is availably as a dummy or a "not implemented" exception it
+will not be listed here.
+
+love.path.normalslashes	function: 0xa0be980
+love.path.leaf	function: 0xa0bf378
+love.path.abs	function: 0xa0ad750
+love.path.getfull	function: 0xa0bf360
+love.path.endslash	function: 0xa0bdbe8
+love._modules.joystick	userdata: 0xa0bae64
+love._modules.audio	userdata: 0xa0db574
+love._modules.keyboard	userdata: 0xa0e320c
+love._modules.event	userdata: 0xa0e41ac
+love._modules.thread	userdata: 0xa0e538c
+love._modules.physics	userdata: 0xa0b054c
+love._modules.image	userdata: 0xa0a5c5c
+love._modules.filesystem	userdata: 0xa0a698c
+love._modules.graphics	userdata: 0xa119ed4
+love._modules.timer	userdata: 0xa16734c
+love._modules.mouse	userdata: 0xa0bf324
+love._modules.sound	userdata: 0xa0a6044
+love._modules.font	userdata: 0xa0ef25c
+love.thread.getThreads	function: 0xa0e54e8
+love.thread.getThread	function: 0xa0e5470
+love.thread.newThread	function: 0xa0e5438
+love.createhandlers	function: 0xa0a9110
+love.physics.newCircleShape	function: 0xa0e3760
+love.physics.newRevoluteJoint	function: 0xa0b0640
+love.physics.newRectangleShape	function: 0xa167ab0
+love.physics.newBody	function: 0xa167090
+love.physics.newMouseJoint	function: 0xa0b0600
+love.physics.newGearJoint	function: 0xa0a96b0
+love.physics.newPulleyJoint	function: 0xa167180
+love.physics.newDistanceJoint	function: 0xa167b30
+love.physics.newPrismaticJoint	function: 0xa167140
+love.physics.newWorld	function: 0xa0aaa58
+love.physics.newPolygonShape	function: 0xa167af0
+love.handlers.q	function: 0xa136f80
+love.handlers.mr	function: 0xa136f20
+love.handlers.f	function: 0xa136f68
+love.handlers.mp	function: 0xa136f08
+love.handlers.jp	function: 0xa136f38
+love.handlers.kp	function: 0xa136ed8
+love.handlers.jr	function: 0xa136f50
+love.handlers.kr	function: 0xa136ef0
+love.sound.newDecoder	function: 0xa0a6290
+love.sound.newSoundData	function: 0xa0a6258
+love.errhand	function: 0xa0a6a28
+love.init	function: 0xa0a9308
+love.font.newRasterizer	function: 0xa0e3510
+love.font.newGlyphData	function: 0xa0e3550
+love.font.newFontData	function: 0xa0e35d0
+love.image.newImageData	function: 0xa0a5b98
+love.image.newEncodedImageData	function: 0xa0e6ce8
+love.run	function: 0xa0a9320
+love._curthread	Thread
+love._version_compat.1	71
+love._version_compat.2	56
+love.graphics.newGlyph	function: 0xa11a198
+love.graphics.drawTest	function: 0xa12dc50
+love.graphics.setFont1	function: 0xa11a5b0
+love.graphics.newFont1	function: 0xa11a210
+love.graphics.print1	function: 0xa12dc88
+love.graphics.hasFocus	function: 0xa12dea0
+love.graphics.printf1	function: 0xa12dcc0
+love.arg.parse_option	function: 0xa0bf3d8
+love.arg.getLow	function: 0xa0a8c00
+love.arg.options.game.a	1
+love.arg.options.game.arg.1	.
+love.arg.options.game.set	true
+love.arg.options.console.a	0
+love.arg.parse_options	function: 0xa0bf348
+love._exe	true

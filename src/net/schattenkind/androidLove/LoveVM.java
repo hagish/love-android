@@ -151,6 +151,7 @@ public class LoveVM {
 		try {
 			setupCoreFunctions();
 			setupLoveFunctions();
+			setupLoveVariables();
 
 			LoveLog("exec pairs_hack.lua...");
 			loadFileFromRes(R.raw.pairs_hack, "pairs_hack.lua");
@@ -175,6 +176,12 @@ public class LoveVM {
 
 		bInitDone = true;
 		bInitInProgress = false;
+	}
+
+	private void setupLoveVariables() {
+		_G.get("love").set("_version_string", "0.7.1");
+		_G.get("love").set("_version", "71");
+		_G.get("love").set("_version_codename", "Game Slave");
 	}
 
 	// / call user defined love.load() in main.lua
@@ -416,7 +423,7 @@ public class LoveVM {
 
 		// ~ LoveLog("calling love.update..."+dt);
 		try {
-			_G.get("love").get("update").call(LuaNumber.valueOf(dt));
+			_G.get("love").get("_update").call(LuaNumber.valueOf(dt));
 		} catch (LuaError e) {
 			handleLuaError(e);
 		}
