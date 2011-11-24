@@ -1,5 +1,6 @@
 package net.schattenkind.androidLove.luan.obj;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.FloatBuffer;
@@ -11,11 +12,15 @@ import net.schattenkind.androidLove.LoveVM;
 import net.schattenkind.androidLove.R;
 import net.schattenkind.androidLove.luan.LuanObjBase;
 import net.schattenkind.androidLove.luan.module.LuanGraphics;
+import net.schattenkind.androidLove.utils.FontRasterizer;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
+
+import android.graphics.Bitmap;
+import android.graphics.Color;
 
 //~ import android.renderscript.Font; // TTF try : android.renderscript cannot be resolved =(
 
@@ -71,10 +76,19 @@ public class LuanObjFont extends LuanObjBase {
 	// ***** ***** ***** ***** *****
 	
 	/// ttf font
-	public LuanObjFont (LuanGraphics g,String ttf_filename,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf"); }
-	
-	/// ttf font
-	public LuanObjFont (LuanGraphics g,int ttf_ResID,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf"); }
+	public LuanObjFont (LuanGraphics g, String ttf_filename, int iSize) throws IOException { 
+		super(g.vm);
+		
+		File ttfFile = g.vm.getStorage().forceGetFileFromLovePath(ttf_filename);
+		FontRasterizer r = new FontRasterizer(ttfFile);
+		
+//		String glyphs = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+		String glyphs = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+		
+		Bitmap b = r.renderBitmapFont(glyphs, iSize, 1, Color.MAGENTA, Color.TRANSPARENT, Color.WHITE);
+		
+		init(g, new LuanObjImage(g, b), glyphs);
+	}
 	
 	/// ttf font, default ttf_filename to verdana sans
 	public LuanObjFont (LuanGraphics g,int iSize) throws IOException { this(g); this.g = g; g.vm.NotImplemented("font:ttf with size"); } 
@@ -86,8 +100,7 @@ public class LuanObjFont extends LuanObjBase {
 	public LuanObjFont (LuanGraphics g,String filename,String glyphs) throws FileNotFoundException { this(g,new LuanObjImage(g,filename),glyphs); }
 	
 	/// imageFont
-	public LuanObjFont (LuanGraphics g,LuanObjImage img,String glyphs) {
-		super(g.vm);
+	private void init (LuanGraphics g, LuanObjImage img, String glyphs) {
 		this.g = g;
 		this.img = img;
 		
@@ -144,7 +157,12 @@ public class LuanObjFont extends LuanObjBase {
 		if (gi != null) w_space = gi.movex;
 			
 		//~ if (pLog != null) pLog.flush();
-		//~ if (pLog != null) pLog.close();
+		//~ if (pLog != null) pLog.close();		
+	}
+	
+	public LuanObjFont (LuanGraphics g,LuanObjImage img,String glyphs) {
+		super(g.vm);
+		init(g, img, glyphs);
 	}
 	
 	public boolean isWhiteSpace (char c) { return c == ' ' || c == '\t' || c == '\r' || c == '\n'; }

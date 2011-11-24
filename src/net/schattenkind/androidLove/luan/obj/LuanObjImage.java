@@ -126,8 +126,11 @@ public class LuanObjImage extends LuanObjDrawable {
 		LoadFromBitmap(mBitmap);
 	}
 	
-	public void LoadFromBitmap (Bitmap bm) {
+	private void LoadFromBitmap (Bitmap bm) {
 		mBitmap = bm;
+		mWidth = bm.getWidth();
+		mHeight = bm.getHeight();
+
 		GL10 gl = g.getGL();
 		
 		// Generate one texture pointer
@@ -165,8 +168,21 @@ public class LuanObjImage extends LuanObjDrawable {
 		//~ LoveVM.LoveLog(TAG,"constructor:"+filepath);
 	}
 	
+	public LuanObjImage (LuanGraphics g, Bitmap bitmap) {
+		super(g.vm);
+		this.g = g;
+		
+		// TODO : auto-scale to 2^n resolution ? naaaah.
+		// bitmap loaded into ram
+		
+		// load into texture
+		LoadFromBitmap(bitmap);
+		
+		sDebugSource = "bitmap";
+	}
+	
 	/// don't allow public call, since we need to store the origin of the image stream somehow, so we can reload the file image after context-switch
-	private LuanObjImage (LuanGraphics g,InputStream input) {
+	private LuanObjImage (LuanGraphics g, InputStream input) {
 		super(g.vm);
 		this.g = g;
 		
@@ -183,8 +199,7 @@ public class LuanObjImage extends LuanObjDrawable {
 		LoveVM.LoveLog(TAG,"BitmapDrawable ok");
 		Bitmap bm = bmd.getBitmap();
 		LoveVM.LoveLog(TAG,"Bitmap ok w="+bm.getWidth()+",h="+bm.getHeight());
-		mWidth = bm.getWidth();
-		mHeight = bm.getHeight();
+
 		// TODO : auto-scale to 2^n resolution ? naaaah.
 		// bitmap loaded into ram
 		

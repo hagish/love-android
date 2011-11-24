@@ -43,8 +43,8 @@ public class LuanObjParticleSystem extends LuanObjDrawable {
 	
 	private float	x_emit = 0f;
 	private float	y_emit = 0f;
-	private float	fOX = 0f; ///< 	Set the offset position which the particle sprite is rotated around. TODO:NotImplemented
-	private float	fOY = 0f; ///< 	Set the offset position which the particle sprite is rotated around. TODO:NotImplemented
+	private float	fOX = 0f; ///< 	Set the offset position which the particle sprite is rotated around.
+	private float	fOY = 0f; ///< 	Set the offset position which the particle sprite is rotated around.
 	private float	fEmissionRate = 1f; ///< The amount of particles per second. 
 	private float	fLifeTime = -1f; ///< Sets how long the particle system should emit particles (if -1 then it emits particles forever).
 	private float	fSize_Start = 1f;
