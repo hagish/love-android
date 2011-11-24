@@ -57,6 +57,8 @@ function love.load()
 		print("love.android",iResID,gAndroidTestImg)
 		print("love.android iResID2=",iResID2)
 	end
+
+	love.graphics.setScissor(100,100,100,100)
 end
 
 function love.update(dt)

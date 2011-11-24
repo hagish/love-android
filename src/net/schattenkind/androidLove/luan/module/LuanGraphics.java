@@ -7,6 +7,7 @@ import net.schattenkind.androidLove.luan.obj.LuanObjFont;
 import net.schattenkind.androidLove.luan.obj.LuanObjImage;
 import net.schattenkind.androidLove.luan.obj.LuanObjParticleSystem;
 import net.schattenkind.androidLove.luan.obj.LuanObjQuad;
+import net.schattenkind.androidLove.utils.Rectangle;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
@@ -80,7 +81,28 @@ public class LuanGraphics extends LuanRenderer {
 		t.set("setPoint",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"setPoint"			); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("setPointSize",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"setPointSize"		); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("setPointStyle",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"setPointStyle"		); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("setScissor",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"setScissor"			); return LuaValue.NONE; } }); // TODO: not yet implemented
+		
+		// love.graphics.setScissor( )
+		// love.graphics.setScissor( x, y, width, height )
+		t.set("setScissor",			new VarArgFunction() { 
+			@Override 
+			public Varargs invoke(Varargs args) { 
+				if (args.narg() == 0)
+				{
+					setScissor();
+				}
+				else if (args.narg() == 4)
+				{
+					setScissor(
+							args.checkint(1), 
+							args.checkint(2), 
+							args.checkint(3), 
+							args.checkint(4));
+				}
+				
+				return LuaValue.NONE; 
+			} 
+		});
 		
 		
 		t.set("getLineStipple",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"getLineStipple"		); return LuaValue.NONE; } }); // TODO: not yet implemented
@@ -90,7 +112,27 @@ public class LuanGraphics extends LuanRenderer {
 		t.set("getModes",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"getModes"			); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("getPointSize",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"getPointSize"		); return LuaValue.NONE; } }); // TODO: not yet implemented
 		t.set("getPointStyle",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"getPointStyle"		); return LuaValue.NONE; } }); // TODO: not yet implemented
-		t.set("getScissor",			new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.graphics."+"getScissor"			); return LuaValue.NONE; } }); // TODO: not yet implemented
+		
+		// x, y, width, height = love.graphics.getScissor( )
+		t.set("getScissor",			new VarArgFunction() { 
+			@Override 
+			public Varargs invoke(Varargs args) { 
+				if (isScissorEnabled())
+				{
+					Rectangle scissorBox = getScissorBox();
+					return LuaValue.tableOf(new LuaValue[]{
+						LuaValue.valueOf(scissorBox.left),
+						LuaValue.valueOf(scissorBox.top),
+						LuaValue.valueOf(scissorBox.width),
+						LuaValue.valueOf(scissorBox.height)
+					});
+				}
+				else
+				{
+					return LuaValue.NONE;	
+				}
+			} 
+		});
 		
 		
 		t.set("setBlendMode",		new VarArgFunction() { @Override public Varargs invoke(Varargs args) { setBlendMode(Str2BlendMode(args.checkjstring(1))); return LuaValue.NONE; } });

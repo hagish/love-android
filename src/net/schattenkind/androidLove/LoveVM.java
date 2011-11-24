@@ -22,6 +22,7 @@ import net.schattenkind.androidLove.luan.module.LuanPhone;
 import net.schattenkind.androidLove.luan.module.LuanPhysics;
 import net.schattenkind.androidLove.luan.module.LuanThread;
 import net.schattenkind.androidLove.luan.module.LuanTimer;
+import net.schattenkind.androidLove.utils.Vector2;
 
 import org.luaj.vm2.LoadState;
 import org.luaj.vm2.LuaError;
@@ -462,12 +463,8 @@ public class LoveVM {
 
 	}
 
-	public int convertMouseX(int mouseX, int mouseY) {
-		return mLuanGraphics.convertMouseX(mouseX, mouseY);
-	}
-
-	public int convertMouseY(int mouseX, int mouseY) {
-		return mLuanGraphics.convertMouseY(mouseX, mouseY);
+	public Vector2 convertMouse(int mouseX, int mouseY) {
+		return mLuanGraphics.convertMouse(mouseX, mouseY);
 	}
 
 	// ***** ***** ***** ***** ***** api access to other modules

@@ -16,6 +16,8 @@ import net.schattenkind.androidLove.luan.LuanBase;
 import net.schattenkind.androidLove.luan.LuanObjBase;
 import net.schattenkind.androidLove.luan.obj.LuanObjFont;
 import net.schattenkind.androidLove.luan.obj.LuanObjQuad;
+import net.schattenkind.androidLove.utils.Rectangle;
+import net.schattenkind.androidLove.utils.Vector2;
 
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.Varargs;
@@ -43,6 +45,9 @@ public abstract class LuanRenderer extends LuanBase implements GfxReinitListener
 	
 	private LuanColor backgroundColor = LuanColor.BLACK;
 	private LuanColor foregroundColor = LuanColor.WHITE;
+	
+	private Rectangle	mScissorBox = new Rectangle();
+	private boolean		mScissorEnabled = false;
 	
 	public enum DrawMode {
 		FILL,LINE
@@ -79,6 +84,65 @@ public abstract class LuanRenderer extends LuanBase implements GfxReinitListener
 	/// replace		Replace color mode. Images (etc) will not be affected by current color. 
 	public static ColorMode	Str2ColorMode	(String a) { return (a.equals("modulate"))?ColorMode.COLOR_MODULATE:ColorMode.COLOR_REPLACE; }
 	
+	
+	public void setScissor()
+	{
+		mScissorEnabled = false;
+		
+		if (gl != null)
+		{
+			gl.glDisable(GL10.GL_SCISSOR_TEST);
+		}
+	}
+	
+	public void setScissor(int left, int top, int width, int height)
+	{
+		mScissorBox.left = left;
+		mScissorBox.top = top;
+		mScissorBox.width = width;
+		mScissorBox.height = height;
+		
+		mScissorEnabled = true;
+		
+		if (gl != null)
+		{
+			Rectangle screenScissorBox = mScissorBox;
+			if (bResolutionOverrideActive)
+			{
+				screenScissorBox = convertUnscaledRectToRealScreenRect(mScissorBox);
+			}
+			
+			gl.glScissor(
+					(int)screenScissorBox.left, 
+					(int)(vm.mfScreenH - (screenScissorBox.top + screenScissorBox.height)), // Compensates for the fact that our y-coordinate is reverse of OpenGLs.
+					(int)screenScissorBox.width, 
+					(int)screenScissorBox.height);
+			gl.glEnable(GL10.GL_SCISSOR_TEST);
+		}
+	}
+
+	
+	private void restoreScissorState() {
+		if (mScissorEnabled)
+		{
+			setScissor((int)mScissorBox.left, (int)mScissorBox.top, 
+					(int)mScissorBox.width, (int)mScissorBox.height);
+		}
+		else
+		{
+			setScissor();
+		}
+	}
+	
+	public Rectangle getScissorBox()
+	{
+		return mScissorBox;
+	}
+	
+	public boolean isScissorEnabled()
+	{
+		return mScissorEnabled;
+	}
 	
 	public void setBlendMode( BlendMode mode ) {
 		gl.glAlphaFunc(GL10.GL_GEQUAL, 0);
@@ -304,15 +368,24 @@ public abstract class LuanRenderer extends LuanBase implements GfxReinitListener
 		LuanFillBuffer(spriteVB_Tex,spriteTexFloats); // assuming the sprite thing is always the full texture and not a subthing
 	}
 	
-	
-	public int convertMouseX(int mouseX,int mouseY) { 
-		if (bResolutionOverrideActive) return (int)( ((float)mouseX) * ((float)mfResolutionOverrideX) / ((float)vm.mfScreenW) );
-		return mouseX;
+	public Vector2 convertUnscaledXYToRealScreenXY(Vector2 v)
+	{
+		return new Vector2(
+					v.x * ((float)mfResolutionOverrideX) / ((float)vm.mfScreenW),
+					v.y * ((float)mfResolutionOverrideY) / ((float)vm.mfScreenH)
+				);
 	}
 	
-	public int convertMouseY(int mouseX,int mouseY) { 
-		if (bResolutionOverrideActive) return (int)( ((float)mouseY) * ((float)mfResolutionOverrideY) / ((float)vm.mfScreenH) );
-		return mouseY;
+	public Rectangle convertUnscaledRectToRealScreenRect(Rectangle r)
+	{
+		Vector2 p0 = convertUnscaledXYToRealScreenXY(new Vector2(r.left, r.top));
+		Vector2 p1 = convertUnscaledXYToRealScreenXY(new Vector2(r.left + r.width, r.top + r.height));
+		
+		return new Rectangle(p0.x, p0.y, p1.x - p0.x, p1.y - p0.y);
+	}
+	
+	public Vector2 convertMouse(int mouseX,int mouseY) { 
+		return convertUnscaledXYToRealScreenXY(new Vector2(mouseX, mouseY));
 	}
 	
 	public void resetTransformMatrix	(GL10 gl) {
@@ -395,6 +468,8 @@ public abstract class LuanRenderer extends LuanBase implements GfxReinitListener
 		
 		// init pixel coordinatesystem
 		resetTransformMatrix(gl);
+		
+		restoreScissorState();
 	}
 	
 	public void notifyFrameEnd		(GL10 gl) {
@@ -502,13 +577,13 @@ public abstract class LuanRenderer extends LuanBase implements GfxReinitListener
 		public boolean IsImage () { return false; }
 		public void RenderSelf (float x,float y,float r,float sx,float sy,float ox,float oy) { }
 	}
-	
 
 	@Override
 	public void onGfxReinit(GL10 gl, float w, float h) {
 		setBackgroundColor(backgroundColor);
 		setForegroundColor(foregroundColor);
 	}
+
 	
 	public void setBackgroundColor(LuanColor color)
 	{

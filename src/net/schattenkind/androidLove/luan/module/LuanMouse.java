@@ -64,8 +64,8 @@ public class LuanMouse extends LuanBase {
 		}
 	}
 	
-	private int mouseX_for_vm() { return vm.convertMouseX(mouseX,mouseY); }
-	private int mouseY_for_vm() { return vm.convertMouseY(mouseX,mouseY); }
+	private int mouseX_for_vm() { return (int) vm.convertMouse(mouseX,mouseY).x; }
+	private int mouseY_for_vm() { return (int) vm.convertMouse(mouseX,mouseY).y; }
 
 	private void triggerCallsbacksIfNecessary(boolean left, boolean middle,
 			boolean right) {
