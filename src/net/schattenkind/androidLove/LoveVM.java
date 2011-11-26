@@ -86,6 +86,9 @@ public class LoveVM {
 
 	LinkedList<WeakReference<GfxReinitListener>> notifyOnGfxReinitList;
 
+	private boolean bKeepScreenOn_UpdateNeeded = false;
+	private boolean bKeepScreenOn;
+	
 	// ***** ***** ***** ***** ***** constructor
 
 	public LoveVM(LoveStorage storage) {
@@ -262,8 +265,24 @@ public class LoveVM {
 	public void notifyUpdateTimerMainThread(float dt) {
 		if (!bCallUpdateDuringDraw)
 			update(dt);
+		
+		// stuff that needs to be done on main thread :
+		
+		// view.setKeepScreenOn needs to be done in mainthread, or exception will be thrown : vm error: android.view.ViewRoot$CalledFromWrongThreadException: Only the original thread that created a view hierarchy can touch its views.
+		if (bKeepScreenOn_UpdateNeeded) {
+			bKeepScreenOn_UpdateNeeded = false;
+			getView().setKeepScreenOn(bKeepScreenOn);
+		}
 	}
 
+	// ***** ***** ***** ***** ***** mainthread stuff
+	
+	/// view.setKeepScreenOn needs to be done in mainthread, or exception will be thrown : vm error: android.view.ViewRoot$CalledFromWrongThreadException: Only the original thread that created a view hierarchy can touch its views.
+	public void setKeepScreenOn(boolean bState) { 
+		bKeepScreenOn_UpdateNeeded = true;
+		bKeepScreenOn = bState;
+	} 
+	
 	// ***** ***** ***** ***** ***** lua api
 
 	private void setupCoreFunctions() {

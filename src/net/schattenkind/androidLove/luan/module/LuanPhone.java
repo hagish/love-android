@@ -41,6 +41,22 @@ public class LuanPhone extends LuanBase {
 	public void Log (String s) { LoveVM.LoveLog(TAG, s); }
 
 	public int generateNewLoveSensorID () { return miNextLoveSensorID++; }
+
+	public static int Str2ScreenOrientation (String a) { 
+		if (a.equals("behind"				)) return android.content.pm.ActivityInfo.SCREEN_ORIENTATION_BEHIND		; ///< 	Constant corresponding to behind in the screenOrientation attribute.
+		//~ if (a.equals("full_sensor",			)) return android.content.pm.ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR	; ///< 	Constant corresponding to fullSensor in the screenOrientation attribute.
+		if (a.equals("landscape"			)) return android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE	; ///< 	Constant corresponding to landscape in the screenOrientation attribute.
+		if (a.equals("nosensor"				)) return android.content.pm.ActivityInfo.SCREEN_ORIENTATION_NOSENSOR		; ///< 	Constant corresponding to nosensor in the screenOrientation attribute.
+		if (a.equals("portrait"				)) return android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT		; ///< 	Constant corresponding to portrait in the screenOrientation attribute.
+		//~ if (a.equals("reverse_landscape",	)) return android.content.pm.ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE	; ///< 	Constant corresponding to reverseLandscape in the screenOrientation attribute.
+		//~ if (a.equals("reverse_portrait",	)) return android.content.pm.ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT	; ///< 	Constant corresponding to reversePortrait in the screenOrientation attribute.
+		if (a.equals("sensor"				)) return android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR	; ///< 	Constant corresponding to sensor in the screenOrientation attribute.
+		//~ if (a.equals("sensor_landscape",	)) return android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE	; ///< 	Constant corresponding to sensorLandscape in the screenOrientation attribute.
+		//~ if (a.equals("sensor_portrait",		)) return android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT	; ///< 	Constant corresponding to sensorPortrait in the screenOrientation attribute.
+		if (a.equals("unspecified"			)) return android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED	; ///< 	Constant corresponding to unspecified in the screenOrientation attribute.
+		if (a.equals("user"					)) return android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER	; ///< 	Constant corresponding to user in the screenOrientation attribute.
+		return android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+	}
 	
 	// ***** ***** ***** ***** ***** init 
 	
@@ -185,11 +201,17 @@ public class LuanPhone extends LuanBase {
 			@Override public Varargs invoke(Varargs args) { vm.getView().performHapticFeedback(args.checkint(1)); return LuaValue.NONE; }
 		});
 		
+		/// love.phone.setKeepScreenOn(bool bKeepScreenOn)
+		t.set("setKeepScreenOn", new VarArgFunction() {
+			@Override public Varargs invoke(Varargs args) { vm.setKeepScreenOn(args.checkboolean(1)); return LuaValue.NONE; }
+		});
 		
 		/// love.phone.setRequestedOrientation(requestedOrientation)
-		/// see also SCREEN_ORIENTATION
+		/// string param : behind,full_sensor,landscape,nosensor,portrait,reverse_landscape,reverse_portrait,sensor,sensor_landscape,sensor_portrait,unspecified,user
+		/// for param meaning see also http://developer.android.com/reference/android/content/pm/ActivityInfo.html
+		/// numeric parameter are still supported but are discouraged, see SCREEN_ORIENTATION
 		t.set("setRequestedOrientation", new VarArgFunction() {
-			@Override public Varargs invoke(Varargs args) { vm.getActivity().setRequestedOrientation(args.checkint(1)); return LuaValue.NONE; }
+			@Override public Varargs invoke(Varargs args) { vm.getActivity().setRequestedOrientation(args.isstring(1) ? Str2ScreenOrientation(args.checkjstring(1)) : args.checkint(1)); return LuaValue.NONE; }
 		});
 		
 		/// love.phone.SCREEN_ORIENTATION = {[name]=value,...}

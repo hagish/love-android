@@ -59,6 +59,14 @@ remove all Log.i() and Log.e() calls and the import line (central function in Lo
 ** to
 ** target=android-7
 
+### lua.conf settings 
+
+* t.android_allow_screensleep
+** if this is not set, then love.phone.setKeepScreenOn(true) is called at startup
+
+* t.android_native_screen
+** if this is not set, then love.graphics.setMode(w,h) is called at startup with t.screen.width/height or default pc resolution
+
 ### android/phone specific api 
 
 
@@ -148,4 +156,13 @@ remove all Log.i() and Log.e() calls and the import line (central function in Lo
 ** ACTION_POINTER_DOWN,ACTION_POINTER_ID_MASK,ACTION_POINTER_ID_SHIFT,ACTION_POINTER_INDEX_MASK,
 ** ACTION_POINTER_INDEX_SHIFT,ACTION_POINTER_UP,ACTION_SCROLL,ACTION_UP,
 
-			
+* love.phone.performHapticFeedback(feedbackConstant), see love.phone.FEEDBACK_CONSTANT
+* love.phone.setHapticFeedbackEnabled(bEnabled)
+
+* love.phone.setKeepScreenOn(bool bKeepScreenOn)
+
+* love.phone.setRequestedOrientation(requestedOrientation), see love.phone.SCREEN_ORIENTATION
+
+* love.phone.setBlockMainKey_Back(bBlocked)
+* love.phone.setBlockMainKey_Menu(bBlocked)
+* love.phone.setBlockMainKey_Search(bBlocked)

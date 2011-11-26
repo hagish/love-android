@@ -1,0 +1,12 @@
+warning, incomplete, see git log and forum thread http://love2d.org/forums/posting.php?mode=reply&f=11&t=3879
+
+
+2011-11-26
+love.phone.setRequestedOrientation(requestedOrientation)
+now accepts string parameters : (api lövification ;)) 
+behind,full_sensor,landscape,nosensor,portrait,reverse_landscape,reverse_portrait,sensor,sensor_landscape,sensor_portrait,unspecified,user
+the old numeric ones will still work, but are discouraged
+
+love.phone.setKeepScreenOn(bool bKeepScreenOn)
+to prevent powersafe if no touch/key (e.g. gravity sensor games etc), now active by default unless love.conf sets t.android_allow_screensleep=true
+

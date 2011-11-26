@@ -116,6 +116,9 @@ function love_andorid_exec_conf ()
 	local t = { screen={}, modules={} }
 	if love.conf then print("*****************") love.conf(t) end
 	
+	if (not t.android_allow_screensleep) then
+		love.phone.setKeepScreenOn(true)
+	end
 	if (not t.android_native_screen) then
 		local w = t.screen and t.screen.width or default_screen_w
 		local h = t.screen and t.screen.height or default_screen_h
