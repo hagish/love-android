@@ -1,4 +1,5 @@
 -- overwrites the current pairs implementation to become invariant to removing elements during iteration
+-- see also bugreport on sourceforge: http://sourceforge.net/tracker/?func=detail&aid=3430986&group_id=197627&atid=962226 
 -- because of a bug in luaj
 
 local _pairs = pairs
