@@ -41,7 +41,13 @@ public class LuanEvent extends LuanBase {
 		/// love.event.push( e, a, b, c )
 		/// Adds an event to the event queue. 
 		/// TODO: not yet implemented
-		t.set("push", new VarArgFunction() { @Override public Varargs invoke(Varargs args) { vm.NotImplemented("love.event.push"); return LuaValue.NONE; } });
+		t.set("push", new VarArgFunction() { @Override public Varargs invoke(Varargs args) {
+			// special: param1=q -> quit
+			String s = args.checkjstring(1);
+			if (s.equals("q")) { vm.quitGame(); }
+			vm.NotImplemented("love.event.push"); 
+			return LuaValue.NONE; 
+		} });
 		
 		/// e, a, b, c = love.event.wait( )
 		/// Like love.event.poll(), but blocks until there is an event in the queue. 

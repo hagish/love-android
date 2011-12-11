@@ -104,6 +104,10 @@ public class LoveVM {
 	public float getRandomFloat			() { return mRandom.nextFloat(); } // [0;1[
 	public float getRandomFloatBetween	(float a,float b) { return a + mRandom.nextFloat() * (b-a); } // [a;b[
 	
+	// lua code requested game quit, e.g. love.event.push("q")
+	public void quitGame () {
+		getActivity().finish();
+	}
 
 	// ***** ***** ***** ***** ***** log
 
