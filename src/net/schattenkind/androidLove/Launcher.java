@@ -72,7 +72,16 @@ public class Launcher extends ActivitiyWithExitMenu {
 		miGamesFound = 0;
 		String sPathDown = "";
 		String sPathSD = "";
-
+		
+		
+		try {
+			LoveVM.MyDummy();
+		} catch (Throwable t) {
+			// wtf ? i really get this case on emulator 2012-06-23
+			addGameToList("ERROR: LoveVM methods not accessible", "");
+			return;
+		}
+		
 		// scan sd card (/mnt/sdcard/love)
 		try {
 			File dir = new File(Environment.getExternalStorageDirectory() + "/"
@@ -81,16 +90,22 @@ public class Launcher extends ActivitiyWithExitMenu {
 
 			File[] files = dir.listFiles();
 			for (File f : files) {
-				if (f.isDirectory()) {
-					tryToPopulateGameFromDirectory(f);
-				}
-				if (isFileLoveZip(f)) {
-					tryToPopulateGameFromZipOrLoveFile(f);
+				try {
+					if (f.isDirectory()) {
+						tryToPopulateGameFromDirectory(f);
+					}
+					if (isFileLoveZip(f)) {
+						tryToPopulateGameFromZipOrLoveFile(f);
+					}
+				} catch (Throwable t) {
+					// at least continue trying with other entries
+					addGameToList("FAILED(1):"+f.getName(), "");
 				}
 			}
-
 		} catch (Exception e) {
 			// avoid crash if folder doesn't exist
+		} catch (Throwable t) {
+			// some java linking error, cannot call LoveVM methods etc. java.lang.VerifyError: net.schattenkind.androidLove.LoveVM ?
 		}
 
 		// scan downloads folder for .love files
@@ -104,13 +119,20 @@ public class Launcher extends ActivitiyWithExitMenu {
 																				// zip
 																				// files
 			for (File f : files) {
-				if (isFileLoveZip(f)) {
-					tryToPopulateGameFromZipOrLoveFile(f);
+				try {
+					if (isFileLoveZip(f)) {
+						tryToPopulateGameFromZipOrLoveFile(f);
+					}
+				} catch (Throwable t) {
+					// at least continue trying with other entries
+					addGameToList("FAILED(2):"+f.getName(), "");
 				}
 			}
 
 		} catch (Exception e) {
 			// avoid crash folder doesn't exist
+		} catch (Throwable t) {
+			// some java linking error, cannot call LoveVM methods etc. java.lang.VerifyError: net.schattenkind.androidLove.LoveVM ?
 		}
 
 		// no games found, display hints :

@@ -2,7 +2,8 @@
 
 if [ -z "$SRC" ]
 then 
-	SRC=/home/hagish/workspace/adt/love-android/sdcard/ 
+	#~ SRC=/home/hagish/workspace/adt/love-android/sdcard/ 
+	SRC=/cavern/eclipse-workspace/love-android/sdcard/ 
 fi
 
 if [ -z "$DST" ]

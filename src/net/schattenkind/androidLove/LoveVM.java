@@ -37,12 +37,12 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.hardware.SensorManager;
-import android.util.Log;
+//~ import android.util.Log;
 import android.widget.Toast;
 
 public class LoveVM {
 	// TODO: disable for release
-	private static final boolean loggingEnabled = true;
+	//~ private static final boolean loggingEnabled = true;
 
 	private static final String TAG = "LoveVM";
 	private Activity attachedToThisActivity;
@@ -108,7 +108,12 @@ public class LoveVM {
 	public void quitGame () {
 		getActivity().finish();
 	}
+	
+	// ***** ***** ***** ***** ***** MyDummy
 
+	/// empty dummy method to check from launcher if methodcalls work at all
+	public static void MyDummy() {}
+		
 	// ***** ***** ***** ***** ***** log
 
 	public static void logException(Exception e) {
@@ -116,16 +121,25 @@ public class LoveVM {
 	}
 
 	public static void LoveLogE(String sTag, String sTxt, Exception e) {
-		Log.e(sTag, sTxt, e);
+		//~ try {
+			//~ Log.e(sTag, sTxt, e);
+		//~ } catch (Throwable t) {
+		//~ }
 	}
 
 	public static void LoveLogE(String sTag, String sTxt) {
-		Log.e(sTag, sTxt);
+		//~ try {
+			//~ Log.e(sTag, sTxt);
+		//~ } catch (Throwable t) {
+		//~ }
 	}
 
 	public static void LoveLog(String sTag, String sTxt) {
-		if (loggingEnabled)
-			Log.i(sTag, sTxt.toString());
+		//~ try {
+			//~ if (loggingEnabled)
+				//~ Log.i(sTag, sTxt.toString());
+		//~ } catch (Throwable t) {
+		//~ }
 	}
 
 	public static void LoveLog(String s) {
