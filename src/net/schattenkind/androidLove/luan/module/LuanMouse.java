@@ -4,9 +4,7 @@ import net.schattenkind.androidLove.LoveVM;
 import net.schattenkind.androidLove.luan.LuanBase;
 
 import org.luaj.vm2.LuaBoolean;
-import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaNumber;
-import org.luaj.vm2.LuaString;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
@@ -53,14 +51,7 @@ public class LuanMouse extends LuanBase {
 				callback = "mousereleased";
 			}
 
-			try {
-				vm.get_G().get("love")
-					.get(callback)
-					.call(LuaNumber.valueOf(mouseX_for_vm()), LuaNumber.valueOf(mouseY_for_vm()),
-							LuaString.valueOf(button));
-			} catch (LuaError e) {
-				vm.handleLuaError(e);
-			}
+			vm.FireEvent(callback,mouseX_for_vm(),mouseY_for_vm(),button);
 		}
 	}
 	

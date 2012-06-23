@@ -28,6 +28,7 @@ import org.luaj.vm2.LoadState;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaNumber;
 import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.LuaString;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.jse.JsePlatform;
@@ -41,6 +42,10 @@ import android.hardware.SensorManager;
 import android.widget.Toast;
 
 public class LoveVM {
+	static public class cLoveEvent { 
+		public void Execute(LoveVM vm) {} 
+	};
+	
 	// TODO: disable for release
 	//~ private static final boolean loggingEnabled = true;
 
@@ -439,6 +444,8 @@ public class LoveVM {
 			this.update(dt / 1000.0f);
 		}
 
+		ExecEvents();
+
 		mLuanGraphics.notifyFrameStart(gl);
 		// ~ LoveLog("calling love.draw...");
 		try {
@@ -561,6 +568,106 @@ public class LoveVM {
 		return _G;
 	}
 
+	// ***** ***** ***** ***** ***** event firing (to be synchronized / guarded by mutex against render-thread crash)
+	
+	private LinkedList<cLoveEvent> myEventList;
+	
+	/// only called during update/draw !
+	/// thread-safe-mutex-list-and-exec-in-update/draw
+	public void ExecEvents () {
+		try {
+			while (true) {
+				cLoveEvent e = PopEvent();
+				if (e == null) break; else e.Execute(this);
+			}
+		} catch (Exception e) {  // java.io.IOException?
+			// weird but seems to happen from calling a synchronized, even if it never returns an event
+		}
+	}
+	
+	public synchronized cLoveEvent PopEvent () {     
+		if (!myEventList.isEmpty()) return myEventList.remove(); // pop first
+		return null;
+	}
+	
+	/// complex things like phone, also used by the others as shortcut
+	public synchronized void FireEvent(cLoveEvent e) {      
+		myEventList.add(e);
+	}
+	
+	public class cLoveEvent_Callback_String extends cLoveEvent {
+		String callback;
+		String a;
+		public cLoveEvent_Callback_String (String callback,String a) { this.callback = callback; this.a = a; }
+		public void Execute	(LoveVM vm) {
+			try {
+				vm.get_G().get("love").get(callback).call(LuaString.valueOf(a));
+			} catch (LuaError e) {
+				vm.handleLuaError(e);
+			}
+		}
+	}
+	
+	
+	/// eg keyboard
+	public void FireEvent(String callback,String a) {
+		FireEvent(new cLoveEvent_Callback_String(callback,a));
+		
+		/* 
+		// legal in java, but crashes android?
+		// http://stackoverflow.com/questions/362424/accessing-constructor-of-an-anonymous-class
+		FireEvent(new cLoveEvent() {
+			String callback;
+			String a;
+			public cLoveEvent MyInit (String callback,String a) { this.callback = callback; this.a = a; return this; }
+			public void Execute	(LoveVM vm) {
+				try {
+					vm.get_G().get("love").get(callback).call(LuaString.valueOf(a));
+				} catch (LuaError e) {
+					vm.handleLuaError(e);
+				}
+			}
+		}.MyInit(callback,a));
+		*/
+	}
+
+	public class cLoveEvent_Callback_IntIntString extends cLoveEvent {
+		String callback;
+		int a,b;
+		String c;
+		public cLoveEvent_Callback_IntIntString (String callback,int a,int b,String c) { this.callback = callback; this.a = a; this.b = b; this.c = c; }
+		public void Execute	(LoveVM vm) {
+			try {
+				vm.get_G().get("love").get(callback).call(LuaNumber.valueOf(a), LuaNumber.valueOf(b), LuaString.valueOf(c));
+			} catch (LuaError e) {
+				vm.handleLuaError(e);
+			}	
+		}
+	}
+	
+	/// eg mouse x,y,btn
+	public void FireEvent(String callback,int a,int b,String c) {
+		FireEvent(new cLoveEvent_Callback_IntIntString(callback,a,b,c));
+		
+		/*
+		// legal in java, but crashes android?
+		// http://stackoverflow.com/questions/362424/accessing-constructor-of-an-anonymous-class
+		FireEvent(new cLoveEvent() {
+			String callback;
+			int a,b;
+			String c;
+			public cLoveEvent MyInit (String callback,int a,int b,String c) { this.callback = callback; this.a = a; this.b = b; this.c = c; return this; }
+			public void Execute	(LoveVM vm) {
+				try {
+					vm.get_G().get("love").get(callback).call(LuaNumber.valueOf(a), LuaNumber.valueOf(b), LuaString.valueOf(c));
+				} catch (LuaError e) {
+					vm.handleLuaError(e);
+				}	
+			}
+		}.MyInit(callback,a,b,c));
+		*/
+	}
+	
 	// ***** ***** ***** ***** ***** file access functions
 
 	private void loadConfig() {

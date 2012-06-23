@@ -301,6 +301,8 @@ public class LuanPhone extends LuanBase {
 	/// see http://developer.android.com/reference/android/view/MotionEvent.html for details about multitouch handling
 	public void onTouch (MotionEvent event) {
 		if (!mbEnableTouchEvents) return;
+
+		/*
 		if (!vm.isInitDone()) return;
 			
 		try {
@@ -314,6 +316,33 @@ public class LuanPhone extends LuanBase {
 		} catch (LuaError e) {
 			vm.handleLuaError(e);
 		}
+		*/
+		
+
+		
+		/*
+		// http://stackoverflow.com/questions/362424/accessing-constructor-of-an-anonymous-class
+		vm.FireEvent(new LoveVM.cLoveEvent() {
+			MotionEvent event;
+			public LoveVM.cLoveEvent MyInit (MotionEvent event) { this.event = event; return this; }
+			public void Execute	(LoveVM vm) {
+				if (!vm.isInitDone()) return;
+				try {
+					LuaTable t = new LuaTable();
+					for (int i=0;i<event.getPointerCount();++i) {
+						t.set(1+i*3+0,LuaValue.valueOf(event.getPointerId(i)));
+						t.set(1+i*3+1,LuaValue.valueOf(event.getX(i)));
+						t.set(1+i*3+2,LuaValue.valueOf(event.getY(i)));
+					}
+					vm.get_G().get("love").get("phone").get("touch").call(LuaValue.valueOf(event.getAction()),t);
+				} catch (LuaError e) {
+					vm.handleLuaError(e);
+				}
+			}
+		}.MyInit(event));
+		*/
+
+
 	}
 	
 	/// calls love.phone.main_key_event (sEventName) with sEventName being one of back,menu,search,home,leavehint

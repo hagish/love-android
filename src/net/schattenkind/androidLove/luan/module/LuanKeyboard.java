@@ -6,9 +6,7 @@ import net.schattenkind.androidLove.LoveVM;
 import net.schattenkind.androidLove.luan.LuanBase;
 
 import org.luaj.vm2.LuaBoolean;
-import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaNumber;
-import org.luaj.vm2.LuaString;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
@@ -74,11 +72,7 @@ public class LuanKeyboard extends LuanBase {
 			}
 
 			// TODO unicode
-			try {
-				vm.get_G().get("love").get(callback).call(LuaString.valueOf(luaKeyCode));
-			} catch (LuaError e) {
-				vm.handleLuaError(e);
-			}
+			vm.FireEvent(callback,luaKeyCode);
 		}
 	}
 
