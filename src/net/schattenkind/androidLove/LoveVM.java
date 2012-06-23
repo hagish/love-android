@@ -595,26 +595,8 @@ public class LoveVM {
 		myEventList.add(e);
 	}
 	
-	public class cLoveEvent_Callback_String extends cLoveEvent {
-		String callback;
-		String a;
-		public cLoveEvent_Callback_String (String callback,String a) { this.callback = callback; this.a = a; }
-		public void Execute	(LoveVM vm) {
-			try {
-				vm.get_G().get("love").get(callback).call(LuaString.valueOf(a));
-			} catch (LuaError e) {
-				vm.handleLuaError(e);
-			}
-		}
-	}
-	
-	
 	/// eg keyboard
 	public void FireEvent(String callback,String a) {
-		FireEvent(new cLoveEvent_Callback_String(callback,a));
-		
-		/* 
-		// legal in java, but crashes android?
 		// http://stackoverflow.com/questions/362424/accessing-constructor-of-an-anonymous-class
 		FireEvent(new cLoveEvent() {
 			String callback;
@@ -628,29 +610,10 @@ public class LoveVM {
 				}
 			}
 		}.MyInit(callback,a));
-		*/
-	}
-
-	public class cLoveEvent_Callback_IntIntString extends cLoveEvent {
-		String callback;
-		int a,b;
-		String c;
-		public cLoveEvent_Callback_IntIntString (String callback,int a,int b,String c) { this.callback = callback; this.a = a; this.b = b; this.c = c; }
-		public void Execute	(LoveVM vm) {
-			try {
-				vm.get_G().get("love").get(callback).call(LuaNumber.valueOf(a), LuaNumber.valueOf(b), LuaString.valueOf(c));
-			} catch (LuaError e) {
-				vm.handleLuaError(e);
-			}	
-		}
 	}
 	
 	/// eg mouse x,y,btn
 	public void FireEvent(String callback,int a,int b,String c) {
-		FireEvent(new cLoveEvent_Callback_IntIntString(callback,a,b,c));
-		
-		/*
-		// legal in java, but crashes android?
 		// http://stackoverflow.com/questions/362424/accessing-constructor-of-an-anonymous-class
 		FireEvent(new cLoveEvent() {
 			String callback;
@@ -665,7 +628,6 @@ public class LoveVM {
 				}	
 			}
 		}.MyInit(callback,a,b,c));
-		*/
 	}
 	
 	// ***** ***** ***** ***** ***** file access functions

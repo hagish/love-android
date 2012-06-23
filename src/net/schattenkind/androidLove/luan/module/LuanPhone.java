@@ -302,25 +302,6 @@ public class LuanPhone extends LuanBase {
 	public void onTouch (MotionEvent event) {
 		if (!mbEnableTouchEvents) return;
 
-		/*
-		if (!vm.isInitDone()) return;
-			
-		try {
-			LuaTable t = new LuaTable();
-			for (int i=0;i<event.getPointerCount();++i) {
-				t.set(1+i*3+0,LuaValue.valueOf(event.getPointerId(i)));
-				t.set(1+i*3+1,LuaValue.valueOf(event.getX(i)));
-				t.set(1+i*3+2,LuaValue.valueOf(event.getY(i)));
-			}
-			vm.get_G().get("love").get("phone").get("touch").call(LuaValue.valueOf(event.getAction()),t);
-		} catch (LuaError e) {
-			vm.handleLuaError(e);
-		}
-		*/
-		
-
-		
-		/*
 		// http://stackoverflow.com/questions/362424/accessing-constructor-of-an-anonymous-class
 		vm.FireEvent(new LoveVM.cLoveEvent() {
 			MotionEvent event;
@@ -340,9 +321,6 @@ public class LuanPhone extends LuanBase {
 				}
 			}
 		}.MyInit(event));
-		*/
-
-
 	}
 	
 	/// calls love.phone.main_key_event (sEventName) with sEventName being one of back,menu,search,home,leavehint
