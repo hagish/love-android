@@ -326,11 +326,18 @@ public class LuanPhone extends LuanBase {
 	/// calls love.phone.main_key_event (sEventName) with sEventName being one of back,menu,search,home,leavehint
 	public void fireLuaMainKeyEvent (String sEventName) {
 		if (!vm.isInitDone()) return;
-		try {
-			vm.get_G().get("love").get("phone").get("main_key_event").call(LuaValue.valueOf(sEventName));
-		} catch (LuaError e) {
-			vm.handleLuaError(e);
-		}
+			
+		vm.FireEvent(new LoveVM.cLoveEvent() {
+			String sEventName;
+			public LoveVM.cLoveEvent MyInit (String sEventName) { this.sEventName = sEventName; return this; }
+			public void Execute	(LoveVM vm) {
+				try {
+					vm.get_G().get("love").get("phone").get("main_key_event").call(LuaValue.valueOf(sEventName));
+				} catch (LuaError e) {
+					vm.handleLuaError(e);
+				}
+			}
+		}.MyInit(sEventName));
 	}
 		
 	public void notifyMainKey_Back		() { fireLuaMainKeyEvent("back"); }
@@ -372,15 +379,21 @@ public class LuanPhone extends LuanBase {
 		/// calls love.phone.sensorevent(sensorid,{f1,f2,....,accuracy=?,timestamp=?})
 		/// see also http://developer.android.com/reference/android/hardware/SensorEvent.html
 		public void 	onSensorChanged (SensorEvent event) {
-			try {
-				LuaTable t = new LuaTable(event.values.length,2);
-				for (int i=0;i<event.values.length;++i) t.set(i+1,LuaValue.valueOf(event.values[i]));
-				t.set("accuracy",LuaValue.valueOf(event.accuracy));
-				t.set("timestamp",LuaValue.valueOf(event.timestamp));
-				phone.vm.get_G().get("love").get("phone").get("sensorevent").call(LuaValue.valueOf(getLoveSensorID()),t);
-			} catch (LuaError e) {
-				phone.vm.handleLuaError(e);
-			}
+			phone.vm.FireEvent(new LoveVM.cLoveEvent() {
+				SensorEvent event;
+				public LoveVM.cLoveEvent MyInit (SensorEvent event) { this.event = event; return this; }
+				public void Execute	(LoveVM vm) {
+					try {
+						LuaTable t = new LuaTable(event.values.length,2);
+						for (int i=0;i<event.values.length;++i) t.set(i+1,LuaValue.valueOf(event.values[i]));
+						t.set("accuracy",LuaValue.valueOf(event.accuracy));
+						t.set("timestamp",LuaValue.valueOf(event.timestamp));
+						vm.get_G().get("love").get("phone").get("sensorevent").call(LuaValue.valueOf(getLoveSensorID()),t);
+					} catch (LuaError e) {
+						vm.handleLuaError(e);
+					}
+				}
+			}.MyInit(event));
 		}
 		
 		// ***** ***** ***** ***** ***** methods

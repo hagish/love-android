@@ -100,6 +100,7 @@ public class LoveVM {
 		this.attachedToThisActivity = null;
 		this.storage = storage;
 		this.config = new LoveConfig();
+		myEventList = new LinkedList<cLoveEvent>();
 
 		notifyOnGfxReinitList = new LinkedList<WeakReference<GfxReinitListener>>();
 	}
